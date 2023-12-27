@@ -1,7 +1,7 @@
 {
-    "name": "@recursyve/nestjs-redis",
-    "version": "9.2.0",
-    "description": "Recursyve's NestJs Redis client",
+    "name": "@lightxinnovations/nestjs-redis",
+    "version": "10.0.0",
+    "description": "NestJs Redis client",
     "main": "index.js",
     "scripts": {
         "watch": "gulp",
@@ -14,7 +14,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/Recursyve/nestjs-librairies/redis"
+        "url": "https://github.com/LightX-Innovations/nestjs-librairies/redis"
     },
     "author": "Recursyve",
     "license": "MIT",

@@ -1,6 +1,6 @@
 {
-    "name": "@recursyve/nestjs-access-control",
-    "version": "9.1.0-beta.1",
+    "name": "@lightxinnovations/nestjs-access-control",
+    "version": "9.1.0",
     "description": "NestJs AccessControl library",
     "main": "index.js",
     "scripts": {
@@ -14,7 +14,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/Recursyve/nestjs-librairies/access-control"
+        "url": "https://github.com/LightX-Innovations/nestjs-librairies/access-control"
     },
     "author": "Recursyve",
     "license": "MIT",
