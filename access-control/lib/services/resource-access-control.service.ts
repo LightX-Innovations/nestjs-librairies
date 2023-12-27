@@ -1,22 +1,22 @@
+import { RedisService } from "@lightxinnovations/nestjs-redis";
 import { Inject, Injectable, Optional } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
-import { RedisService } from "@recursyve/nestjs-redis";
 import { lastValueFrom } from "rxjs";
 import { IDatabaseAdapter } from "../adapters";
 import {
     AccessActionType,
     AccessRules,
-    PolicyResourcesCondition,
     PolicyResourceTypes,
+    PolicyResourcesCondition,
     ResourceId,
     Resources,
     Users
 } from "../models";
 import { PolicyConfig } from "../models/policy-config.model";
 import { RedisKeyUtils } from "../utils";
+import { arrayUnique } from "../utils/array.utils";
 import { AccessControlResourceLoaderService } from "./access-control-resource-loader.service";
 import { DatabaseAdaptersRegistry } from "./database-adapters.registry";
-import { arrayUnique } from "../utils/array.utils";
 
 @Injectable()
 export class ResourceAccessControlService {

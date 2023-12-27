@@ -1,6 +1,6 @@
 {
     "name": "@lightxinnovations/nestjs-access-control",
-    "version": "9.1.0",
+    "version": "10.0.0",
     "description": "NestJs AccessControl library",
     "main": "index.js",
     "scripts": {
@@ -19,17 +19,16 @@
     "author": "Recursyve",
     "license": "MIT",
     "peerDependencies": {
-        "@nestjs/common": ">=9.0.0",
-        "@nestjs/core": ">=9.0.0",
-        "@nestjs/cqrs": ">=9.0.0",
-        "@recursyve/nestjs-redis": ">=9.2.0"
+        "@nestjs/common": ">=10.0.0",
+        "@nestjs/core": ">=10.0.0",
+        "@lightxinnovations/nestjs-redis": ">=10.0.1"
     },
     "devDependencies": {
-        "@nestjs/common": "^9.2.1",
-        "@nestjs/core": "^9.2.1",
-        "@nestjs/cqrs": "^9.0.1",
-        "@nestjs/testing": "^9.2.1",
-        "@recursyve/nestjs-redis": "^9.2.0",
+        "@nestjs/common": "^10.0.0",
+        "@nestjs/core": "^10.0.0",
+        "@nestjs/cqrs": "^10.0.0",
+        "@nestjs/testing": "^10.0.0",
+        "@lightxinnovations/nestjs-redis": "^10.0.1",
         "@types/jest": "^29.2.5",
         "gulp": "^4.0.2",
         "gulp-copy": "^4.0.1",
