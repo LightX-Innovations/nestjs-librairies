@@ -1,4 +1,4 @@
-import { ObjectUtils } from "@recursyve/nestjs-common";
+import { ObjectUtils } from "@lightxinnovations/nestjs-common";
 import * as xlsx from "xlsx";
 
 export class XlsxUtils {
@@ -28,10 +28,10 @@ export class XlsxUtils {
         let xlsxContent: string = xlsx.write(
             {
                 Sheets: sheet,
-                SheetNames: [name]
+                SheetNames: [name],
             },
             {
-                type: "binary"
+                type: "binary",
             }
         );
 
