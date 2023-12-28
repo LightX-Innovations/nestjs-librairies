@@ -1,4 +1,4 @@
-import { ObjectUtils } from "@recursyve/nestjs-common";
+import { ObjectUtils } from "@lightxinnovations/nestjs-common";
 import * as csv from "csv-stringify";
 import { promisify } from "util";
 

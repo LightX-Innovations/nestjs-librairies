@@ -1,6 +1,6 @@
 {
-    "name": "@recursyve/nestjs-sequelize-utils",
-    "version": "9.4.1",
+    "name": "@lightxinnovations/nestjs-sequelize-utils",
+    "version": "10.0.0",
     "description": "Sequelize utilities for NestJs",
     "main": "index.js",
     "scripts": {
@@ -14,22 +14,22 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/Recursyve/nestjs-librairies/sequelize-utils"
+        "url": "https://github.com/LightX-Innovations/nestjs-librairies/sequelize-utils"
     },
     "author": "Recursyve",
     "license": "MIT",
     "peerDependencies": {
-        "@nestjs/common": ">=9.0.0",
-        "@nestjs/core": ">=9.0.0",
-        "@nestjs/sequelize": ">=9.0.0",
+        "@nestjs/common": ">=10.0.0",
+        "@nestjs/core": ">=10.0.0",
+        "@nestjs/sequelize": ">=10.0.0",
         "sequelize": ">=6.0.0",
         "sequelize-typescript": ">=2.1.0"
     },
     "devDependencies": {
-        "@nestjs/common": "^9.2.1",
-        "@nestjs/core": "^9.2.1",
-        "@nestjs/sequelize": "^9.0.0",
-        "@nestjs/testing": "^9.2.1",
+        "@nestjs/common": "^10.0.0",
+        "@nestjs/core": "^10.0.0",
+        "@nestjs/sequelize": "^10.0.0",
+        "@nestjs/testing": "^10.0.0",
         "@recursyve/eslint-config-node": "^1.0.1",
         "@types/jest": "^29.2.3",
         "@typescript-eslint/eslint-plugin": "^5.45.0",

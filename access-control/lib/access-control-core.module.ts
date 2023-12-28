@@ -1,26 +1,26 @@
+import { RedisModule } from "@lightxinnovations/nestjs-redis";
 import { Global, Module, OnModuleInit } from "@nestjs/common";
 import { CqrsModule } from "@nestjs/cqrs";
-import { RedisModule } from "@recursyve/nestjs-redis";
 import {
     AccessControlGetResourcesHandler,
     AccessControlResourceCreatedHandler,
     AccessControlResourceDeletedHandler,
     AccessControlResourceUpdatedHandler
 } from "./handlers";
+import { AccessControlResourceAccessUpdatedHandler } from "./handlers/resource-access-updated.handler";
 import {
     AccessControlExplorerService,
     AccessControlService,
     AccessPoliciesService,
     DatabaseAdaptersRegistry,
+    ResourceAccessService,
     ResourceCreatedPoliciesService,
     ResourceDeletedPoliciesService,
     ResourceEventAccessControlService,
-    ResourceAccessService,
     ResourceUpdatedPoliciesService
 } from "./services";
 import { AccessControlResourceLoaderService } from "./services/access-control-resource-loader.service";
 import { ResourceAccessUpdatedPoliciesService } from "./services/resource-access-updated-policies.service";
-import { AccessControlResourceAccessUpdatedHandler } from "./handlers/resource-access-updated.handler";
 
 @Global()
 @Module({

@@ -1,27 +1,24 @@
+import { RedisService } from "@lightxinnovations/nestjs-redis";
 import { Injectable, Logger } from "@nestjs/common";
-import { RedisService } from "@recursyve/nestjs-redis";
-import {
-    AccessActionType,
-    accessActionTypeValues,
-    AccessControlResources,
-    PolicyResources,
-    PolicyResourceTypes,
-    ResourceId,
-    UserResources,
-    Users
-} from "../models";
-import { RedisKeyUtils } from "../utils";
 import { CommandBus } from "@nestjs/cqrs";
 import { ResourceAccessUpdatedCommand } from "../commands";
+import {
+    AccessActionType,
+    AccessControlResources,
+    PolicyResourceTypes,
+    PolicyResources,
+    ResourceId,
+    UserResources,
+    Users,
+    accessActionTypeValues
+} from "../models";
+import { RedisKeyUtils } from "../utils";
 
 @Injectable()
 export class ResourceAccessService {
     private logger = new Logger(ResourceAccessService.name);
 
-    constructor(
-        private redisService: RedisService,
-        private commandBus: CommandBus
-    ) {}
+    constructor(private redisService: RedisService, private commandBus: CommandBus) {}
 
     public async setUserAccessRules(
         user: Users,
