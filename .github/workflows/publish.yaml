@@ -1,4 +1,4 @@
-
+name: Publish to GitHub Packages
 #https://docs.github.com/en/packages/quickstart
 
 on:
