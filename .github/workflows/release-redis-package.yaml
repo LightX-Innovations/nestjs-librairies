@@ -1,4 +1,4 @@
-name: Redis Node.js Package
+name: Publish Redis Node.js Package
 
 on:
   workflow_dispatch: # Manually run the workflow
