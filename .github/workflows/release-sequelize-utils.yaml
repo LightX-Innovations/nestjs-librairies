@@ -1,0 +1,19 @@
+name: Publish Sequelize Utils Node.js Package
+
+on:
+  workflow_dispatch: # Manually run the workflow
+
+jobs:
+  publish-sequelize-utils:
+    name: Publish Sequelize Utils Package
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/publish
+        with:
+          working-directory: sequelize-utils
+          token: ${{ secrets.GITHUB_TOKEN }}
+        timeout-minutes: 10

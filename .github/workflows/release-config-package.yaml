@@ -1,0 +1,19 @@
+name: Publish Config Node.js Package
+
+on:
+  workflow_dispatch: # Manually run the workflow
+
+jobs:
+  publish-config:
+    name: Publish Config Package
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/publish
+        with:
+          working-directory: config
+          token: ${{ secrets.GITHUB_TOKEN }}
+        timeout-minutes: 10

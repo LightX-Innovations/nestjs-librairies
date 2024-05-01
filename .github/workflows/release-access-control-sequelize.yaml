@@ -1,0 +1,19 @@
+name: Publish Access Control Sequelize Node.js Package
+
+on:
+  workflow_dispatch: # Manually run the workflow
+
+jobs:
+  publish-access-control-sequelize:
+    name: Publish Access Control Sequelize Package
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/publish
+        with:
+          working-directory: access-control-sequelize
+          token: ${{ secrets.GITHUB_TOKEN }}
+        timeout-minutes: 10
