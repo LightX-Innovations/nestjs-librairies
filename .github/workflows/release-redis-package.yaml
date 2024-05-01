@@ -7,11 +7,29 @@ on:
     types: [created]
 
 jobs:
+  fetch-previous-release:
+    runs-on: ubuntu-latest
+    outputs:
+      previous_release_sha: ${{ steps.set-output.outputs.previous_release_sha }}
+    steps:
+      - name: Get previous release
+        id: get_previous_release
+        run: |
+          previous_release_sha=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/${{ github.repository }}/releases | jq -r '.[1].tag_name')
+          echo "::set-output name=previous_release_sha::$previous_release_sha"
+
   build:
+    if: ${{ github.event_name == 'release' && github.sha != needs.fetch-previous-release.outputs.previous_release_sha && steps.changed_files.outputs.changed_files == 'redis/*' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Check for changes in the redis folder
+        id: changed_files
+        run: |
+          git diff --name-only ${{ needs.fetch-previous-release.outputs.previous_release_sha }} ${{ github.sha }} > changed_files
+          cat changed_files
+        continue-on-error: true
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 16
       - name: Install dependencies
