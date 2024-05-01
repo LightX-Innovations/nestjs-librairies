@@ -21,16 +21,12 @@ runs:
         registry-url: https://npm.pkg.github.com/
         scope: '@lightx-innovations'
         token: ${{ inputs.token }}
-    - name: Authenticate GitHub Packages Registry
+    - name: Install dependencies
       shell: bash
-      run: echo ${NODE_AUTH_TOKEN} | npm login --registry=https://npm.pkg.github.com --scope=@lightx-innovations --always-auth=false
+      run: echo ${NODE_AUTH_TOKEN} | npm login --registry=https://npm.pkg.github.com --scope=@lightx-innovations --always-auth=false && npm ci
       working-directory: ${{ inputs.working-directory }}
       env:
         NODE_AUTH_TOKEN: ${{ inputs.token }}
-    - name: Install dependencies
-      shell: bash
-      run: npm ci
-      working-directory: ${{ inputs.working-directory }}
     - name: Run tests
       shell: bash
       run: npm test
