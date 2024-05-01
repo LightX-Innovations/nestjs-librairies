@@ -16,12 +16,12 @@ export abstract class SequelizeRepository<T extends SequelizeEntities, CreateDto
         return this.repository.create(dto as any, options as any) as unknown as Promise<T>;
     }
 
-    public bulkCreate<Options>(dto: (CreateDto)[], options?: Options & BulkCreateOptions<Attributes<T>>): Promise<T[]> {
+    public bulkCreate<Options>(dto: CreateDto[], options?: Options & BulkCreateOptions<Attributes<T>>): Promise<T[]> {
         return this.repository.bulkCreate(dto as any, options as any) as unknown as Promise<T[]>;
     }
 
     public findOrCreate<Options>(options: FindOrCreateOptions, args?: Options): Promise<[T, boolean]> {
-        return (this.repository.findOrCreate(options)) as Promise<[T, boolean]>;
+        return this.repository.findOrCreate(options) as Promise<[T, boolean]>;
     }
 
     public async updateByPk<Options>(identifier: Identifier, dto: UpdateDto, options?: Options & UpdateOptions<Attributes<T>>): Promise<T | null> {
@@ -31,7 +31,7 @@ export abstract class SequelizeRepository<T extends SequelizeEntities, CreateDto
             },
             ...options as unknown as any
         });
-        return this.findByPk(identifier);
+        return this.findByPk(identifier, { transaction: options?.transaction });
     }
 
     public async update<Options>(dto: UpdateDto, options?: Options & UpdateOptions<Attributes<T>>): Promise<void> {

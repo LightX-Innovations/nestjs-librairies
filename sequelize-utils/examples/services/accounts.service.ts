@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
-import { CreateOptions } from "sequelize";
+import { Attributes, CreateOptions, CreationAttributes } from "sequelize";
 import { SequelizeReadRepository } from "../../lib";
-import { Accounts, AccountsAttributes, CreateAccountsAttributes } from "../models/accounts.model";
+import { Accounts } from "../models/accounts.model";
 
 @Injectable()
 export class AccountsService extends SequelizeReadRepository<Accounts> {
@@ -10,13 +10,13 @@ export class AccountsService extends SequelizeReadRepository<Accounts> {
         super();
     }
 
-    public async create(values: CreateAccountsAttributes, options?: CreateOptions<AccountsAttributes>): Promise<Accounts> {
+    public async create(values: CreationAttributes<Accounts>, options?: CreateOptions<Attributes<Accounts>>): Promise<Accounts> {
         return await this.repository.create(values, options);
     }
 
     public async test(id: number): Promise<Accounts> {
         await this.repository.update({
-            phone: null,
+            phone: null
         }, {
             where: {
                 id: id

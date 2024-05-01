@@ -1,3 +1,4 @@
+import { CreationOptional, DataTypes } from "sequelize";
 import { AutoIncrement, Column, CreatedAt, DeletedAt, Model, PrimaryKey, UpdatedAt } from "sequelize-typescript";
 
 export interface SequelizeEntitiesAttributes {
@@ -13,8 +14,8 @@ export class SequelizeEntities<
 > extends Model<TModelAttributes, TCreationAttributes> {
     @AutoIncrement
     @PrimaryKey
-    @Column
-    id!: number;
+    @Column(DataTypes.INTEGER)
+    id!: CreationOptional<number>;
 
     @CreatedAt
     @Column({ field: "created_at" })

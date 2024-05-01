@@ -13,10 +13,10 @@ export abstract class SequelizeAccessControlRepository<
     implements OnModuleInit
 {
     @Inject()
-    protected accessControlService: AccessControlService;
-    protected resourceAccessControlService: ResourceAccessControlService;
+    protected accessControlService!: AccessControlService;
+    protected resourceAccessControlService!: ResourceAccessControlService;
 
-    protected readonly accessControlRepository: AccessControlRepository<T>;
+    protected readonly accessControlRepository!: AccessControlRepository<T>;
 
     protected constructor(repository: typeof SequelizeEntities<any, any>) {
         super();

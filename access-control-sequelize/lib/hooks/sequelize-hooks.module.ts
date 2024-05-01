@@ -13,7 +13,7 @@ export class SequelizeHooksAccessControlModule implements OnModuleInit {
 
             (model as unknown as typeof M).addHook("afterCreate", "access-control-created-policy-hook", async (instance: M, options) => {
                 if (options.transaction) {
-                    await options.transaction.afterCommit(async () => {
+                    options.transaction.afterCommit(async () => {
                         await this.markAsCreated(model as unknown as typeof M, instance);
                     });
                 } else {
@@ -26,7 +26,7 @@ export class SequelizeHooksAccessControlModule implements OnModuleInit {
              */
             (model as unknown as typeof M).addHook("afterBulkCreate", "access-control-bulk-created-policy-hook", async (instances: M[], options) => {
                 if (options.transaction) {
-                    await options.transaction.afterCommit(async () => {
+                    options.transaction.afterCommit(async () => {
                         await Promise.all(
                             instances.map((instance) => this.markAsCreated(model as unknown as typeof M, instance))
                         );
@@ -47,14 +47,19 @@ export class SequelizeHooksAccessControlModule implements OnModuleInit {
             });
 
             (model as unknown as typeof M).addHook("afterUpdate", "access-control-updated-policy-hook", async (instance: M, options) => {
+                /**
+                 * When a transaction is committed, the previous dataValue is set to the current dataValue.
+                 * We compute the previous before to avoid this issue.
+                 */
+                const previous = new (instance as any).constructor(instance.toJSON()) as M;
+                previous.set(instance.previous());
+
                 const run = async () => {
-                    const previous = new (instance as any).constructor(instance.toJSON()) as M;
-                    previous.set(instance.previous());
                     await this.resourceEventAccessControlService.onResourceUpdated(`${model.tableName}-sequelize`, previous, instance);
                 }
 
                 if (options.transaction) {
-                    await options.transaction.afterCommit(async () => {
+                    options.transaction.afterCommit(async () => {
                         await run();
                     });
                 } else {
@@ -76,7 +81,7 @@ export class SequelizeHooksAccessControlModule implements OnModuleInit {
                 };
 
                 if (options.transaction) {
-                    await options.transaction.afterCommit(async () => {
+                    options.transaction.afterCommit(async () => {
                         await run();
                     });
                 } else {

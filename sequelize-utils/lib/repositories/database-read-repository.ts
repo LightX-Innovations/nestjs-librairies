@@ -5,7 +5,7 @@ import { SequelizeEntities } from "../models/sequelize-entities.model";
 export abstract class SequelizeReadRepository<T extends SequelizeEntities> {
     protected abstract repository: typeof SequelizeEntities<any, any>;
 
-    public findByPk(identifier: Identifier, options?: FindOptions<Attributes<T>>): Promise<T | null> {
+    public findByPk(identifier: Identifier, options?: Omit<FindOptions<Attributes<T>>, "where">): Promise<T | null> {
         return this.repository.findByPk(identifier, options) as unknown as Promise<T | null>;
     }
 
@@ -17,7 +17,7 @@ export abstract class SequelizeReadRepository<T extends SequelizeEntities> {
         return this.repository.findAll(options) as unknown as Promise<T[]>;
     }
 
-    public count(options?: CountOptions<Attributes<T>>): Promise<number> {
+    public count(options?: Omit<CountOptions<Attributes<T>>, "group">): Promise<number> {
         return this.repository.count(options);
     }
 }

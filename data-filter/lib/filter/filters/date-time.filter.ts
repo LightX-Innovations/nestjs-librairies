@@ -1,12 +1,11 @@
+import { format, parseJSON } from "date-fns";
 import { WhereOptions } from "sequelize";
 import { QueryRuleModel } from "../models";
 import { DateOperators, FilterOperatorTypes } from "../operators";
 import { FilterType } from "../type";
 import { BaseFilterDefinition, Filter } from "./filter";
-import * as moment from "moment";
 
 // Filters a row by exact date and time given in the rules.
-// TODO: Do not hard code timezone offset
 export class DateTimeFilter extends Filter {
     public type = FilterType.DateTime;
     public operators = [...DateOperators];
@@ -20,21 +19,15 @@ export class DateTimeFilter extends Filter {
             return super.getWhereOptions({
                 ...rule,
                 value: [
-                    moment(rule.value[0])
-                        .utcOffset(-5, true)
-                        .format(),
-                    moment(rule.value[1])
-                        .utcOffset(-5, true)
-                        .format()
+                    format(parseJSON(rule.value[0]), "yyyy-MM-dd HH:mm:ss"),
+                    format(parseJSON(rule.value[1]), "yyyy-MM-dd HH:mm:ss")
                 ]
             });
         }
 
         return super.getWhereOptions({
             operation: rule.operation,
-            value: moment(rule.value)
-                .utcOffset(-5, true)
-                .format(),
+            value: format(parseJSON(rule.value as any), "yyyy-MM-dd HH:mm:ss"),
             id: rule.id
         });
     }

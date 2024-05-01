@@ -192,7 +192,7 @@ describe("DateTimeFilter", () => {
             });
             expect(options).toBeDefined();
             expect(options).toStrictEqual<WhereOptions>({
-                test: "2020-03-06T00:55:12-05:00"
+                test: "2020-03-06 00:55:12"
             });
         });
 
@@ -208,7 +208,7 @@ describe("DateTimeFilter", () => {
             expect(options).toBeDefined();
             expect(options).toStrictEqual<WhereOptions>({
                 test: {
-                    [Op.ne]: "2020-03-06T00:55:12-05:00"
+                    [Op.ne]: "2020-03-06 00:55:12"
                 }
             });
         });
@@ -225,7 +225,7 @@ describe("DateTimeFilter", () => {
             expect(options).toBeDefined();
             expect(options).toStrictEqual<WhereOptions>({
                 test: {
-                    [Op.lt]: "2020-03-06T00:55:12-05:00"
+                    [Op.lt]: "2020-03-06 00:55:12"
                 }
             });
         });
@@ -242,7 +242,7 @@ describe("DateTimeFilter", () => {
             expect(options).toBeDefined();
             expect(options).toStrictEqual<WhereOptions>({
                 test: {
-                    [Op.lte]: "2020-03-06T00:55:12-05:00"
+                    [Op.lte]: "2020-03-06 00:55:12"
                 }
             });
         });
@@ -259,7 +259,7 @@ describe("DateTimeFilter", () => {
             expect(options).toBeDefined();
             expect(options).toStrictEqual<WhereOptions>({
                 test: {
-                    [Op.gt]: "2020-03-06T00:55:12-05:00"
+                    [Op.gt]: "2020-03-06 00:55:12"
                 }
             });
         });
@@ -276,7 +276,7 @@ describe("DateTimeFilter", () => {
             expect(options).toBeDefined();
             expect(options).toStrictEqual<WhereOptions>({
                 test: {
-                    [Op.gte]: "2020-03-06T00:55:12-05:00"
+                    [Op.gte]: "2020-03-06 00:55:12"
                 }
             });
         });
@@ -294,8 +294,8 @@ describe("DateTimeFilter", () => {
             expect(options).toStrictEqual<WhereOptions>({
                 test: {
                     [Op.between]: [
-                        "2020-03-06T00:55:12-05:00",
-                        "2020-06-06T00:55:12-05:00"
+                        "2020-03-06 00:55:12",
+                        "2020-06-06 00:55:12"
                     ]
                 }
             });
@@ -314,8 +314,8 @@ describe("DateTimeFilter", () => {
             expect(options).toStrictEqual<WhereOptions>({
                 test: {
                     [Op.notBetween]: [
-                        "2020-03-06T00:55:12-05:00",
-                        "2020-06-06T00:55:12-05:00"
+                        "2020-03-06 00:55:12",
+                        "2020-06-06 00:55:12"
                     ]
                 }
             });

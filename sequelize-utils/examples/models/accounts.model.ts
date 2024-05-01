@@ -1,20 +1,18 @@
+import { CreationOptional, InferAttributes, InferCreationAttributes } from "sequelize";
 import { AllowNull, Column, HasMany, } from "sequelize-typescript";
-import { SequelizeEntities } from "../../lib";
-import { SequelizeAttributes } from "../../lib/models/sequelize-attributes.model";
+import { MakePropertiesNullable, SequelizeEntities } from "../../lib";
 
-export interface CreateAccountsAttributes {
+type Attributes = MakePropertiesNullable<InferAttributes<Accounts>>;
+type CreateAttributes = InferCreationAttributes<Accounts> & {
     firstName: string;
     lastName: string;
     email: string;
-    phone: string | null;
-}
+};
 
-export interface AccountsAttributes extends SequelizeAttributes<CreateAccountsAttributes> {}
-
-export class Accounts extends SequelizeEntities<AccountsAttributes, CreateAccountsAttributes> {
+export class Accounts extends SequelizeEntities<Attributes, CreateAttributes> {
     @AllowNull(false)
     @Column
-    email?: string;
+    email?: CreationOptional<string>;
 
     @AllowNull(false)
     @Column

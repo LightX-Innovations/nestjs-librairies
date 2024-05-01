@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import Redis from "ioredis";
+import { ScanStreamOptions } from "ioredis/built/types";
 import { RedisArrayUtils } from "../utils/array.utils";
 import { RedisConfigService } from "./redis-config.service";
 
@@ -9,6 +10,7 @@ export interface RedidSetOptions {
     duration: number;
 }
 
+export type RedisScanOptions = Omit<ScanStreamOptions, "match">;
 export type RedisValue = string | Buffer | number;
 
 @Injectable()
@@ -21,6 +23,10 @@ export class RedisService {
 
     public async disconnect(): Promise<void> {
         this.client.disconnect();
+    }
+
+    public keys(keys: string): Promise<string[]> {
+        return this.client.keys(keys);
     }
 
     public async exist(key: string): Promise<boolean> {
@@ -81,8 +87,8 @@ export class RedisService {
         return this.client.lrangeBuffer(key, start, end);
     }
 
-    public async scanDel(pattern: string): Promise<void> {
-        const keys = await this.scan(pattern);
+    public async scanDel(pattern: string, options?: RedisScanOptions): Promise<void> {
+        const keys = await this.scan(pattern, options);
         if (keys?.length) {
             await this.client.del(...keys);
         }
@@ -132,10 +138,12 @@ export class RedisService {
         })
     }
 
-    public scan(pattern: string): Promise<string[]> {
+    public scan(pattern: string, options: RedisScanOptions = { count: 1000 }): Promise<string[]> {
         return new Promise<string[]>((resolve, reject) => {
             const stream = this.client.scanStream({
-                match: pattern
+                match: pattern,
+                count: options.count ?? 1000,
+                type: options.type
             });
 
             const keys = [];

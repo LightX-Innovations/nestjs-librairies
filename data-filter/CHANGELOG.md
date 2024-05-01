@@ -317,3 +317,9 @@ SelectFilter({
 ### Bugfix
 
 -  Fix issues with filter group and count with joins
+
+## [9.3.2] - 2024-04-04
+
+### Bugfix
+
+-  Fix issues with date time filters with a path
