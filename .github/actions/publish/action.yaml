@@ -29,7 +29,7 @@ runs:
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       env:
-        NODE_AUTH_TOKEN: ${{ inputs.token }}
+        NODE_AUTH_TOKEN: ${{ inputs.package-read-token }}
     - name: Install dependencies
       shell: bash
       run: npm ci
