@@ -6,6 +6,7 @@ on:
   release:
     types: [created]
 
+
 jobs:
   fetch-previous-release:
     runs-on: ubuntu-latest
@@ -19,15 +20,10 @@ jobs:
           echo "::set-output name=previous_release_sha::$previous_release_sha"
 
   build:
-    if: ${{ github.event_name == 'release' && github.sha != needs.fetch-previous-release.outputs.previous_release_sha && steps.changed_files.outputs.changed_files == 'redis/*' }}
+    if: github.event_name == 'release' && github.sha != needs.fetch-previous-release.outputs.previous_release_sha && contains(github.event_path, 'redis/')
     runs-on: ubuntu-latest
     steps:
-      - name: Check for changes in the redis folder
-        id: changed_files
-        run: |
-          git diff --name-only ${{ needs.fetch-previous-release.outputs.previous_release_sha }} ${{ github.sha }} > changed_files
-          cat changed_files
-        continue-on-error: true
+      - uses: actions/checkout@v4
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
