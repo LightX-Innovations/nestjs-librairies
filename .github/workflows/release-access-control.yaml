@@ -8,7 +8,7 @@ jobs:
     name: Publish Access Control Package
     runs-on: ubuntu-latest
     permissions:
-      packages: write
+      packages: read
       contents: read
     steps:
       - uses: actions/checkout@v4
