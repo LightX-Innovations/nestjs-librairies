@@ -9,6 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: publish.yaml
+      - uses: ./publish.yaml
         with:
           working_directory: redis
