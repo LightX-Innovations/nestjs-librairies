@@ -16,4 +16,5 @@ jobs:
         with:
           working-directory: access-control
           token: ${{ secrets.GITHUB_TOKEN }}
+          package-read-token: ${{ secrets.PACKAGES_READ_TOKEN }}
         timeout-minutes: 10

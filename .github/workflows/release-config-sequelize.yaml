@@ -16,4 +16,5 @@ jobs:
         with:
           working-directory: sequelize
           token: ${{ secrets.GITHUB_TOKEN }}
+          package-read-token: ${{ secrets.PACKAGES_READ_TOKEN }}
         timeout-minutes: 10

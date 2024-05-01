@@ -10,6 +10,9 @@ inputs:
   token:
     description: 'A Github PAT'
     required: true
+  package-read-token:
+    description: 'A Github PAT with read:packages scope'
+    required: true
 
 runs:
   using: 'composite'
@@ -26,7 +29,7 @@ runs:
       run: npm ci
       working-directory: ${{ inputs.working-directory }}
       env:
-        NODE_AUTH_TOKEN: ${{ inputs.token }}
+        NODE_AUTH_TOKEN: ${{ inputs.package-read-token }}
     - name: Run tests
       shell: bash
       run: npm test
