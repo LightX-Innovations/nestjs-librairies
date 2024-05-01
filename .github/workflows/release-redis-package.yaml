@@ -15,4 +15,5 @@ jobs:
       - uses: ./.github/actions/publish
         with:
           working-directory: redis
+          token: ${{ secrets.GITHUB_TOKEN }}
         timeout-minutes: 10
