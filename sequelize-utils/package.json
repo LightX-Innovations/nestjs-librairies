@@ -1,5 +1,5 @@
 {
-    "name": "@lightxinnovations/nestjs-sequelize-utils",
+    "name": "@lightx-innovations/nestjs-sequelize-utils",
     "version": "10.0.0",
     "description": "Sequelize utilities for NestJs",
     "main": "index.js",
@@ -8,9 +8,7 @@
         "build": "gulp build",
         "build:lib": "gulp build-lib",
         "lint": "gulp lint",
-        "publish-package": "npm run build:lib && npm publish ./dist --access public",
-        "publish-package:beta": "npm run publish-package -- --tag beta --access public",
-        "publish-package:dry-run": "npm run publish-package -- --dry-run"
+        "test": "jest"
     },
     "repository": {
         "type": "git",

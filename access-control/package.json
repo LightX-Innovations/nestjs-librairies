@@ -1,5 +1,5 @@
 {
-    "name": "@lightxinnovations/nestjs-access-control",
+    "name": "@lightx-innovations/nestjs-access-control",
     "version": "10.0.0",
     "description": "NestJs AccessControl library",
     "main": "index.js",
@@ -8,9 +8,7 @@
         "build": "gulp build",
         "build:lib": "gulp build-lib",
         "lint": "gulp lint",
-        "publish-package": "npm run build:lib && npm publish ./dist --access public",
-        "publish-package:beta": "npm run publish-package -- --tag beta --access public",
-        "publish-package:dry-run": "npm run publish-package -- --dry-run"
+        "test": "jest"
     },
     "repository": {
         "type": "git",
@@ -21,14 +19,14 @@
     "peerDependencies": {
         "@nestjs/common": ">=10.0.0",
         "@nestjs/core": ">=10.0.0",
-        "@lightxinnovations/nestjs-redis": ">=10.0.1"
+        "@lightx-innovations/nestjs-redis": ">=10.0.1"
     },
     "devDependencies": {
         "@nestjs/common": "^10.0.0",
         "@nestjs/core": "^10.0.0",
         "@nestjs/cqrs": "^10.0.0",
         "@nestjs/testing": "^10.0.0",
-        "@lightxinnovations/nestjs-redis": "^10.0.1",
+        "@lightx-innovations/nestjs-redis": "^10.0.1",
         "@types/jest": "^29.2.5",
         "gulp": "^4.0.2",
         "gulp-copy": "^4.0.1",

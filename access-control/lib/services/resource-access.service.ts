@@ -1,4 +1,4 @@
-import { RedisService } from "@lightxinnovations/nestjs-redis";
+import { RedisService } from "@lightx-innovations/nestjs-redis";
 import { Injectable, Logger } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { ResourceAccessUpdatedCommand } from "../commands";

@@ -1,4 +1,4 @@
-import { TypeUtils } from "@lightxinnovations/nestjs-common";
+import { TypeUtils } from "@lightx-innovations/nestjs-common";
 import { Injectable } from "@nestjs/common";
 import { FindAttributeOptions, IncludeOptions, literal, Order } from "sequelize";
 import { Association, BaseAssociation, getAssociations, Model } from "sequelize-typescript";

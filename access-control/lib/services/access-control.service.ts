@@ -1,4 +1,4 @@
-import { RedisService } from "@lightxinnovations/nestjs-redis";
+import { RedisService } from "@lightx-innovations/nestjs-redis";
 import { Inject, Injectable, Optional } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { ACCESS_CONTROL_DEFAULT_DATABASE } from "../constant";

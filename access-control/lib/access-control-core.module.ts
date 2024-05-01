@@ -1,4 +1,4 @@
-import { RedisModule } from "@lightxinnovations/nestjs-redis";
+import { RedisModule } from "@lightx-innovations/nestjs-redis";
 import { Global, Module, OnModuleInit } from "@nestjs/common";
 import { CqrsModule } from "@nestjs/cqrs";
 import {

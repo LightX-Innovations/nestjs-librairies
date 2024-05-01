@@ -1,4 +1,4 @@
-import { ArrayUtils, TypeUtils } from "@lightxinnovations/nestjs-common";
+import { ArrayUtils, TypeUtils } from "@lightx-innovations/nestjs-common";
 import {
     AbstractDataTypeConstructor,
     FindAttributeOptions,
