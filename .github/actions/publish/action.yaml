@@ -23,7 +23,7 @@ runs:
         token: ${{ inputs.token }}
     - name: Install dependencies
       shell: bash
-      run: echo ${NODE_AUTH_TOKEN} | npm login --registry=https://npm.pkg.github.com --scope=@lightx-innovations --always-auth=false && npm ci
+      run: echo ${NODE_AUTH_TOKEN} | npm login --registry=https://npm.pkg.github.com --scope=@lightx-innovations && npm ci
       working-directory: ${{ inputs.working-directory }}
       env:
         NODE_AUTH_TOKEN: ${{ inputs.token }}
