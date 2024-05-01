@@ -26,7 +26,7 @@ runs:
         token: ${{ inputs.token }}
     - name: Install dependencies
       shell: bash
-      run: npm i
+      run: npm ci
       working-directory: ${{ inputs.working-directory }}
       env:
         NODE_AUTH_TOKEN: ${{ inputs.package-read-token }}
