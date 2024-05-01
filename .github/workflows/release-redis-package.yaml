@@ -1,48 +1,14 @@
 name: Redis Node.js Package
 
-#https://docs.github.com/en/packages/quickstart
-
 on:
   workflow_dispatch: # Manually run the workflow
 
 jobs:
-  build:
+  publish-redis:
+    name: Publish Redis Package
     runs-on: ubuntu-latest
+    env:
+      github-working_directory: redis
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-      - name: Install dependencies
-        run: npm ci
-        working-directory: redis
-      - name: Run tests
-        run: npm test
-        working-directory: redis
-
-  publish-gpr:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      packages: write
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-          registry-url: https://npm.pkg.github.com/
-          scope: '@LightX-Innovations'
-      - name: Install dependencies
-        run: npm ci
-        working-directory: redis
-      - name: Set npm config for GitHub Packages
-        run: echo "//npm.pkg.github.com/:_authToken=\${NODE_AUTH_TOKEN}" > ~/.npmrc
-        working-directory: redis
-      - name: Publish to GitHub Packages
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-          NPM_CONFIG_REGISTRY: https://npm.pkg.github.com/
-        working-directory: redis
+      - uses: ./jobs/publish.yaml
