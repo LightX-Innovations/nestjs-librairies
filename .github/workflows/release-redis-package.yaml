@@ -11,4 +11,4 @@ jobs:
       - uses: actions/checkout@v4
       - uses: publish.yaml
         with:
-          github-working_directory: redis
+          working_directory: redis
