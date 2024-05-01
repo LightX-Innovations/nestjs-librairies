@@ -1,4 +1,4 @@
-name: Publish Access Control Node.js Package
+name: Publish Access Control Package
 
 on:
   workflow_dispatch: # Manually run the workflow

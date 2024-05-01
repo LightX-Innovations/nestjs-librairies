@@ -1,4 +1,4 @@
-name: Publish Data Filter Node.js Package
+name: Publish Data Filter Package
 
 on:
   workflow_dispatch: # Manually run the workflow

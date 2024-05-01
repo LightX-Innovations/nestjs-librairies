@@ -1,4 +1,4 @@
-name: Publish Access Control Sequelize Node.js Package
+name: Publish Access Control Sequelize Package
 
 on:
   workflow_dispatch: # Manually run the workflow

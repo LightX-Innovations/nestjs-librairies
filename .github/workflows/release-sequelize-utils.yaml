@@ -1,4 +1,4 @@
-name: Publish Sequelize Utils Node.js Package
+name: Publish Sequelize Utils Package
 
 on:
   workflow_dispatch: # Manually run the workflow

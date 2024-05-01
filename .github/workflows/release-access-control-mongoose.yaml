@@ -1,4 +1,4 @@
-name: Publish Access Control Mongoose Node.js Package
+name: Publish Access Control Mongoose Package
 
 on:
   workflow_dispatch: # Manually run the workflow
