@@ -25,15 +25,15 @@ runs:
         scope: '@lightx-innovations'
         token: ${{ inputs.token }}
     - name: Authenticate with GitHub Packages
-      run: echo "depdx\n${{ inputs.package-read-token }}\n" | npm login --registry=https://npm.pkg.github.com --scope=@lightx-innovations
+      run: echo "depdx\n${NODE_AUTH_TOKEN}\n" | npm login --registry=https://npm.pkg.github.com --scope=@lightx-innovations
       shell: bash
       working-directory: ${{ inputs.working-directory }}
+      env:
+        NODE_AUTH_TOKEN: ${{ inputs.package-read-token }}
     - name: Install dependencies
       shell: bash
       run: npm ci
       working-directory: ${{ inputs.working-directory }}
-      env:
-        NODE_AUTH_TOKEN: ${{ inputs.package-read-token }}
     - name: Run tests
       shell: bash
       run: npm test
