@@ -7,8 +7,12 @@ jobs:
   publish-redis:
     name: Publish Redis Package
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
     steps:
       - uses: actions/checkout@v4
-      - uses: ./publish.yaml
+      - uses: ./.github/actions/publish
         with:
-          working_directory: redis
+          working-directory: redis
+        timeout-minutes: 10
