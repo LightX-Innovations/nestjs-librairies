@@ -3,9 +3,7 @@ name: Redis Node.js Package
 #https://docs.github.com/en/packages/quickstart
 
 on:
-  release:
-    types: [created]
-  workflow_dispatch:
+  workflow_dispatch: # Manually run the workflow
 
 jobs:
   build:
@@ -27,8 +25,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     permissions:
-        packages: write
-        contents: read
+      packages: write
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
