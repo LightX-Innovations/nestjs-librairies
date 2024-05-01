@@ -7,8 +7,8 @@ jobs:
   publish-redis:
     name: Publish Redis Package
     runs-on: ubuntu-latest
-    env:
-      github-working_directory: redis
     steps:
       - uses: actions/checkout@v4
       - uses: ./jobs/publish.yaml
+        with:
+          github-working_directory: redis
