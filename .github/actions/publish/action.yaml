@@ -20,6 +20,11 @@ runs:
         node-version: '20.x'
         registry-url: https://npm.pkg.github.com/
         scope: '@LightX-Innovations'
+        token: ${{ inputs.token }}
+    - name: Authenticate with GitHub Packages
+      shell: bash
+      run: echo "//npm.pkg.github.com/:_authToken=\${NODE_AUTH_TOKEN}" > ~/.npmrc
+      working-directory: ${{ inputs.working-directory }}
     - name: Install dependencies
       shell: bash
       run: npm ci
@@ -27,10 +32,6 @@ runs:
     - name: Run tests
       shell: bash
       run: npm test
-      working-directory: ${{ inputs.working-directory }}
-    - name: Set npm config for GitHub Packages
-      shell: bash
-      run: echo "//npm.pkg.github.com/:_authToken=\${NODE_AUTH_TOKEN}" > ~/.npmrc
       working-directory: ${{ inputs.working-directory }}
     - name: Publish to GitHub Packages
       shell: bash
