@@ -5,22 +5,10 @@ name: Redis Node.js Package
 on:
   release:
     types: [created]
-
+  workflow_dispatch:
 
 jobs:
-  fetch-previous-release:
-    runs-on: ubuntu-latest
-    outputs:
-      previous_release_sha: ${{ steps.set-output.outputs.previous_release_sha }}
-    steps:
-      - name: Get previous release
-        id: get_previous_release
-        run: |
-          previous_release_sha=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/${{ github.repository }}/releases | jq -r '.[1].tag_name')
-          echo "::set-output name=previous_release_sha::$previous_release_sha"
-
   build:
-    if: github.event_name == 'release' && github.sha != needs.fetch-previous-release.outputs.previous_release_sha && contains(github.event_path, 'redis/')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
