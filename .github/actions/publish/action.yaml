@@ -21,16 +21,19 @@ runs:
     - uses: actions/setup-node@v4
       with:
         node-version: '20.x'
-    - name: Cache node modules
-      uses: actions/cache@v2
-      with:
-        path: node_modules
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
+        registry-url: 'https://npm.pkg.github.com/'
+        token: ${{ inputs.package-read-token }}
+        always-auth: true
+    # - name: Cache node modules
+    #   uses: actions/cache@v2
+    #   with:
+    #     path: node_modules
+    #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-node-
     - name: Install dependencies
       shell: bash
-      run: echo "@lightx-innovations:registry=https://npm.pkg.github.com\n//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}\nalways-auth=true" > .npmrc && cp .npmrc ~/.npmrc && npm ci
+      run: npm ci
       working-directory: ${{ inputs.working-directory }}
       env:
         NODE_AUTH_TOKEN: ${{ github.package-read-token }}
