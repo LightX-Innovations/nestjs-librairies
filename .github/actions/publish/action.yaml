@@ -18,14 +18,16 @@ runs:
   using: 'composite'
   steps:
     - uses: actions/checkout@v4
-    - uses: actions/setup-node@v3
+    - uses: actions/setup-node@v4
       with:
         node-version: '20.x'
         registry-url: 'https://npm.pkg.github.com/'
-        # scope: '@lightx-innovations'
-        # token: ${{ inputs.package-read-token }}
-        # cache: 'npm'
-        # cache-dependency-path: ${{ inputs.working-directory }}/package-lock.json
+        scope: '@lightx-innovations'
+        token: ${{ inputs.token }}
+        cache: 'npm'
+        cache-dependency-path: ${{ inputs.working-directory }}/package-lock.json
+      env:
+        NODE_AUTH_TOKEN: ${{ inputs.token }}
     - name: Install dependencies
       shell: bash
       run: npm ci
