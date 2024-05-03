@@ -18,20 +18,20 @@ runs:
   using: 'composite'
   steps:
     - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-node@v3
       with:
         node-version: '20.x'
         registry-url: 'https://npm.pkg.github.com/'
-        scope: '@lightx-innovations'
-        token: ${{ inputs.package-read-token }}
-        cache: 'npm'
-        cache-dependency-path: ${{ inputs.working-directory }}/package-lock.json
+        # scope: '@lightx-innovations'
+        # token: ${{ inputs.package-read-token }}
+        # cache: 'npm'
+        # cache-dependency-path: ${{ inputs.working-directory }}/package-lock.json
     - name: Install dependencies
       shell: bash
       run: npm ci
       working-directory: ${{ inputs.working-directory }}
       env:
-        NODE_AUTH_TOKEN: ${{ github.package-read-token }}
+        NODE_AUTH_TOKEN: ${{ github.token }}
     - name: Run tests
       shell: bash
       run: npm test
@@ -41,5 +41,5 @@ runs:
       run: npm publish
       env:
         NODE_AUTH_TOKEN: ${{ inputs.token }}
-        NPM_CONFIG_REGISTRY: https://npm.pkg.github.com/
+        # NPM_CONFIG_REGISTRY: https://npm.pkg.github.com/
       working-directory: ${{ inputs.working-directory }}
