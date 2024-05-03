@@ -1,4 +1,8 @@
+import { ConfigProvider, IConfigProvider } from "@lightx-innovations/nestjs-config";
+import { ConfigHandler } from "@lightx-innovations/nestjs-config/handlers/config.handler";
+import { ConfigTransformerService } from "@lightx-innovations/nestjs-config/services/config-transformer.service";
 import { Injectable, Type } from "@nestjs/common";
+import { Transaction } from "sequelize";
 import {
     ConfigSequelizeModel,
     InjectConfigSequelizeModel,
@@ -7,10 +11,6 @@ import {
     SequelizeConfigUpdate,
     UpdateSequelizeConfigOptions
 } from "../models";
-import { ConfigProvider, IConfigProvider } from "@recursyve/nestjs-config";
-import { ConfigTransformerService } from "@recursyve/nestjs-config/services/config-transformer.service";
-import { Transaction } from "sequelize";
-import { ConfigHandler } from "@recursyve/nestjs-config/handlers/config.handler";
 
 export interface GetSequelizeConfigValueOptions {
     transaction?: Transaction;

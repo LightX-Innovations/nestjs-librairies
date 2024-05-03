@@ -1,13 +1,13 @@
 # Config sequelize
 
-An extension for the `@recursyve/nestjs-config` library, which adds a Sequelize provider, which is used to fetch
+An extension for the `@lightx-innovations/nestjs-config` library, which adds a Sequelize provider, which is used to fetch
 variables from a database.
 
 ## Getting started
 
 ### Install
 ```
-npm i --save @recursyve/nestjs-config-sequelize
+npm i --save @lightx-innovations/nestjs-config-sequelize
 ```
 
 ### example
