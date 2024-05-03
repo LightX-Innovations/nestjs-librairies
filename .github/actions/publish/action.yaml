@@ -28,7 +28,7 @@ runs:
           ${{ runner.os }}-node-
     - name: Install dependencies
       shell: bash
-      run: cp ./.npmrc ~/.npmrc && cat ~/.npmrc && npm ci
+      run: echo "@lightx-innovations:registry=https://npm.pkg.github.com\n//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}\nalways-auth=true" > .npmrc && npm ci
       working-directory: ${{ inputs.working-directory }}
       env:
         NODE_AUTH_TOKEN: ${{ github.token }}
