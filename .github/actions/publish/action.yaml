@@ -26,8 +26,6 @@ runs:
         token: ${{ inputs.token }}
         cache: 'npm'
         cache-dependency-path: ${{ inputs.working-directory }}/package-lock.json
-      env:
-        NODE_AUTH_TOKEN: ${{ token }}
     - name: Install dependencies
       shell: bash
       run: npm ci
