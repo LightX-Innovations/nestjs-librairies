@@ -10,6 +10,9 @@ inputs:
   token:
     description: 'A Github PAT'
     required: true
+  package-read-token:
+    description: 'A Github PAT with read:packages scope'
+    required: true
 
 runs:
   using: 'composite'
@@ -30,7 +33,7 @@ runs:
       run: echo "@lightx-innovations:registry=https://npm.pkg.github.com\n//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}\nalways-auth=true" > .npmrc && npm ci
       working-directory: ${{ inputs.working-directory }}
       env:
-        NODE_AUTH_TOKEN: ${{ github.token }}
+        NODE_AUTH_TOKEN: ${{ github.package-read-token }}
     - name: Run tests
       shell: bash
       run: npm test
