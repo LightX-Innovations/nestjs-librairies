@@ -15,5 +15,4 @@ jobs:
       - uses: ./.github/actions/publish
         with:
           working-directory: access-control
-          token: ${{ secrets.GITHUB_TOKEN }}
         timeout-minutes: 10
