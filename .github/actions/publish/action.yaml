@@ -10,9 +10,6 @@ inputs:
   token:
     description: 'A Github PAT'
     required: true
-  package-read-token:
-    description: 'A Github PAT with read:packages scope'
-    required: true
 
 runs:
   using: 'composite'
@@ -23,13 +20,13 @@ runs:
         node-version: '20.x'
         registry-url: 'https://npm.pkg.github.com'
         scope: '@lightx-innovations'
-        token: ${{ inputs.package-read-token }}
+        token: ${{ inputs.token }}
     - name: Install dependencies
       shell: bash
       run: npm ci
       working-directory: ${{ inputs.working-directory }}
       env:
-        NODE_AUTH_TOKEN: ${{ inputs.package-read-token }}
+        NODE_AUTH_TOKEN: ${{ inputs.token }}
     - name: Run tests
       shell: bash
       run: npm test
