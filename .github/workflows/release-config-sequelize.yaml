@@ -1,4 +1,4 @@
-name: Publish Sequelize Package
+name: Publish Config Sequelize Package
 
 on:
   workflow_dispatch: # Manually run the workflow
