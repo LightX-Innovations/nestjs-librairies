@@ -1,6 +1,6 @@
-import { SequelizeEntities, SequelizeRepository } from "@recursyve/nestjs-sequelize-utils";
+import { SequelizeEntities, SequelizeRepository } from "@lightx-innovations/nestjs-sequelize-utils";
 import { Inject, OnModuleInit } from "@nestjs/common";
-import { AccessControlService, ResourceAccessControlService, Users } from "@recursyve/nestjs-access-control";
+import { AccessControlService, ResourceAccessControlService, Users } from "@lightx-innovations/nestjs-access-control";
 import { FindOptions, Identifier } from "sequelize";
 import { AccessControlRepository } from "./access-control.repository";
 

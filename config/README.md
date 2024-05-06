@@ -7,7 +7,7 @@
 
 ### Install
 ```
-npm i --save @recursyve/nestjs-librairies
+npm i --save @lightx-innovations/nestjs-librairies
 ```
 
 ### example

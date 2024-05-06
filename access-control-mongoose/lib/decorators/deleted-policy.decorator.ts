@@ -1,3 +1,4 @@
-import { DeletedPolicy } from "@recursyve/nestjs-access-control";
+import { DeletedPolicy } from "@lightx-innovations/nestjs-access-control";
 
-export const MongooseDeletedPolicy = (model: any) => DeletedPolicy(model, { type: "mongoose" });
+export const MongooseDeletedPolicy = (model: any) =>
+  DeletedPolicy(model, { type: "mongoose" });

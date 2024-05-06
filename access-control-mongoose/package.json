@@ -1,5 +1,5 @@
 {
-    "name": "@recursyve/nestjs-access-control-mongoose",
+    "name": "@lightx-innovations/nestjs-access-control-mongoose",
     "version": "9.0.0-beta.6",
     "description": "Mongoose utilities for Recursyve's NestJs AccessControl library",
     "main": "index.js",
@@ -22,7 +22,7 @@
         "@nestjs/common": ">=9.0.0",
         "@nestjs/core": ">=9.0.0",
         "@nestjs/mongoose": ">=9.0.0",
-        "@recursyve/nestjs-access-control": ">=9.0.0-beta.4",
+        "@lightx-innovations/nestjs-access-control": ">=9.0.0-beta.4",
         "mongoose": ">=7.0.0"
     },
     "devDependencies": {
@@ -32,9 +32,9 @@
         "@nestjs/mongoose": "^9.2.2",
         "@nestjs/terminus": "^9.1.4",
         "@nestjs/testing": "^9.2.1",
-        "@recursyve/eslint-config-node": "^1.0.1",
-        "@recursyve/nestjs-access-control": "^9.0.0-beta.5",
-        "@recursyve/nestjs-redis": "^9.0.0",
+        "@lightx-innovations/eslint-config-node": "^1.0.1",
+        "@lightx-innovations/nestjs-access-control": "^9.0.0-beta.5",
+        "@lightx-innovations/nestjs-redis": "^9.0.0",
         "@types/jest": "^29.2.5",
         "@typescript-eslint/eslint-plugin": "^5.48.0",
         "@typescript-eslint/parser": "^5.48.0",

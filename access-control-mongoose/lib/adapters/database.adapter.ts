@@ -1,5 +1,5 @@
+import { DatabaseAdapter, IDatabaseAdapter, ResourceId } from "@lightx-innovations/nestjs-access-control";
 import { InjectConnection } from "@nestjs/mongoose";
-import { DatabaseAdapter, IDatabaseAdapter, ResourceId } from "@recursyve/nestjs-access-control";
 import { Connection, Model } from "mongoose";
 
 @DatabaseAdapter({ type: "mongoose" })

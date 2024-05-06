@@ -1,6 +1,6 @@
 {
-    "name": "@recursyve/nestjs-access-control-sequelize",
-    "version": "9.0.0-beta.9",
+    "name": "@lightx-innovations/nestjs-access-control-sequelize",
+    "version": "10.0.0",
     "description": "Sequelize utilities for Recursyve's NestJs AccessControl library",
     "main": "index.js",
     "scripts": {
@@ -10,34 +10,35 @@
         "lint": "gulp lint",
         "publish-package": "npm run build:lib && npm publish ./dist --access public",
         "publish-package:beta": "npm run publish-package -- --tag beta --access public",
-        "publish-package:dry-run": "npm run publish-package -- --dry-run"
+        "publish-package:dry-run": "npm run publish-package -- --dry-run",
+        "test": "jest"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/Recursyve/nestjs-librairies/access-control-sequelize"
+        "url": "https://github.com/LightX-Innovations/nestjs-librairies/access-control-sequelize"
     },
     "author": "Recursyve",
     "license": "MIT",
     "peerDependencies": {
-        "@nestjs/common": ">=9.0.0",
-        "@nestjs/core": ">=9.0.0",
+        "@nestjs/common": ">=10.0.0",
+        "@nestjs/core": ">=10.0.0",
         "@nestjs/sequelize": ">=9.0.0",
-        "@recursyve/nestjs-access-control": ">=9.0.0-beta.4",
-        "@recursyve/nestjs-sequelize-utils": ">=9.3.0",
+        "@lightx-innovations/nestjs-access-control": ">=9.0.0-beta.4",
+        "@lightx-innovations/nestjs-sequelize-utils": ">=9.3.0",
         "sequelize": ">=6.0.0",
         "sequelize-typescript": ">=2.1.0"
     },
     "devDependencies": {
-        "@nestjs/common": "^9.2.1",
-        "@nestjs/core": "^9.2.1",
-        "@nestjs/cqrs": "^9.0.1",
-        "@nestjs/sequelize": "^9.0.0",
-        "@nestjs/terminus": "^9.1.4",
-        "@nestjs/testing": "^9.2.1",
+        "@nestjs/common": "^10.0.0",
+        "@nestjs/core": "^10.0.0",
+        "@nestjs/cqrs": "^10.0.0",
+        "@nestjs/sequelize": "^10.0.0",
+        "@nestjs/terminus": "^10.0.0",
+        "@nestjs/testing": "^10.0.0",
         "@recursyve/eslint-config-node": "^1.0.1",
-        "@recursyve/nestjs-access-control": "^9.0.0-beta.5",
-        "@recursyve/nestjs-redis": "^9.0.0",
-        "@recursyve/nestjs-sequelize-utils": "^9.3.1",
+        "@lightx-innovations/nestjs-access-control": ">=9.0.0-beta.5",
+        "@lightx-innovations/nestjs-redis": ">=9.0.0",
+        "@lightx-innovations/nestjs-sequelize-utils": ">=9.3.1",
         "@types/jest": "^29.2.5",
         "@types/node": "^18.11.18",
         "@typescript-eslint/eslint-plugin": "^5.48.0",

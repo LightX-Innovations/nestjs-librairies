@@ -1,5 +1,5 @@
-import { ResourceAccessControlService, Resources } from "@recursyve/nestjs-access-control";
-import { SequelizeEntities } from "@recursyve/nestjs-sequelize-utils";
+import { ResourceAccessControlService, Resources } from "@lightx-innovations/nestjs-access-control";
+import { SequelizeEntities } from "@lightx-innovations/nestjs-sequelize-utils";
 import { Attributes, FindOptions, Identifier, Op, WhereOptions } from "sequelize";
 import { Sequelize } from "sequelize-typescript";
 
