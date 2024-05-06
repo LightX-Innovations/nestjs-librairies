@@ -1,6 +1,6 @@
 {
     "name": "@lightx-innovations/nestjs-config",
-    "version": "9.2.0",
+    "version": "10.0.0",
     "scripts": {
         "watch": "gulp",
         "build": "gulp build",
@@ -17,15 +17,15 @@
         "url": "https://github.com/LightX-Innovations/nestjs-librairies/config"
     },
     "peerDependencies": {
-        "@nestjs/common": ">=9.0.0",
-        "@nestjs/core": ">=9.0.0",
+        "@nestjs/common": ">=10.0.0",
+        "@nestjs/core": ">=10.0.0",
         "reflect-metadata": "^0.1.13",
         "class-transformer": "^0.5.1"
     },
     "devDependencies": {
-        "@nestjs/common": "^9.2.1",
-        "@nestjs/core": "^9.2.1",
-        "@nestjs/testing": "^9.2.1",
+        "@nestjs/common": "^10.0.0",
+        "@nestjs/core": "^10.0.0",
+        "@nestjs/testing": "^10.0.0",
         "@types/jest": "^29.5.0",
         "gulp": "^4.0.2",
         "gulp-copy": "^4.0.1",
