@@ -1,6 +1,6 @@
 {
     "name": "@lightx-innovations/nestjs-config-sequelize",
-    "version": "9.3.0",
+    "version": "10.0.0",
     "scripts": {
         "watch": "gulp",
         "build": "gulp build",
@@ -13,19 +13,19 @@
         "url": "https://github.com/LightX-Innovations/nestjs-librairies/config-sequelize"
     },
     "peerDependencies": {
-        "@lightx-innovations/nestjs-config": ">=9.2.0",
-        "@nestjs/common": ">=9.0.0",
-        "@nestjs/core": ">=9.0.0",
-        "@nestjs/sequelize": ">=9.0.0",
+        "@lightx-innovations/nestjs-config": ">=10.0.0",
+        "@nestjs/common": ">=10.0.0",
+        "@nestjs/core": ">=10.0.0",
+        "@nestjs/sequelize": ">=10.0.0",
         "sequelize": ">=6.25.8",
         "sequelize-typescript": ">=2.1.5"
     },
     "devDependencies": {
-        "@lightx-innovations/nestjs-config": "^9.2.0",
-        "@nestjs/common": "^9.4.2",
-        "@nestjs/core": "^9.4.2",
-        "@nestjs/sequelize": "^9.0.0",
-        "@nestjs/testing": "^9.4.2",
+        "@lightx-innovations/nestjs-config": "^10.0.0",
+        "@nestjs/common": "^10.0.0",
+        "@nestjs/core": "^10.0.0",
+        "@nestjs/sequelize": "^10.0.0",
+        "@nestjs/testing": "^10.0.0",
         "@types/jest": "^29.5.0",
         "class-transformer": "^0.5.1",
         "gulp": "^4.0.2",
