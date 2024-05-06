@@ -15,7 +15,7 @@ export type RedisValue = string | Buffer | number;
 
 @Injectable()
 export class RedisService {
-    private readonly client: Redis;
+    public readonly client: Redis;
 
     constructor(private readonly configService: RedisConfigService) {
         this.client = configService.getRedisInstance();
@@ -134,8 +134,8 @@ export class RedisService {
         return new Promise((resolve, reject) => {
             this.client.ping((error, response) => {
                 resolve([error, response]);
-            })
-        })
+            });
+        });
     }
 
     public scan(pattern: string, options: RedisScanOptions = { count: 1000 }): Promise<string[]> {
@@ -143,11 +143,11 @@ export class RedisService {
             const stream = this.client.scanStream({
                 match: pattern,
                 count: options.count ?? 1000,
-                type: options.type
+                type: options.type,
             });
 
             const keys = [];
-            stream.on("data", resultKeys => {
+            stream.on("data", (resultKeys) => {
                 for (const key of resultKeys) {
                     keys.push(key);
                 }
