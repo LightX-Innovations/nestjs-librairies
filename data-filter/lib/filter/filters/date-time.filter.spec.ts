@@ -1,8 +1,8 @@
+import { Op, WhereOptions } from "sequelize";
 import { DefaultTranslateAdapter } from "../../adapters/default-translate.adapter";
 import { FilterUtils } from "../filter.utils";
-import { FilterOperatorTypes } from "../operators";
-import { Op, WhereOptions } from "sequelize";
 import { FilterBaseConfigurationModel } from "../models/filter-configuration.model";
+import { FilterOperatorTypes } from "../operators";
 import { FilterType } from "../type";
 import { DateTimeFilter } from "./date-time.filter";
 
@@ -10,7 +10,7 @@ describe("DateTimeFilter", () => {
     describe("getConfig", () => {
         it("should return a valid config", async () => {
             const filter = new DateTimeFilter({
-                attribute: "test"
+                attribute: "test",
             });
             filter.translateService = new DefaultTranslateAdapter();
             const config = await filter.getConfig(null, null);
@@ -20,44 +20,44 @@ describe("DateTimeFilter", () => {
                 operators: [
                     {
                         id: "equal",
-                        name: FilterUtils.getOperatorTranslationKey("equal")
+                        name: FilterUtils.getOperatorTranslationKey("equal"),
                     },
                     {
                         id: "not_equal",
-                        name: FilterUtils.getOperatorTranslationKey("not_equal")
+                        name: FilterUtils.getOperatorTranslationKey("not_equal"),
                     },
                     {
                         id: "greater",
-                        name: FilterUtils.getOperatorTranslationKey("greater")
+                        name: FilterUtils.getOperatorTranslationKey("greater"),
                     },
                     {
                         id: "greater_or_equal",
-                        name: FilterUtils.getOperatorTranslationKey("greater_or_equal")
+                        name: FilterUtils.getOperatorTranslationKey("greater_or_equal"),
                     },
                     {
                         id: "less",
-                        name: FilterUtils.getOperatorTranslationKey("less")
+                        name: FilterUtils.getOperatorTranslationKey("less"),
                     },
                     {
                         id: "less_or_equal",
-                        name: FilterUtils.getOperatorTranslationKey("less_or_equal")
+                        name: FilterUtils.getOperatorTranslationKey("less_or_equal"),
                     },
                     {
                         id: "between",
-                        name: FilterUtils.getOperatorTranslationKey("between")
+                        name: FilterUtils.getOperatorTranslationKey("between"),
                     },
                     {
                         id: "not_between",
-                        name: FilterUtils.getOperatorTranslationKey("not_between")
-                    }
-                ]
+                        name: FilterUtils.getOperatorTranslationKey("not_between"),
+                    },
+                ],
             });
         });
 
         it("with group should return a valid config", async () => {
             const filter = new DateTimeFilter({
                 attribute: "test",
-                group: "test"
+                group: "test",
             });
             filter.translateService = new DefaultTranslateAdapter();
             const config = await filter.getConfig(null, null);
@@ -67,49 +67,49 @@ describe("DateTimeFilter", () => {
                 operators: [
                     {
                         id: "equal",
-                        name: FilterUtils.getOperatorTranslationKey("equal")
+                        name: FilterUtils.getOperatorTranslationKey("equal"),
                     },
                     {
                         id: "not_equal",
-                        name: FilterUtils.getOperatorTranslationKey("not_equal")
+                        name: FilterUtils.getOperatorTranslationKey("not_equal"),
                     },
                     {
                         id: "greater",
-                        name: FilterUtils.getOperatorTranslationKey("greater")
+                        name: FilterUtils.getOperatorTranslationKey("greater"),
                     },
                     {
                         id: "greater_or_equal",
-                        name: FilterUtils.getOperatorTranslationKey("greater_or_equal")
+                        name: FilterUtils.getOperatorTranslationKey("greater_or_equal"),
                     },
                     {
                         id: "less",
-                        name: FilterUtils.getOperatorTranslationKey("less")
+                        name: FilterUtils.getOperatorTranslationKey("less"),
                     },
                     {
                         id: "less_or_equal",
-                        name: FilterUtils.getOperatorTranslationKey("less_or_equal")
+                        name: FilterUtils.getOperatorTranslationKey("less_or_equal"),
                     },
                     {
                         id: "between",
-                        name: FilterUtils.getOperatorTranslationKey("between")
+                        name: FilterUtils.getOperatorTranslationKey("between"),
                     },
                     {
                         id: "not_between",
-                        name: FilterUtils.getOperatorTranslationKey("not_between")
-                    }
+                        name: FilterUtils.getOperatorTranslationKey("not_between"),
+                    },
                 ],
                 group: {
                     name: FilterUtils.getGroupTranslationKey("test"),
-                    key: "test"
-                }
+                    key: "test",
+                },
             });
         });
 
         it("with custom operator should return a valid config", async () => {
             const filter = new DateTimeFilter({
-                attribute: "test"
+                attribute: "test",
             }).addOperators({
-                name: "none"
+                name: "none",
             });
             filter.translateService = new DefaultTranslateAdapter();
             const config = await filter.getConfig("test", null);
@@ -119,47 +119,47 @@ describe("DateTimeFilter", () => {
                 operators: [
                     {
                         id: "equal",
-                        name: FilterUtils.getOperatorTranslationKey("equal")
+                        name: FilterUtils.getOperatorTranslationKey("equal"),
                     },
                     {
                         id: "not_equal",
-                        name: FilterUtils.getOperatorTranslationKey("not_equal")
+                        name: FilterUtils.getOperatorTranslationKey("not_equal"),
                     },
                     {
                         id: "greater",
-                        name: FilterUtils.getOperatorTranslationKey("greater")
+                        name: FilterUtils.getOperatorTranslationKey("greater"),
                     },
                     {
                         id: "greater_or_equal",
-                        name: FilterUtils.getOperatorTranslationKey("greater_or_equal")
+                        name: FilterUtils.getOperatorTranslationKey("greater_or_equal"),
                     },
                     {
                         id: "less",
-                        name: FilterUtils.getOperatorTranslationKey("less")
+                        name: FilterUtils.getOperatorTranslationKey("less"),
                     },
                     {
                         id: "less_or_equal",
-                        name: FilterUtils.getOperatorTranslationKey("less_or_equal")
+                        name: FilterUtils.getOperatorTranslationKey("less_or_equal"),
                     },
                     {
                         id: "between",
-                        name: FilterUtils.getOperatorTranslationKey("between")
+                        name: FilterUtils.getOperatorTranslationKey("between"),
                     },
                     {
                         id: "not_between",
-                        name: FilterUtils.getOperatorTranslationKey("not_between")
+                        name: FilterUtils.getOperatorTranslationKey("not_between"),
                     },
                     {
                         id: "none",
-                        name: FilterUtils.getCustomOperatorTranslationKey("test", "none")
-                    }
-                ]
+                        name: FilterUtils.getCustomOperatorTranslationKey("test", "none"),
+                    },
+                ],
             });
         });
 
         it("with specified operators should return a valid config", async () => {
             const filter = new DateTimeFilter({
-                attribute: "test"
+                attribute: "test",
             }).setOperators(FilterOperatorTypes.Equal, FilterOperatorTypes.NotEqual);
             filter.translateService = new DefaultTranslateAdapter();
             const config = await filter.getConfig(null, null);
@@ -169,13 +169,13 @@ describe("DateTimeFilter", () => {
                 operators: [
                     {
                         id: "equal",
-                        name: FilterUtils.getOperatorTranslationKey("equal")
+                        name: FilterUtils.getOperatorTranslationKey("equal"),
                     },
                     {
                         id: "not_equal",
-                        name: FilterUtils.getOperatorTranslationKey("not_equal")
-                    }
-                ]
+                        name: FilterUtils.getOperatorTranslationKey("not_equal"),
+                    },
+                ],
             });
         });
     });
@@ -183,141 +183,135 @@ describe("DateTimeFilter", () => {
     describe("getWhereOptions", () => {
         it("with equal operator should return a valid filter config", async () => {
             const filter = new DateTimeFilter({
-                attribute: "test"
+                attribute: "test",
             });
             const options = await filter.getWhereOptions({
                 id: "test",
                 value: "2020-03-06T00:55:12",
-                operation: FilterOperatorTypes.Equal
+                operation: FilterOperatorTypes.Equal,
             });
             expect(options).toBeDefined();
             expect(options).toStrictEqual<WhereOptions>({
-                test: "2020-03-06 00:55:12"
+                test: "2020-03-05 19:55:12",
             });
         });
 
         it("with not equal operator custom name should return a valid filter config", async () => {
             const filter = new DateTimeFilter({
-                attribute: "test"
+                attribute: "test",
             });
             const options = await filter.getWhereOptions({
                 id: "test",
                 value: "2020-03-06T00:55:12",
-                operation: FilterOperatorTypes.NotEqual
+                operation: FilterOperatorTypes.NotEqual,
             });
             expect(options).toBeDefined();
             expect(options).toStrictEqual<WhereOptions>({
                 test: {
-                    [Op.ne]: "2020-03-06 00:55:12"
-                }
+                    [Op.ne]: "2020-03-05 19:55:12",
+                },
             });
         });
 
         it("with less operator should return a valid filter config", async () => {
             const filter = new DateTimeFilter({
-                attribute: "test"
+                attribute: "test",
             });
             const options = await filter.getWhereOptions({
                 id: "test",
                 value: "2020-03-06T00:55:12",
-                operation: FilterOperatorTypes.Less
+                operation: FilterOperatorTypes.Less,
             });
             expect(options).toBeDefined();
             expect(options).toStrictEqual<WhereOptions>({
                 test: {
-                    [Op.lt]: "2020-03-06 00:55:12"
-                }
+                    [Op.lt]: "2020-03-05 19:55:12",
+                },
             });
         });
 
         it("with less or equal operator should return a valid filter config", async () => {
             const filter = new DateTimeFilter({
-                attribute: "test"
+                attribute: "test",
             });
             const options = await filter.getWhereOptions({
                 id: "test",
                 value: "2020-03-06T00:55:12",
-                operation: FilterOperatorTypes.LessOrEqual
+                operation: FilterOperatorTypes.LessOrEqual,
             });
             expect(options).toBeDefined();
             expect(options).toStrictEqual<WhereOptions>({
                 test: {
-                    [Op.lte]: "2020-03-06 00:55:12"
-                }
+                    [Op.lte]: "2020-03-05 19:55:12",
+                },
             });
         });
 
         it("with greater operator should return null", async () => {
             const filter = new DateTimeFilter({
-                attribute: "test"
+                attribute: "test",
             });
             const options = await filter.getWhereOptions({
                 id: "test",
                 value: "2020-03-06T00:55:12",
-                operation: FilterOperatorTypes.Greater
+                operation: FilterOperatorTypes.Greater,
             });
             expect(options).toBeDefined();
             expect(options).toStrictEqual<WhereOptions>({
                 test: {
-                    [Op.gt]: "2020-03-06 00:55:12"
-                }
+                    [Op.gt]: "2020-03-05 19:55:12",
+                },
             });
         });
 
         it("with greater or equal operator should return a valid filter config", async () => {
             const filter = new DateTimeFilter({
-                attribute: "test"
+                attribute: "test",
             });
             const options = await filter.getWhereOptions({
                 id: "test",
                 value: "2020-03-06T00:55:12",
-                operation: FilterOperatorTypes.GreaterOrEqual
+                operation: FilterOperatorTypes.GreaterOrEqual,
             });
             expect(options).toBeDefined();
             expect(options).toStrictEqual<WhereOptions>({
                 test: {
-                    [Op.gte]: "2020-03-06 00:55:12"
-                }
+                    [Op.gte]: "2020-03-05 19:55:12",
+                },
             });
         });
 
         it("with between operator should return a valid filter config", async () => {
             const filter = new DateTimeFilter({
-                attribute: "test"
+                attribute: "test",
             });
             const options = await filter.getWhereOptions({
                 id: "test",
                 value: ["2020-03-06T00:55:12", "2020-06-06T00:55:12"],
-                operation: FilterOperatorTypes.Between
+                operation: FilterOperatorTypes.Between,
             });
             expect(options).toBeDefined();
             expect(options).toStrictEqual<WhereOptions>({
                 test: {
-                    [Op.between]: [
-                        "2020-03-06 00:55:12",
-                        "2020-06-06 00:55:12"
-                    ]
-                }
+                    [Op.between]: ["2020-03-05 19:55:12", "2020-06-05 20:55:12"],
+                },
             });
         });
 
         it("with not between operator should return a valid filter config", async () => {
             const filter = new DateTimeFilter({
-                attribute: "test"
+                attribute: "test",
             });
             const options = await filter.getWhereOptions({
                 id: "test",
                 value: ["2020-03-06T00:55:12", "2020-06-06T00:55:12"],
-                operation: FilterOperatorTypes.NotBetween
+                operation: FilterOperatorTypes.NotBetween,
             });
             expect(options).toBeDefined();
             expect(options).toStrictEqual<WhereOptions>({
                 test: {
-                    [Op.notBetween]: [
-                        "2020-03-06 00:55:12",
-                        "2020-06-06 00:55:12"
-                    ]
-                }
+                    [Op.notBetween]: ["2020-03-05 19:55:12", "2020-06-05 20:55:12"],
+                },
             });
         });
     });
