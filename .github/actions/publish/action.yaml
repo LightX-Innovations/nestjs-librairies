@@ -32,7 +32,7 @@ runs:
       working-directory: ${{ inputs.working-directory }}
     - name: Publish to GitHub Packages
       shell: bash
-      run: npm run publish-package
+      run: npm run build:lib && npm publish ./dist
       env:
         NODE_AUTH_TOKEN: ${{ github.token }}
         NPM_CONFIG_REGISTRY: https://npm.pkg.github.com/
