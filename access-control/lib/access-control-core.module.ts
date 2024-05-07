@@ -13,6 +13,7 @@ import {
     AccessControlService,
     AccessPoliciesService,
     DatabaseAdaptersRegistry,
+    ResourceAccessControlService,
     ResourceAccessService,
     ResourceCreatedPoliciesService,
     ResourceDeletedPoliciesService,
@@ -40,13 +41,15 @@ import { ResourceAccessUpdatedPoliciesService } from "./services/resource-access
         AccessControlResourceUpdatedHandler,
         AccessControlResourceDeletedHandler,
         AccessControlResourceAccessUpdatedHandler,
-        AccessControlResourceLoaderService
+        AccessControlResourceLoaderService,
+        ResourceAccessControlService
     ],
     exports: [
         CqrsModule,
         RedisModule,
         AccessControlService,
         AccessPoliciesService,
+        ResourceAccessControlService,
         ResourceEventAccessControlService,
         AccessControlResourceLoaderService
     ]

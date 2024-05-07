@@ -1,6 +1,6 @@
 {
     "name": "@lightx-innovations/nestjs-access-control",
-    "version": "10.0.0",
+    "version": "10.0.1",
     "description": "NestJs AccessControl library",
     "main": "index.js",
     "scripts": {
