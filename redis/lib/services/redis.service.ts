@@ -15,7 +15,7 @@ export type RedisValue = string | Buffer | number;
 
 @Injectable()
 export class RedisService {
-    public readonly client: Redis;
+    private readonly client: Redis;
 
     constructor(private readonly configService: RedisConfigService) {
         this.client = configService.getRedisInstance();
