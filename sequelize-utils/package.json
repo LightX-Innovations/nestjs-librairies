@@ -1,6 +1,6 @@
 {
     "name": "@lightx-innovations/nestjs-sequelize-utils",
-    "version": "10.0.0",
+    "version": "10.0.1",
     "description": "Sequelize utilities for NestJs",
     "main": "index.js",
     "scripts": {

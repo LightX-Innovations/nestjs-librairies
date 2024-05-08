@@ -8,3 +8,4 @@ export * from "./transactions/sequelize-transaction.service";
 export * from "./transactions/transaction";
 
 export * from "./types";
+export * from "./utils/sequelize.utils";
