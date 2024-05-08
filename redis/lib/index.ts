@@ -2,13 +2,11 @@ import { Module, OnModuleDestroy } from "@nestjs/common";
 import { ModuleRef } from "@nestjs/core";
 import { RedisHealthIndicator } from "./health-indicators/redis-health.indicator";
 import { RedisConfigService } from "./services/redis-config.service";
-import { RedisRelayConfigService } from "./services/redis-relay-config.service";
-import { RedisRelayService } from "./services/redis-relay.service";
 import { RedisService } from "./services/redis.service";
 
 @Module({
-    providers: [RedisConfigService, RedisRelayConfigService, RedisRelayService, RedisService, RedisHealthIndicator],
-    exports: [RedisConfigService, RedisRelayConfigService, RedisRelayService, RedisService, RedisHealthIndicator],
+    providers: [RedisConfigService, RedisService, RedisHealthIndicator],
+    exports: [RedisConfigService, RedisService, RedisHealthIndicator],
 })
 export class RedisModule implements OnModuleDestroy {
     constructor(private readonly moduleRef: ModuleRef) {}
