@@ -1,4 +1,5 @@
-import { Model, ModelStatic } from "sequelize-typescript";
+import { Model } from "sequelize";
+import { ModelStatic } from "sequelize-typescript";
 
 export const GEO_POINT_SRID = 4326;
 
