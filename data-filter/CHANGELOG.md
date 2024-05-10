@@ -355,3 +355,9 @@ SelectFilter({
 ### Deprecation
 
 - RadioFilter is now deprecated, you should use OptionsFilter instead
+
+## [10.1.1] - 2024-05-10
+
+### Bugfix
+
+- Fix crash caused when using an old client library.
