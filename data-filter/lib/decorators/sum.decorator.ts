@@ -3,7 +3,7 @@ import { DataFilterHandler } from "../handlers/data-filter.handler";
 import { SumAttributesConfig, SumConfig } from "../models/sum.model";
 
 export function Sum(name: string, options: Omit<SumConfig, "name">): PropertyDecorator & ClassDecorator {
-    return (target: Object, propertyKey?: string) => {
+    return (target: Object, propertyKey?: string | symbol) => {
         defineCustomAttributesMetadata(target, propertyKey, name, {
             ...options,
             name
@@ -11,7 +11,7 @@ export function Sum(name: string, options: Omit<SumConfig, "name">): PropertyDec
     };
 }
 
-function defineCustomAttributesMetadata(target: Object, propertyKey?: string, name?: string, options?: SumConfig) {
+function defineCustomAttributesMetadata(target: Object, propertyKey: string | symbol | undefined, name: string, options: SumConfig) {
     if (!propertyKey) {
         const dataFilter = DataFilterHandler.getDataFilter(target);
         dataFilter.addCustomAttribute(new SumAttributesConfig(name, options));

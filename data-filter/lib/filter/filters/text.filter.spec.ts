@@ -13,7 +13,7 @@ describe("TextFilter", () => {
                 mask: "(000) 000-0000"
             });
             filter.translateService = new DefaultTranslateAdapter();
-            const config = await filter.getConfig(null, null);
+            const config = await filter.getConfig("", null);
             expect(config).toBeDefined();
             expect(config).toStrictEqual<FilterBaseConfigurationModel>({
                 type: FilterType.Text,
@@ -57,7 +57,7 @@ describe("TextFilter", () => {
                 group: "test"
             });
             filter.translateService = new DefaultTranslateAdapter();
-            const config = await filter.getConfig(null, null);
+            const config = await filter.getConfig("", null);
             expect(config).toBeDefined();
             expect(config).toStrictEqual<FilterBaseConfigurationModel>({
                 type: FilterType.Text,
@@ -151,7 +151,7 @@ describe("TextFilter", () => {
                 attribute: "test"
             }).setOperators(FilterOperatorTypes.Equal, FilterOperatorTypes.NotEqual);
             filter.translateService = new DefaultTranslateAdapter();
-            const config = await filter.getConfig(null, null);
+            const config = await filter.getConfig("", null);
             expect(config).toBeDefined();
             expect(config).toStrictEqual<FilterBaseConfigurationModel>({
                 type: FilterType.Text,

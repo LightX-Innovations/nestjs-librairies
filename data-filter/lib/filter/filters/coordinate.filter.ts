@@ -1,9 +1,9 @@
-import { FilterType } from "../type";
-import { FilterOperatorTypes, SelectOperators } from "../operators";
-import { BaseFilterDefinition, Filter } from "./filter";
-import { QueryRuleModel, RuleModel } from "../models";
 import { Op, WhereOptions } from "sequelize";
 import { SequelizeUtils } from "../../sequelize.utils";
+import { QueryRuleModel, RuleModel } from "../models";
+import { FilterOperatorTypes, SelectOperators } from "../operators";
+import { FilterType } from "../type";
+import { BaseFilterDefinition, Filter } from "./filter";
 
 export class CoordinateFilter extends Filter {
     public type = FilterType.Coordinate;
@@ -13,7 +13,7 @@ export class CoordinateFilter extends Filter {
         super(definition);
     }
 
-    public async getWhereOptions(rule: QueryRuleModel): Promise<WhereOptions> {
+    public async getWhereOptions(rule: QueryRuleModel): Promise<WhereOptions | undefined> {
         const [latitude, longitude] = CoordinateFilter.getCoordinates(rule);
         switch (rule.operation) {
             case FilterOperatorTypes.Equal:
@@ -23,36 +23,52 @@ export class CoordinateFilter extends Filter {
         }
     }
 
-    private async getEqualWhereOptions(rule: QueryRuleModel, latitude: number, longitude: number): Promise<WhereOptions> {
+    private async getEqualWhereOptions(rule: QueryRuleModel, latitude: number, longitude: number): Promise<WhereOptions | undefined> {
+        const first = await super.getWhereOptions({
+            operation: FilterOperatorTypes.Equal,
+            value: latitude,
+            id: rule.id
+        }, SequelizeUtils.getAttributeFullName("latitude", [this.path, this.attribute].filter(x => x).join(".")));
+
+        const second = await super.getWhereOptions({
+            operation: FilterOperatorTypes.Equal,
+            value: longitude,
+            id: rule.id
+        }, SequelizeUtils.getAttributeFullName("longitude", [this.path, this.attribute].filter(x => x).join(".")));
+
+        if (!first || !second) {
+            return;
+        }
+
         return {
             [Op.and]: [
-                await super.getWhereOptions({
-                    operation: FilterOperatorTypes.Equal,
-                    value: latitude,
-                    id: rule.id
-                }, SequelizeUtils.getAttributeFullName("latitude", [this.path, this.attribute].filter(x => x).join("."))),
-                await super.getWhereOptions({
-                    operation: FilterOperatorTypes.Equal,
-                    value: longitude,
-                    id: rule.id
-                }, SequelizeUtils.getAttributeFullName("longitude", [this.path, this.attribute].filter(x => x).join("."))),
+                first,
+                second
             ]
         };
     }
 
-    private async getNotEqualWhereOptions(rule: QueryRuleModel, latitude: number, longitude: number): Promise<WhereOptions> {
+    private async getNotEqualWhereOptions(rule: QueryRuleModel, latitude: number, longitude: number): Promise<WhereOptions | undefined> {
+        const first = await super.getWhereOptions({
+            operation: FilterOperatorTypes.NotEqual,
+            value: latitude,
+            id: rule.id
+        }, SequelizeUtils.getAttributeFullName("latitude", [this.path, this.attribute].filter(x => x).join(".")));
+
+        const second = await super.getWhereOptions({
+            operation: FilterOperatorTypes.NotEqual,
+            value: longitude,
+            id: rule.id
+        }, SequelizeUtils.getAttributeFullName("longitude", [this.path, this.attribute].filter(x => x).join(".")));
+
+        if (!first || !second) {
+            return;
+        }
+
         return {
             [Op.or]: [
-                await super.getWhereOptions({
-                    operation: FilterOperatorTypes.NotEqual,
-                    value: latitude,
-                    id: rule.id
-                }, SequelizeUtils.getAttributeFullName("latitude", [this.path, this.attribute].filter(x => x).join("."))),
-                await super.getWhereOptions({
-                    operation: FilterOperatorTypes.NotEqual,
-                    value: longitude,
-                    id: rule.id
-                }, SequelizeUtils.getAttributeFullName("longitude", [this.path, this.attribute].filter(x => x).join("."))),
+                first,
+                second
             ]
         };
     }

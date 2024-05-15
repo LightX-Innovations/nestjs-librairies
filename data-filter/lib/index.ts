@@ -38,46 +38,37 @@ export interface DataFilterFeatureConfig extends DataFilterConfig {
 })
 export class DataFilterModule {
     public static forRoot(option?: DataFilterConfig): DynamicModule {
-        option = {
-            imports: option?.imports ?? [],
-            deserializer: option?.deserializer ?? {
-                provide: UserDeserializer,
-                useClass: DefaultDeserializer
-            },
-            accessControlAdapter: option?.accessControlAdapter ?? {
-                provide: AccessControlAdapter,
-                useClass: DefaultAccessControlAdapter
-            },
-            translateAdapter: option?.translateAdapter ?? {
-                provide: TranslateAdapter,
-                useClass: DefaultTranslateAdapter
-            },
-            exportAdapter: option?.exportAdapter ?? {
-                provide: ExportAdapter,
-                useClass: DefaultExportAdapter
-            },
-            filter: {
-                ...defaultFilterOptionConfig,
-                ...(option?.filter ?? {})
-            },
-            validateData: option?.validateData ?? false
-        };
         return {
             module: DataFilterModule,
-            imports: [...option.imports],
+            imports: [...(option?.imports ?? [])],
             providers: [
                 {
                     provide: FILTER_OPTION,
-                    useValue: option.filter
+                    useValue: {
+                        ...defaultFilterOptionConfig,
+                        ...(option?.filter ?? {})
+                    }
                 },
                 {
                     provide: VALIDATE_DATA,
-                    useValue: option.validateData
+                    useValue: option?.validateData ?? false
                 },
-                option.deserializer,
-                option.accessControlAdapter,
-                option.translateAdapter,
-                option.exportAdapter,
+                option?.deserializer ?? {
+                    provide: UserDeserializer,
+                    useClass: DefaultDeserializer
+                },
+                option?.accessControlAdapter ?? {
+                    provide: AccessControlAdapter,
+                    useClass: DefaultAccessControlAdapter
+                },
+                option?.translateAdapter ?? {
+                    provide: TranslateAdapter,
+                    useClass: DefaultTranslateAdapter
+                },
+                option?.exportAdapter ?? {
+                    provide: ExportAdapter,
+                    useClass: DefaultExportAdapter
+                },
                 DataFilterValidationService
             ],
             exports: [
@@ -95,7 +86,7 @@ export class DataFilterModule {
             if (x === "imports" || x === "filters") {
                 return;
             }
-            return option[x];
+            return (option as any)[x];
         }).filter(x => x);
         return {
             module: DataFilterModule,

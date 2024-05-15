@@ -1,3 +1,4 @@
+import { PathConfig } from "../models/path.model";
 import { DataFilterScanner } from "./data-filter.scanner";
 import { Attributes, Data, Include, Path } from "../decorators";
 import { Persons } from "../test/models/persons/persons.model";
@@ -10,12 +11,12 @@ import { AttributesConfig, AttributesConfigModel } from "../models/attributes.mo
 @Attributes(["first_name", "last_name"])
 class PersonsTest {
     @Attributes(["cellphone"])
-    coord: Coords;
+    coord?: Coords;
 
     @Attributes([])
     @Path("owner.places")
     @Include({ path: "system", attributes: ["file_number"], where: { file_number: option => option.file_number } })
-    places: Places[];
+    places?: Places[];
 }
 
 describe("DataFilterScanner", () => {
@@ -47,20 +48,20 @@ describe("DataFilterScanner", () => {
         Object.assign<AttributesConfig, AttributesConfigModel>(expected[0], {
             key: "coord",
             attributes: ["cellphone"],
-            path: {
+            path: new PathConfig({
                 path: "coord",
                 paranoid: true
-            } as any,
+            }),
             customAttributes: [],
             includes: []
         });
         Object.assign<AttributesConfig, AttributesConfigModel>(expected[1], {
             key: "places",
             attributes: [],
-            path: {
+            path: new PathConfig({
                 path: "owner.places",
                 paranoid: true
-            } as any,
+            }),
             customAttributes: [],
             includes: [
                 {

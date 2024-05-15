@@ -16,19 +16,11 @@ export interface AccessControlConfig extends Pick<ModuleMetadata, 'imports'> {
 @Module({})
 export class AccessControlModule {
     public static forRoot(option: AccessControlConfig): DynamicModule {
-        option = {
-            imports: option.imports ?? [],
-            defaultDatabaseType: option.defaultDatabaseType,
-            deserializer: option.deserializer ?? {
-                provide: UserDeserializer,
-                useClass: DefaultDeserializer
-            }
-        };
         return {
             module: AccessControlModule,
-            imports: [AccessControlCoreModule, ...option.imports],
+            imports: [AccessControlCoreModule, ...(option.imports ?? [])],
             providers: [
-                option.deserializer,
+                option.deserializer ?? { provide: UserDeserializer, useClass: DefaultDeserializer },
                 DatabaseAdaptersRegistry,
                 {
                     provide: ACCESS_CONTROL_DEFAULT_DATABASE,

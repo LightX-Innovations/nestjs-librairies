@@ -10,7 +10,7 @@ export const NeedsAccessActions = (...accessActions: (AccessActionType | AccessA
 
     // Convert enums to interface with default values.
     for (const accessAction of accessActions) {
-        if (accessAction["type"] !== null && accessAction["type"] !== undefined) {
+        if ((accessAction as AccessAction)["type"] !== null && (accessAction as AccessAction)["type"] !== undefined) {
             accessActionAsObjects.push(accessAction as AccessAction);
         } else if (accessActionTypeValues.includes(accessAction as AccessActionType)) {
             accessActionAsObjects.push({

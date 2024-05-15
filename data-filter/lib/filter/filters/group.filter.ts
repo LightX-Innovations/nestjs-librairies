@@ -1,5 +1,5 @@
 import { Op, WhereOptions } from "sequelize";
-import { DataFilterUserModel } from "../..";
+import { DataFilterUserModel, IRule } from "../..";
 import { TranslateAdapter } from "../../adapters/translate.adapter";
 import { FilterUtils } from "../filter.utils";
 import { GroupFilterBaseConfigurationModel } from "../models/filter-configuration.model";
@@ -16,15 +16,15 @@ export interface BaseGroupFilterDefinition {
     getValueFilter?: (rule: QueryRuleModel) => Promise<BaseFilterDefinition>;
 }
 
-export interface GroupFilterDefinition extends BaseGroupFilterDefinition {
+export interface GroupFilterDefinition extends BaseGroupFilterDefinition, IRule {
     getConfig(key: string, user?: DataFilterUserModel): Promise<GroupFilterBaseConfigurationModel>;
-    getWhereOptions(rule: QueryRuleModel): Promise<WhereOptions>;
-    getHavingOptions(rule: QueryRuleModel): Promise<WhereOptions>;
+    getWhereOptions(rule: QueryRuleModel): Promise<WhereOptions | undefined>;
+    getHavingOptions(rule: QueryRuleModel): Promise<WhereOptions | undefined>;
 }
 
 export class GroupFilter implements GroupFilterDefinition {
-    private _type = "group_filter";
-    protected _translateService: TranslateAdapter;
+    public readonly _type = "group_filter";
+    protected _translateService!: TranslateAdapter;
 
     public set translateService(translateService: TranslateAdapter) {
         this._translateService = translateService;
@@ -36,8 +36,8 @@ export class GroupFilter implements GroupFilterDefinition {
     }
 
     public type = FilterType.Group;
-    public group: string;
-    public rootFilter: Filter;
+    public group!: string;
+    public rootFilter!: Filter;
     public valueFilter?: Filter;
     public lazyLoading?: boolean;
     public getValueFilter?: (rule: QueryRuleModel) => Promise<FilterDefinition>;
@@ -46,7 +46,7 @@ export class GroupFilter implements GroupFilterDefinition {
         Object.assign(this, definition);
     }
 
-    public static validate(definition: BaseGroupFilterDefinition) {
+    public static validate(definition: IRule) {
         return definition["_type"] === "group_filter";
     }
 
@@ -64,7 +64,7 @@ export class GroupFilter implements GroupFilterDefinition {
             config.group = {
                 key: this.group,
                 name: await this._translateService.getTranslation(
-                    user?.language,
+                    user?.language ?? "",
                     FilterUtils.getGroupTranslationKey(this.group)
                 )
             };
@@ -72,43 +72,50 @@ export class GroupFilter implements GroupFilterDefinition {
         return config;
     }
 
-    public async getWhereOptions(rule: QueryRuleModel, name?: string): Promise<WhereOptions> {
+    public async getWhereOptions(rule: QueryRuleModel, name?: string): Promise<WhereOptions | undefined> {
         const [root, value] = this.getRules(rule);
         if (!root || !value) {
             return {};
         }
 
-        const valueFilter = this.valueFilter ?? await this.getValueFilter(root as QueryRuleModel);
+        const rootWhere = await this.rootFilter.getWhereOptions(root as QueryRuleModel);
+        const valueFilter = this.valueFilter ?? await this.getValueFilter?.(root as QueryRuleModel);
+        if (!valueFilter) {
+            return rootWhere;
+        }
+
+        const valueWhere = await valueFilter.getWhereOptions(value as QueryRuleModel);
+        if (!rootWhere || !valueWhere) {
+            return undefined;
+        }
+
         return {
-            [Op.and]: [
-                await this.rootFilter.getWhereOptions(root as QueryRuleModel),
-                await valueFilter.getWhereOptions(value as QueryRuleModel)
-            ]
+            [Op.and]: [rootWhere, valueWhere]
         };
     }
 
-    public async getHavingOptions(rule: QueryRuleModel): Promise<WhereOptions> {
+    public async getHavingOptions(rule: QueryRuleModel): Promise<WhereOptions | undefined> {
         const [root, value] = this.getRules(rule);
         if (!root || !value) {
             return {};
         }
 
-        const valueFilter = this.valueFilter ?? await this.getValueFilter(root as QueryRuleModel);
+        const valueFilter = this.valueFilter ?? await this.getValueFilter?.(root as QueryRuleModel);
         const rootHaving = await this.rootFilter.getHavingOptions(rule);
-        const valueHaving = await valueFilter.getHavingOptions(rule);
-        if (!rootHaving && !valueHaving) {
-            return null;
+        const valueHaving = await valueFilter?.getHavingOptions(rule);
+        if (!rootHaving || !valueHaving) {
+            return undefined;
         }
 
         return {
             [Op.and]: [
                 rootHaving,
                 valueHaving
-            ].filter(x => x)
+            ]
         };
     }
 
-    protected getRules(rule: QueryRuleModel): [RuleModel, RuleModel] {
+    protected getRules(rule: QueryRuleModel): [RuleModel | null, RuleModel | null] {
         const [root, value] = rule.value as [RuleModel, RuleModel];
         if (!root.value || !value.value || !value.operation) {
             return [null, null];

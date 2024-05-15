@@ -21,7 +21,7 @@ export class Systems extends Model {
     @AutoIncrement
     @PrimaryKey
     @Column
-    id: number;
+    id!: number;
 
     @Column
     @ForeignKey(() => Places)
@@ -37,17 +37,17 @@ export class Systems extends Model {
     file_number?: string;
 
     @BelongsTo(() => Places)
-    place: Places;
+    place?: Places;
 
     @HasMany(() => ContractSystems)
-    contracts: ContractSystems[];
+    contracts?: ContractSystems[];
 
     @CreatedAt
-    created_at: Date;
+    created_at?: Date;
 
     @UpdatedAt
-    updated_at: Date;
+    updated_at?: Date;
 
     @DeletedAt
-    deleted_at: Date;
+    deleted_at?: Date;
 }

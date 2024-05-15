@@ -9,13 +9,13 @@ export interface SelectFilterValue {
     name: string;
 }
 
-export interface SelectFilterGetValuesOptions<T = any, User = any, Request = any> {
+export interface SelectFilterGetValuesOptions<T = any, User = DataFilterUserModel, Request = any> {
     value: T;
     user?: User;
     request?: Request
 }
 
-export interface SelectFilterGetResourceOptions<User = any, Request = any> {
+export interface SelectFilterGetResourceOptions<User = DataFilterUserModel, Request = any> {
     id: number | string;
     user?: User;
     request?: Request
@@ -30,21 +30,20 @@ export interface SelectFilterDefinition<T> {
 export class SelectFilter<T> extends Filter implements SelectFilterDefinition<T> {
     public type = FilterType.Select;
     public operators = [...SelectOperators];
-    public values: ({ value, user, request }: SelectFilterGetValuesOptions) => Promise<SelectFilterValue[]>;
-    public getResourceById: ({ id, user, request }: SelectFilterGetResourceOptions) => Promise<SelectFilterValue | null>;
-    public lazyLoading;
+    public values!: ({ value, user, request }: SelectFilterGetValuesOptions) => Promise<SelectFilterValue[]>;
+    public getResourceById!: ({ id, user, request }: SelectFilterGetResourceOptions) => Promise<SelectFilterValue | null>;
+    public lazyLoading!: boolean;
 
     constructor(definition: BaseFilterDefinition & SelectFilterDefinition<T>) {
         super(definition);
 
-        if (this.lazyLoading === undefined) {
+        if (definition.lazyLoading === undefined) {
             this.lazyLoading = true;
         }
     }
 
-    public async getConfig<Request>(key: string, request: Request, user?: DataFilterUserModel): Promise<FilterBaseConfigurationModel> {
+    public async getConfig<Request>(key: string, request: Request, user?: DataFilterUserModel): Promise<FilterBaseConfigurationModel | null> {
         const config = await super.getConfig(key, request, user);
-
         if (!config) {
             return null;
         }

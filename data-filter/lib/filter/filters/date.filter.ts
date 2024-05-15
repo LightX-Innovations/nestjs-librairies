@@ -25,7 +25,7 @@ export class DateFilter extends Filter implements DateFilterDefinition {
     public operators = [...DateOperators];
 
     public readonly defaultTimezone: string;
-    public readonly skipTimezone: boolean;
+    public readonly skipTimezone!: boolean;
 
     constructor(definition: BaseFilterDefinition & DateFilterDefinition) {
         super(definition);
@@ -33,7 +33,7 @@ export class DateFilter extends Filter implements DateFilterDefinition {
         this.defaultTimezone = definition.defaultTimezone ?? "America/Montreal";
     }
 
-    public async getWhereOptions(rule: QueryRuleModel): Promise<WhereOptions> {
+    public async getWhereOptions(rule: QueryRuleModel): Promise<WhereOptions | undefined> {
         if (rule.operation === FilterOperatorTypes.IsNull || rule.operation === FilterOperatorTypes.IsNotNull) {
             return super.getWhereOptions(rule);
         }
@@ -42,6 +42,10 @@ export class DateFilter extends Filter implements DateFilterDefinition {
         const offsetMilliseconds = getTimezoneOffset(this.defaultTimezone);
 
         if (rule.operation === FilterOperatorTypes.Between || rule.operation === FilterOperatorTypes.NotBetween) {
+            if (!Array.isArray(rule.value)) {
+                return;
+            }
+
             const values = this.skipTimezone
                 ? rule.value
                 :
@@ -77,7 +81,7 @@ export class DateFilter extends Filter implements DateFilterDefinition {
         }
     }
 
-    private async getEqualWhereOptions(rule: QueryRuleModel, start: string, end: string): Promise<WhereOptions> {
+    private async getEqualWhereOptions(rule: QueryRuleModel, start: string, end: string): Promise<WhereOptions | undefined> {
         return super.getWhereOptions({
             operation: FilterOperatorTypes.Between,
             value: [start, end],
@@ -85,24 +89,27 @@ export class DateFilter extends Filter implements DateFilterDefinition {
         });
     }
 
-    private async getNotEqualWhereOptions(rule: QueryRuleModel, start: string, end: string): Promise<WhereOptions> {
+    private async getNotEqualWhereOptions(rule: QueryRuleModel, start: string, end: string): Promise<WhereOptions | undefined> {
+        const first = await super.getWhereOptions({
+            operation: FilterOperatorTypes.Less,
+            value: start,
+            id: rule.id
+        });
+        const second = await super.getWhereOptions({
+            operation: FilterOperatorTypes.Greater,
+            value: end,
+            id: rule.id
+        });
+        if (!first || !second) {
+            return;
+        }
+
         return {
-            [Op.or]: [
-                await super.getWhereOptions({
-                    operation: FilterOperatorTypes.Less,
-                    value: start,
-                    id: rule.id
-                }),
-                await super.getWhereOptions({
-                    operation: FilterOperatorTypes.Greater,
-                    value: end,
-                    id: rule.id
-                })
-            ]
+            [Op.or]: [first, second]
         };
     }
 
-    private async getLessWhereOptions(rule: QueryRuleModel, start: string): Promise<WhereOptions> {
+    private async getLessWhereOptions(rule: QueryRuleModel, start: string): Promise<WhereOptions | undefined> {
         return super.getWhereOptions({
             operation: FilterOperatorTypes.Less,
             value: start,
@@ -110,7 +117,7 @@ export class DateFilter extends Filter implements DateFilterDefinition {
         });
     }
 
-    private async getLessOrEqualWhereOptions(rule: QueryRuleModel, end: string): Promise<WhereOptions> {
+    private async getLessOrEqualWhereOptions(rule: QueryRuleModel, end: string): Promise<WhereOptions | undefined> {
         return super.getWhereOptions({
             operation: FilterOperatorTypes.LessOrEqual,
             value: end,
@@ -118,7 +125,7 @@ export class DateFilter extends Filter implements DateFilterDefinition {
         });
     }
 
-    private async getGreaterWhereOptions(rule: QueryRuleModel, end: string): Promise<WhereOptions> {
+    private async getGreaterWhereOptions(rule: QueryRuleModel, end: string): Promise<WhereOptions | undefined> {
         return super.getWhereOptions({
             operation: FilterOperatorTypes.Greater,
             value: end,
@@ -126,7 +133,7 @@ export class DateFilter extends Filter implements DateFilterDefinition {
         });
     }
 
-    private async getGreaterOrEqualWhereOptions(rule: QueryRuleModel, start: string): Promise<WhereOptions> {
+    private async getGreaterOrEqualWhereOptions(rule: QueryRuleModel, start: string): Promise<WhereOptions | undefined> {
         return super.getWhereOptions({
             operation: FilterOperatorTypes.GreaterOrEqual,
             value: start,

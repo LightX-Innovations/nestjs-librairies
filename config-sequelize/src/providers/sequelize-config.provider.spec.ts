@@ -13,40 +13,40 @@ import { SequelizeConfigProvider } from "./sequelize.config-provider";
 @SequelizeConfig()
 class SequelizeConfigModel1 {
     @Variable("REDIS_HOST")
-    redisHost: string;
+    redisHost!: string;
 
     @Variable({
         required: false
     })
-    REDIS_PORT: string;
+    REDIS_PORT?: string;
 
     @Variable
-    redisPassword: string;
+    redisPassword!: string;
 }
 
 @SequelizeConfig()
 class ManageableSequelizeConfig1 extends ManageableSequelizeConfig<ManageableSequelizeConfig1> {
     @Variable
-    first: string;
+    first!: string;
 
     @Variable
     @Type(() => Number)
-    second: number;
+    second!: number;
 
     @Variable("not_three")
-    three: string;
+    three!: string;
 }
 
 @SequelizeConfig()
 class SequelizeConfigModel2 {
     @Variable("SEQUELIZE_FIRST_VAR")
-    firstVar: string;
+    firstVar!: string;
 
     @Variable
-    SEQUELIZE_SECOND_VAR: string;
+    SEQUELIZE_SECOND_VAR!: string;
 
     @Variable(true)
-    sequelizeThirdVar: string;
+    sequelizeThirdVar!: string;
 }
 
 describe("SequelizeConfigProvider", () => {
@@ -142,7 +142,7 @@ describe("SequelizeConfigProvider", () => {
 
         await repository.update({ value: "updated_first_value" }, { where: { key: "first" } });
 
-        await config.reload();
+        await config!.reload();
 
         expect(config).toBeDefined();
         expect(config).toBeInstanceOf(ManageableSequelizeConfig1);
@@ -156,7 +156,7 @@ describe("SequelizeConfigProvider", () => {
         await repository.update({ value: 1024 }, { where: { key: "second" } });
         await repository.update({ value: "42" }, { where: { key: "not_three" } });
 
-        await config.reload();
+        await config!.reload();
 
         expect(config).toBeDefined();
         expect(config).toBeInstanceOf(ManageableSequelizeConfig1);
@@ -185,7 +185,7 @@ describe("SequelizeConfigProvider", () => {
             three: "4"
         });
 
-        await config.update({
+        await config!.update({
             first: "updated_first_value"
         });
 
@@ -206,7 +206,7 @@ describe("SequelizeConfigProvider", () => {
         expect(second?.value).toEqual("42");
         expect(three?.value).toEqual("4");
 
-        await config.update({
+        await config!.update({
             first: "re_updated_first_value",
             second: 2048
         });
@@ -228,7 +228,7 @@ describe("SequelizeConfigProvider", () => {
         expect(second1?.value).toEqual("2048");
         expect(three1?.value).toEqual("4");
 
-        await config.update({
+        await config!.update({
             first: "re_updated_first_value",
             second: 2048,
             three: "42"

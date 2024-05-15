@@ -11,6 +11,9 @@ import {
 import { SequelizeEntities } from "../models/sequelize-entities.model";
 import { SequelizeReadRepository } from "./database-read-repository";
 
+/**
+ * @deprecated You should create your own functions instead
+ */
 export abstract class SequelizeRepository<T extends SequelizeEntities, CreateDto = CreationAttributes<T>, UpdateDto = Partial<Attributes<T>>> extends SequelizeReadRepository<T> {
     public create<Options>(dto: CreateDto, options?: Options & CreateOptions<Attributes<T>>): Promise<T> {
         return this.repository.create(dto as any, options as any) as unknown as Promise<T>;
@@ -25,7 +28,7 @@ export abstract class SequelizeRepository<T extends SequelizeEntities, CreateDto
     }
 
     public async updateByPk<Options>(identifier: Identifier, dto: UpdateDto, options?: Options & UpdateOptions<Attributes<T>>): Promise<T | null> {
-         await this.repository.update(dto, {
+         await this.repository.update(dto as any, {
             where: {
                 [this.repository.primaryKeyAttribute]: identifier
             },
@@ -35,7 +38,7 @@ export abstract class SequelizeRepository<T extends SequelizeEntities, CreateDto
     }
 
     public async update<Options>(dto: UpdateDto, options?: Options & UpdateOptions<Attributes<T>>): Promise<void> {
-        await this.repository.update(dto, options as any);
+        await this.repository.update(dto as any, options as any);
     }
 
     public async destroyByPk(identifier: Identifier, options?: Omit<DestroyOptions<Attributes<T>>, "where">): Promise<void> {

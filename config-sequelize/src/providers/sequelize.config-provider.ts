@@ -18,7 +18,7 @@ export interface GetSequelizeConfigValueOptions {
 
 @Injectable()
 @ConfigProvider(SequelizeConfigProvider.type)
-export class SequelizeConfigProvider implements IConfigProvider {
+export class SequelizeConfigProvider implements IConfigProvider<GetSequelizeConfigValueOptions> {
     static type = "sequelize" as const;
 
     private initialized = false;
@@ -35,7 +35,7 @@ export class SequelizeConfigProvider implements IConfigProvider {
             where: { key },
             transaction: options?.transaction
         });
-        return config?.getDataValue("value");
+        return config?.getDataValue("value") ?? null;
     }
 
     public async hydrate<T extends Object>(config: T): Promise<void> {
@@ -65,7 +65,7 @@ export class SequelizeConfigProvider implements IConfigProvider {
                 return callback(options.transaction);
             }
 
-            return this.repository.sequelize.transaction(callback);
+            return this.repository.sequelize?.transaction(callback);
         };
 
         await transactionCallback(async (transaction) => {
@@ -77,12 +77,12 @@ export class SequelizeConfigProvider implements IConfigProvider {
             await Promise.all(
                 Object.entries(update)
                     .filter(([key, _]) => config.hasOwnProperty(key))
-                    .map(([key, value]) => {
+                    .map(([key, value]: [string, any]) => {
                         const variable = configMetadata.variables.find((variable) => variable.propertyKey === key);
 
                         return {
                             key: variable?.variableName || variable?.propertyKey,
-                            value: value.toString()
+                            value: value?.toString()
                         };
                     })
                     .filter(({ key }) => key)
@@ -102,7 +102,7 @@ export class SequelizeConfigProvider implements IConfigProvider {
                     continue;
                 }
 
-                config[key] = update[key];
+                (config as any)[key] = (update as any)[key];
             }
         });
     }

@@ -1,5 +1,5 @@
 import { FilterType } from "../type";
-import { RadioFilterOptionConfiguration } from "../filters";
+import { OptionsFilterOptionConfiguration, OptionsFilterSelectionMode } from "../filters";
 
 export interface FilterOperatorsConfiguration {
     id: string;
@@ -16,7 +16,8 @@ export interface FilterBaseConfigurationModel {
     operators: FilterOperatorsConfiguration[];
     values?: unknown[];
     lazyLoading?: boolean;
-    options?: RadioFilterOptionConfiguration[];
+    selectionMode?: OptionsFilterSelectionMode;
+    options?: OptionsFilterOptionConfiguration[];
     group?: FilterGroupConfiguration;
     mask?: string;
 }
@@ -28,8 +29,8 @@ export interface FilterConfigurationModel extends FilterBaseConfigurationModel {
 
 export interface GroupFilterBaseConfigurationModel {
     type: FilterType;
-    rootFilter: FilterBaseConfigurationModel;
-    valueFilter?: FilterBaseConfigurationModel;
+    rootFilter: FilterBaseConfigurationModel | null;
+    valueFilter?: FilterBaseConfigurationModel | null;
     lazyLoading?: boolean;
     group?: FilterGroupConfiguration;
 }

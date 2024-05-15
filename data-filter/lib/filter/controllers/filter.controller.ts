@@ -27,10 +27,10 @@ import { FilterResourceValueModel } from "../models/filter-resource-value.model"
 export class FilterController<Data> {
     @Inject()
     @Optional()
-    private readonly userUserDeserializer: UserDeserializer<DataFilterUserModel>;
+    private readonly userUserDeserializer!: UserDeserializer<DataFilterUserModel>;
 
     @Inject(FILTER_OPTION)
-    private readonly option: FilterOptionConfig;
+    private readonly option!: FilterOptionConfig;
 
     constructor(protected readonly filterService: FilterService<Data>) {}
 
@@ -82,7 +82,7 @@ export class FilterController<Data> {
         return await this.filterService.searchConfigValues(req, search, await this.getUser(req) ?? {} as DataFilterUserModel);
     }
 
-    protected async getUser(req: any): Promise<DataFilterUserModel> {
+    protected async getUser(req: any): Promise<DataFilterUserModel | null> {
         if (!this.userUserDeserializer || this.option.disableAccessControl) {
             return null;
         }

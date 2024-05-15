@@ -3,15 +3,15 @@ import { DataFilterHandler } from "../handlers/data-filter.handler";
 import { AttributesHandler } from "../handlers/attributes.handler";
 
 export function Distance(options: DistanceConfig): PropertyDecorator & ClassDecorator {
-    return (target: Object, propertyKey?: string) => {
+    return (target: Object, propertyKey?: string | symbol) => {
         defineCustomAttributesMetadata(target, propertyKey, options);
     };
 }
 
-function defineCustomAttributesMetadata(target: Object, propertyKey?: string, options?: DistanceConfig) {
+function defineCustomAttributesMetadata(target: Object, propertyKey: string | symbol | undefined, options: DistanceConfig) {
     if (!propertyKey) {
         const dataFilter = DataFilterHandler.getDataFilter(target);
-        dataFilter.addCustomAttribute(new DistanceAttributesConfig(propertyKey, options));
+        dataFilter.addCustomAttribute(new DistanceAttributesConfig(options.name, options));
         DataFilterHandler.saveDataFilter(target, dataFilter);
         return;
     }

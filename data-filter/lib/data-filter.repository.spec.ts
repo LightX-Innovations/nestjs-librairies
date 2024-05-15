@@ -23,7 +23,7 @@ class PersonsTest {
         separate: true
     })
     @Where({ [Op.or]: () => [ { id: { [Op.ne]: null } } ] }, true)
-    coord: Coords;
+    coord?: Coords;
 
 }
 
@@ -38,7 +38,7 @@ class CustomCoordAttributesTest {
     @Attributes(["cellphone"])
     @Distance({ name: "distance", attribute: "geo_point", coordinates: option => option.coordinates })
     @Include("location", { attributes: ["value"], where: { value: option => option.value } })
-    coord: Coords;
+    coord?: Coords;
 }
 
 describe("DataFilterRepository", () => {

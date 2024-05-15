@@ -5,13 +5,13 @@ export class Devices extends Model {
     @PrimaryKey
     @AutoIncrement
     @Column
-    id: number;
+    id!: number;
 
     @AllowNull(false)
     @Column
-    uniqueId: string;
+    uniqueId?: string;
 
     @AllowNull(false)
     @Column
-    name: string;
+    name?: string;
 }

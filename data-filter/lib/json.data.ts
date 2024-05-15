@@ -6,7 +6,7 @@ export abstract class JsonData {
             const desc = Object.getOwnPropertyDescriptor(proto, key);
             const hasGetter = desc && typeof desc.get === "function";
             if (hasGetter) {
-                jsonObj[key] = this[key];
+                (jsonObj as any)[key] = (this as any)[key];
             }
         }
         return jsonObj;

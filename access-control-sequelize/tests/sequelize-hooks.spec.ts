@@ -8,7 +8,7 @@ import { Accounts } from "./models/accounts";
 import { Devices } from "./models/devices";
 
 describe("SequelizeHooksModule", () => {
-    let resourceEventAccessControlService;
+    let resourceEventAccessControlService: any;
 
     beforeAll(async () => {
         resourceEventAccessControlService = {

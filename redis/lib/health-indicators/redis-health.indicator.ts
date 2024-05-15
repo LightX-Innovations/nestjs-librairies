@@ -14,7 +14,7 @@ export class RedisHealthIndicator extends HealthIndicator {
 
         try {
             const [error, response] = await this.redisService.ping();
-            isHealthy = error === null;
+            isHealthy = error === null || error === undefined;
             result = this.getStatus(key, isHealthy, { operation: "PING", response, error });
 
             if (isHealthy) {

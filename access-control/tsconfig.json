@@ -9,6 +9,7 @@
     "lib": [
       "es2018"
     ],
+    "strict": true,
     "sourceMap": true,
     "outDir": "build"
   },

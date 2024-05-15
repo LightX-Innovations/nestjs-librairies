@@ -1,8 +1,8 @@
-import { FindAttributeOptions, Order, WhereOptions } from "sequelize";
+import { FindAttributeOptions, Order } from "sequelize";
 import { SequelizeUtils } from "../sequelize.utils";
-import { IncludeConfig, IncludeModel, IncludeWhereModel } from "./include.model";
-import { PathConfig, PathModel } from "./path.model";
 import { CustomAttributesConfig, CustomAttributesModel } from "./custom-attributes.model";
+import { IncludeConfig, IncludeModel } from "./include.model";
+import { PathConfig } from "./path.model";
 
 export interface AttributesConfigModel {
     key: string;
@@ -13,6 +13,7 @@ export interface AttributesConfigModel {
 }
 
 export class AttributesConfig implements AttributesConfigModel {
+    public readonly key: string;
     public attributes?: FindAttributeOptions;
     public searchableAttributes?: string[];
     public path: PathConfig;
@@ -20,9 +21,10 @@ export class AttributesConfig implements AttributesConfigModel {
     public customAttributes: CustomAttributesConfig[] = [];
     public ignoreInSearch = false;
 
-    constructor(public key: string) {
+    constructor(key: string | symbol) {
+        this.key = typeof key === "string" ? key : key.toString();
         this.path = new PathConfig({
-            path: key,
+            path: typeof key === "string" ? key : undefined,
             paranoid: true
         });
     }
@@ -63,15 +65,18 @@ export class AttributesConfig implements AttributesConfigModel {
         this.customAttributes.push(attribute);
     }
 
-    public transformAttributesConfig(options?: object): FindAttributeOptions {
+    public transformAttributesConfig(options?: object): FindAttributeOptions | null {
         const customAttributes = this.getCustomAttributes(options);
         if (this.attributes) {
             if (this.customAttributes.length) {
-                return SequelizeUtils.ensureAttributesValidity(
-                    SequelizeUtils.mergeAttributes(this.attributes, {
-                        include: customAttributes.map(x => x.attribute)
-                    })
-                );
+                const attributes = SequelizeUtils.mergeAttributes(this.attributes, {
+                    include: customAttributes.map(x => x.attribute)
+                });
+                if (!attributes) {
+                    return null;
+                }
+
+                return SequelizeUtils.ensureAttributesValidity(attributes);
             }
 
             return SequelizeUtils.ensureAttributesValidity(this.attributes);
@@ -81,6 +86,8 @@ export class AttributesConfig implements AttributesConfigModel {
                 include: customAttributes.map(x => x.attribute)
             };
         }
+
+        return null;
     }
 
     public transformIncludesConfig(options?: object): IncludeModel[] {
@@ -124,7 +131,7 @@ export class AttributesConfig implements AttributesConfigModel {
 
     public getCustomAttributes(options?: object, path?: string): CustomAttributesModel[] {
         return this.customAttributes
-            .filter(x => x.config.path === path)
+            .filter(x => x.config?.path === path)
             .map(x => ({
                 key: x.key,
                 attribute: x.transform(options, this.path.path),

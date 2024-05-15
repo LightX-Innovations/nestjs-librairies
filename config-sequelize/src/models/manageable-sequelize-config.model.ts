@@ -11,6 +11,6 @@ export type UpdateSequelizeConfigOptions = {
 };
 
 export abstract class ManageableSequelizeConfig<T extends ManageableSequelizeConfig<T>> {
-    reload: (options?: ReloadSequelizeConfigOptions) => Promise<void>;
-    update: (update: SequelizeConfigUpdate<T>, options?: UpdateSequelizeConfigOptions) => Promise<void>;
+    reload!: (options?: ReloadSequelizeConfigOptions) => Promise<void>;
+    update!: (update: SequelizeConfigUpdate<T>, options?: UpdateSequelizeConfigOptions) => Promise<void>;
 }

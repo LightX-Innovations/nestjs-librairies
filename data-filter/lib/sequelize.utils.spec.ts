@@ -64,12 +64,12 @@ describe("SequelizeUtils", () => {
 
         it("Merge include empty object and empty attributes should return the attribute with the id", () => {
             const a = { include: [] };
-            const b = [];
+            const b: any[] = [];
 
             const res = SequelizeUtils.mergeAttributes(a, b);
             expect(res).toEqual(["id"]);
 
-            const a2 = [];
+            const a2: any[] = [];
             const b2 = { include: [] };
 
             const res2 = SequelizeUtils.mergeAttributes(a2, b2);

@@ -12,7 +12,7 @@ export interface DataFilterConfigModel {
 }
 
 export class DataFilterConfig implements DataFilterConfigModel {
-    public model: typeof Model;
+    public model!: typeof Model;
     public attributes?: FindAttributeOptions;
     public searchableAttributes?: string[];
     public exportColumns?: string[];
@@ -43,15 +43,18 @@ export class DataFilterConfig implements DataFilterConfigModel {
         this.customAttributes.push(attribute);
     }
 
-    public transformAttributesConfig(options?: object): FindAttributeOptions {
+    public transformAttributesConfig(options?: object): FindAttributeOptions | null {
         const customAttributes = this.getCustomAttributes(options);
         if (this.attributes) {
             if (this.customAttributes.length) {
-                return SequelizeUtils.ensureAttributesValidity(
-                    SequelizeUtils.mergeAttributes(this.attributes, {
-                        include: customAttributes.map(x => x.attribute)
-                    })
-                );
+                const attributes = SequelizeUtils.mergeAttributes(this.attributes, {
+                    include: customAttributes.map(x => x.attribute)
+                });
+                if (!attributes) {
+                    return null;
+                }
+
+                return SequelizeUtils.ensureAttributesValidity(attributes);
             }
 
             return SequelizeUtils.ensureAttributesValidity(this.attributes);
@@ -61,6 +64,8 @@ export class DataFilterConfig implements DataFilterConfigModel {
                 include: customAttributes.map(x => x.attribute)
             };
         }
+
+        return null;
     }
 
     public getCustomAttributes(options?: object): CustomAttributesModel[] {
@@ -78,11 +83,11 @@ export class DataFilterConfig implements DataFilterConfigModel {
 
     public getCustomAttributesIncludes(): IncludeConfig[] {
         return this.customAttributes
-            .filter(x => x.config.path)
+            .filter(x => x.config?.path)
             .map(x => ({
                 attributes: { include: [] },
-                path: x.config.path,
-                where: x.config.where,
+                path: x.config?.path ?? "",
+                where: x.config?.where,
                 paranoid: true
             }));
     }

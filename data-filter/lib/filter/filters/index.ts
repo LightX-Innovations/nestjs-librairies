@@ -6,6 +6,6 @@ export * from "./filter";
 export * from "./geo-localization.filter";
 export * from "./group.filter";
 export * from "./number.filter";
-export * from "./radio.filter";
+export * from "./options.filter";
 export * from "./select.filter";
 export * from "./text.filter";

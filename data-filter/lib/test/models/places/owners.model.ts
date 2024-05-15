@@ -23,24 +23,24 @@ export class Owners extends Model {
     @AutoIncrement
     @PrimaryKey
     @Column
-    id: number;
+    id!: number;
 
     @Column
     @ForeignKey(() => Persons)
-    person_id: number;
+    person_id?: number;
 
     @BelongsTo(() => Persons)
-    person: Persons;
+    person?: Persons;
 
     @BelongsToMany(() => Places, () => PlaceOwners)
-    places: Places[];
+    places?: Places[];
 
     @CreatedAt
-    created_at: Date;
+    created_at?: Date;
 
     @UpdatedAt
-    updated_at: Date;
+    updated_at?: Date;
 
     @DeletedAt
-    deleted_at: Date;
+    deleted_at?: Date;
 }

@@ -7,7 +7,7 @@ import { ExportTypes } from "../models/export-types.model";
 import { DefaultOrderRule } from "./order-rules/default.order-rule";
 
 export abstract class BaseFilter<T> implements FilterModel<T> {
-    private _translateService: TranslateAdapter;
+    private _translateService!: TranslateAdapter;
 
     [name: string]: FilterConfig | unknown;
     public abstract dataDefinition: Type<T>;

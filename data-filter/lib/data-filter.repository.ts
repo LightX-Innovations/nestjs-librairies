@@ -19,8 +19,8 @@ import { XlsxUtils } from "./utils/xlsx.utils";
 
 @Injectable()
 export class DataFilterRepository<Data> {
-    private _config: DataFilterConfig;
-    private _definitions: AttributesConfig[];
+    private _config!: DataFilterConfig;
+    private _definitions!: AttributesConfig[];
 
     public get model(): typeof M {
         return this._config.model as typeof M;
@@ -176,7 +176,7 @@ export class DataFilterRepository<Data> {
 
         const customAttr = this.getCustomAttribute(order.column);
         if (customAttr) {
-            if (!customAttr.config.path) {
+            if (!customAttr.config?.path) {
                 return [];
             }
 
@@ -274,11 +274,11 @@ export class DataFilterRepository<Data> {
     }
 
     public hasCustomAttribute(name: string): boolean {
-        return !!this._config.customAttributes.find((x) => x.config.name === name);
+        return !!this._config.customAttributes.find((x) => x.config?.name === name);
     }
 
-    public getCustomAttribute(name: string): CustomAttributesConfig {
-        return this._config.customAttributes.find((x) => x.config.name === name);
+    public getCustomAttribute(name: string): CustomAttributesConfig | null {
+        return this._config.customAttributes.find((x) => x.config?.name === name) ?? null;
     }
 
     public getCustomAttributeGroupBy(): (string | Fn | Col)[] {
@@ -392,7 +392,7 @@ export class DataFilterRepository<Data> {
         }
 
         const where = options.where;
-        const generateFieldsObject = searchValue =>
+        const generateFieldsObject = (searchValue: string) =>
             this.getSearchAttributes()
                 .map(a => {
                     if (a.isJson) {
@@ -402,7 +402,7 @@ export class DataFilterRepository<Data> {
                          * literal function is not working of some reason...
                          * This is the equivalent
                          */
-                        const value = this.model.sequelize.escape(`%${searchValue.toUpperCase()}%`);
+                        const value = this.model.sequelize?.escape(`%${searchValue.toUpperCase()}%`);
                         return new Utils.Literal(`UPPER(JSON_EXTRACT(${field}, '$')) LIKE ${value}`);
                     }
                     return {
@@ -413,7 +413,7 @@ export class DataFilterRepository<Data> {
                 }).filter(x => !!x);
 
         const tokens = search.split(" ");
-        where[Op.and].push(
+        (where as any)[Op.and].push(
             tokens.map(t => {
                 return {
                     [Op.or]: generateFieldsObject(t)
@@ -428,9 +428,9 @@ export class DataFilterRepository<Data> {
 
     private getExportData(data: Data[]): object[] {
         return data.map(x => {
-            const result = {};
+            const result: { [key: string]: any } = {};
             let i = 0;
-            for (const key of this._config.exportColumns) {
+            for (const key of this._config.exportColumns ?? []) {
                 const [value, prop] = this.getExportValue(x, key);
                 result[`${i++}:${prop}`] = value;
             }
@@ -442,21 +442,21 @@ export class DataFilterRepository<Data> {
         const keys = path.split(".");
         if (keys.length === 1) {
             const key = keys.pop();
-            return [data[key], key];
+            return [(data as any)[key as string], key as string];
         }
 
-        let key: string;
+        let key = "";
         while (keys.length) {
-            key = keys.shift();
+            key = keys.shift() as string;
             if (data) {
-                data = data[key];
+                data = (data as string)[key as any] as any;
             }
         }
 
         return [data, key];
     }
 
-    private async mergeAccessControlCondition(where: WhereOptions, user: DataFilterUserModel): Promise<WhereOptions> {
+    private async mergeAccessControlCondition(where: WhereOptions | undefined, user: DataFilterUserModel): Promise<WhereOptions | undefined> {
         const resources = await this.accessControlAdapter.getResources(this._config.model as any, user);
         if (resources.ids) {
             return SequelizeUtils.mergeWhere({ id: resources.ids }, where);
@@ -466,7 +466,7 @@ export class DataFilterRepository<Data> {
                     where,
                     resources.where
                 ]
-            };
+            } as WhereOptions;
         }
 
         return where;

@@ -16,7 +16,7 @@ export class TextFilter extends Filter {
         super(definition);
     }
 
-    public async getConfig<Request>(key: string, request: Request, user?: DataFilterUserModel): Promise<FilterBaseConfigurationModel> {
+    public async getConfig<Request>(key: string, request: Request, user?: DataFilterUserModel): Promise<FilterBaseConfigurationModel | null> {
         if (!this.mask) {
             return super.getConfig(key, request, user);
         }

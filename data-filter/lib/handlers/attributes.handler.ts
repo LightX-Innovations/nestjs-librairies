@@ -2,7 +2,7 @@ import { AttributesConfig } from "../models/attributes.model";
 import { ATTRIBUTES } from "../constant";
 
 export class AttributesHandler {
-    public static getAttribute(target: Object, propertyKey: string): AttributesConfig {
+    public static getAttribute(target: Object, propertyKey: string | symbol): AttributesConfig {
         const attributes: AttributesConfig[] = Reflect.getMetadata(ATTRIBUTES, target) || [];
         const attribute = attributes.find(x => x.key === propertyKey);
         if (!attribute) {

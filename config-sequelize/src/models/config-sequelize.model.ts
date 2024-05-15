@@ -11,11 +11,11 @@ export const InjectConfigSequelizeModel = () => Inject(ConfigSequelizeModelInjec
 export class ConfigSequelizeModel extends Model {
     @AllowNull(false)
     @Column
-    key: string;
+    key!: string;
 
     @AllowNull(false)
     @Column(DataTypes.TEXT)
-    value: string;
+    value!: string;
 }
 
 export const createSequelizeModel = (tableName?: string): typeof Model => {

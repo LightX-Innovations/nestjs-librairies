@@ -20,26 +20,26 @@ export class Visits extends Model {
     @AutoIncrement
     @PrimaryKey
     @Column
-    id: number;
+    id!: number;
 
     @Column
-    type: string;
+    type?: string;
 
     @Column(DataType.DATEONLY)
-    visit_date: string;
+    visit_date?: string;
 
     @Column(DataType.TIME)
-    visit_time: string;
+    visit_time?: string;
 
     @HasOne(() => MaintenanceVisits)
-    maintenanceVisit: MaintenanceVisits;
+    maintenanceVisit?: MaintenanceVisits;
 
     @CreatedAt
-    created_at: Date;
+    created_at?: Date;
 
     @UpdatedAt
-    updated_at: Date;
+    updated_at?: Date;
 
     @DeletedAt
-    deleted_at: Date;
+    deleted_at?: Date;
 }

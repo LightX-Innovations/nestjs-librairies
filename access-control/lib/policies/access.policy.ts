@@ -3,8 +3,8 @@ import { PolicyResources, Users } from "../models";
 
 @Injectable()
 export abstract class AccessPolicy {
-    public type: string;
-    public resourceName: string;
+    public type!: string;
+    public resourceName!: string;
 
     public get name(): string {
         return (this as any).constructor.name;

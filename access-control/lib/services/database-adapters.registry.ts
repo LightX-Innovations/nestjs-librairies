@@ -28,7 +28,11 @@ export class DatabaseAdaptersRegistry {
         return Reflect.getMetadata(DATABASE_ADAPTER_METADATA, policy);
     }
 
-    public getAdapter(type: string): IDatabaseAdapter {
+    public getAdapter(type?: string): IDatabaseAdapter {
+        if (!type) {
+            throw new Error(`You must provide a type`);
+        }
+
         const adapter =  this.registry.get(type);
         if (!adapter) {
             throw new Error(`No database adapters found for type ${type}`);

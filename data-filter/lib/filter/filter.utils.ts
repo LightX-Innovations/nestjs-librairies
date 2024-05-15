@@ -28,7 +28,7 @@ export class FilterUtils {
         return `filter.${key}.options.${option}`;
     }
 
-    public static generateWhereConditions(model: IncludeWhereModel, data?: object): WhereOptions {
+    public static generateWhereConditions(model: IncludeWhereModel | undefined, data?: object): WhereOptions | undefined {
         if (!model) {
             return;
         }
@@ -41,7 +41,7 @@ export class FilterUtils {
 
             const value = model[key](data);
             if (typeof value !== "undefined") {
-                where[key] = value;
+                (where as any)[key] = value;
             }
         }
 

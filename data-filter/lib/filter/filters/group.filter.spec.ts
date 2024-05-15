@@ -23,7 +23,7 @@ describe("GroupFilter", () => {
                 })
             });
             filter.translateService = new DefaultTranslateAdapter();
-            const config = await filter.getConfig(null, null);
+            const config = await filter.getConfig("", {});
             expect(config).toBeDefined();
             expect(config).toStrictEqual<GroupFilterBaseConfigurationModel>({
                 type: FilterType.Group,
@@ -88,7 +88,7 @@ describe("GroupFilter", () => {
                 group: "test"
             });
             filter.translateService = new DefaultTranslateAdapter();
-            const config = await filter.getConfig(null, null);
+            const config = await filter.getConfig("", {});
             expect(config).toBeDefined();
             expect(config).toStrictEqual<GroupFilterBaseConfigurationModel>({
                 type: FilterType.Group,
@@ -155,7 +155,7 @@ describe("GroupFilter", () => {
                 lazyLoading: false
             });
             filter.translateService = new DefaultTranslateAdapter();
-            const config = await filter.getConfig(null, null);
+            const config = await filter.getConfig("", {});
             expect(config).toBeDefined();
             expect(config).toStrictEqual<GroupFilterBaseConfigurationModel>({
                 type: FilterType.Group,

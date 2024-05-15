@@ -22,7 +22,7 @@ export class XlsxUtils {
             aoa.unshift(header);
         }
 
-        let sheet = {};
+        let sheet: { [key: string]: any } = {};
         sheet[name] = xlsx.utils.aoa_to_sheet(aoa);
 
         let xlsxContent: string = xlsx.write(

@@ -41,7 +41,7 @@ export class RedisService {
         return this.client.set(key, value);
     }
 
-    public get(key: string): Promise<string> {
+    public get(key: string): Promise<string | null> {
         return this.client.get(key);
     }
 
@@ -49,7 +49,7 @@ export class RedisService {
         return this.client.mget(...keys);
     }
 
-    public getBuffer(key: string): Promise<Buffer> {
+    public getBuffer(key: string): Promise<Buffer | null> {
         return this.client.getBuffer(key);
     }
 
@@ -59,7 +59,7 @@ export class RedisService {
 
     public async lpush(key: string, ...value: RedisValue[]): Promise<number> {
         if (!value.length) {
-            return;
+            return 0;
         }
 
         const slices = RedisArrayUtils.getSlices(value, this.configService.lpushBlockSize);
@@ -126,11 +126,16 @@ export class RedisService {
         return this.client.zrevrange(key, start, end);
     }
 
-    public async zscore(key: string, value: RedisValue): Promise<number> {
-        return +(await this.client.zscore(key, value));
+    public async zscore(key: string, value: RedisValue): Promise<number | null> {
+        const result = await this.client.zscore(key, value);
+        if (!result) {
+            return null;
+        }
+
+        return +result;
     }
 
-    public ping(): Promise<[Error | null, string]> {
+    public ping(): Promise<[Error | null | undefined, string | undefined]> {
         return new Promise((resolve, reject) => {
             this.client.ping((error, response) => {
                 resolve([error, response]);
@@ -146,7 +151,7 @@ export class RedisService {
                 type: options.type,
             });
 
-            const keys = [];
+            const keys: string[] = [];
             stream.on("data", (resultKeys) => {
                 for (const key of resultKeys) {
                     keys.push(key);

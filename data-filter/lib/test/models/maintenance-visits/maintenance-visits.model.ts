@@ -21,28 +21,28 @@ export class MaintenanceVisits extends Model {
     @AutoIncrement
     @PrimaryKey
     @Column
-    id: number;
+    id!: number;
 
     @Column
     @ForeignKey(() => Visits)
-    visit_id: number;
+    visit_id?: number;
 
     @Column
     @ForeignKey(() => ContractSystems)
     contract_system_id?: number;
 
     @BelongsTo(() => Visits)
-    visit: Visits;
+    visit?: Visits;
 
     @BelongsTo(() => ContractSystems)
-    contractSystem: ContractSystems;
+    contractSystem?: ContractSystems;
 
     @CreatedAt
-    created_at: Date;
+    created_at?: Date;
 
     @UpdatedAt
-    updated_at: Date;
+    updated_at?: Date;
 
     @DeletedAt
-    deleted_at: Date;
+    deleted_at?: Date;
 }

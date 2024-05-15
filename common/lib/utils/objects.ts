@@ -1,8 +1,8 @@
 export class ObjectUtils {
     public static forEachProperty(
-        object: Object,
+        object: { [key: string]: any },
         valueHandle: (value: any) => any,
-        objectHandle?: (object: Object) => void
+        objectHandle?: ((object: Object) => void) | null
     ) {
         for (const property in object) {
             if (!object.hasOwnProperty || object.hasOwnProperty(property)) {

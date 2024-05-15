@@ -23,8 +23,8 @@ export type GeoBoundsFilterDefinition = BaseGeoBoundsFilterDefinition & (GeoBoun
 export class GeoBoundsFilter extends Filter implements BaseGeoBoundsFilterDefinition, GeoBoundsFilterDefinitionWithPoint, GeoBoundsFilterDefinitionWithLatLng  {
     public type = FilterType.GeoBounds;
     public operators = [...SelectOperators];
-    public latAttribute: string;
-    public lngAttribute: string;
+    public latAttribute!: string;
+    public lngAttribute!: string;
     public srid?: number;
 
     constructor(definition: GeoBoundsFilterDefinition) {

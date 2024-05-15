@@ -21,17 +21,17 @@ import { DatabaseAdaptersRegistry } from "./database-adapters.registry";
 @Injectable()
 export class ResourceAccessControlService {
     @Inject()
-    public redisService: RedisService;
+    public redisService!: RedisService;
     @Inject()
-    public commandBus: CommandBus;
+    public commandBus!: CommandBus;
     @Inject()
-    public databaseAdaptersRegistry: DatabaseAdaptersRegistry;
+    public databaseAdaptersRegistry!: DatabaseAdaptersRegistry;
     @Inject()
-    public accessControlResourceLoaderService: AccessControlResourceLoaderService;
+    public accessControlResourceLoaderService!: AccessControlResourceLoaderService;
 
     constructor(@Optional() private config: PolicyConfig) {}
 
-    private _databaseAdapter: IDatabaseAdapter;
+    private _databaseAdapter?: IDatabaseAdapter;
 
     private get databaseAdapter(): IDatabaseAdapter {
         if (!this._databaseAdapter) {
@@ -41,7 +41,7 @@ export class ResourceAccessControlService {
         return this._databaseAdapter;
     }
 
-    private _resourceName: string;
+    private _resourceName?: string;
 
     private get resourceName(): string {
         if (!this._resourceName) {
@@ -51,7 +51,7 @@ export class ResourceAccessControlService {
         return this._resourceName;
     }
 
-    public async getResources(user: Users): Promise<Resources> {
+    public async getResources(user: Users): Promise<Resources | null> {
         const exist = await this.accessControlsExists(user);
         if (!exist) {
             return await lastValueFrom(this.accessControlResourceLoaderService.loadResources(user, this.resourceName));
@@ -126,7 +126,7 @@ export class ResourceAccessControlService {
                         )
                     )
                 )
-                .filter((user) => user);
+                .filter((user): user is Users => user !== null);
             return arrayUnique([...users, ...usersFromWildcard], (user) => `${user.id}:${user.role}`);
         }
 
@@ -157,7 +157,7 @@ export class ResourceAccessControlService {
             .map(([user, _], index) => [user, accessControlStrings[index]] as [Users, string])
             .filter(
                 ([_, accessControlStr]) =>
-                    accessControlStr && AccessRules.fromString(accessControlStr).has(options.action)
+                    accessControlStr && options.action && AccessRules.fromString(accessControlStr).has(options.action)
             )
             .map(([user, _]) => user);
         return arrayUnique([...users, ...usersFromWildcard], (user) => `${user.id}:${user.role}`);
@@ -173,7 +173,7 @@ export class ResourceAccessControlService {
                 .map((matchedKey) =>
                     RedisKeyUtils.extractUserFromUsersResourceActionWildcardPatternMatch(matchedKey, this.resourceName)
                 )
-                .filter((user) => user);
+                .filter((user): user is Users => user !== null);
         }
 
         if (!matchedKeys.length) {
@@ -182,16 +182,16 @@ export class ResourceAccessControlService {
 
         const accessControlStrings = await this.redisService.mget(...matchedKeys);
         return accessControlStrings
-            .filter((accessControlString) => accessControlString)
+            .filter((accessControlString): accessControlString is string => accessControlString !== null)
             .map((accessControlString, index): [string, number] => [accessControlString, index])
-            .filter(([accessControlString]) => AccessRules.fromString(accessControlString).has(options.action))
+            .filter(([accessControlString]) => options.action && AccessRules.fromString(accessControlString).has(options.action))
             .map(([_, index]) =>
                 RedisKeyUtils.extractUserFromUsersResourceActionWildcardPatternMatch(
                     matchedKeys[index],
                     this.resourceName
                 )
             )
-            .filter((user) => user);
+            .filter((user): user is Users => user !== null);
     }
 
     private async fetchAccessRules(user: Users, resourceId: ResourceId): Promise<AccessRules> {
@@ -208,7 +208,7 @@ export class ResourceAccessControlService {
         return rules;
     }
 
-    private async getResourcesForAction(user: Users, action: AccessActionType): Promise<Resources> {
+    private async getResourcesForAction(user: Users, action: AccessActionType): Promise<Resources | null> {
         const type = await this.accessControlsType(user);
 
         if (!type || type === PolicyResourceTypes.Resources) {
@@ -218,7 +218,7 @@ export class ResourceAccessControlService {
             return Resources.fromIds(ids);
         }
         if (type === PolicyResourceTypes.Wildcard) {
-            const rule = await this.generateAccessRule(user, null);
+            const rule = await this.generateAccessRule(user);
             if (rule[action]) {
                 return Resources.all();
             }
@@ -227,17 +227,19 @@ export class ResourceAccessControlService {
         }
         if (type === PolicyResourceTypes.Condition) {
             const condition = await this.getResourceCondition(user);
-            if (!condition.where || !condition.rules || !condition.rules?.[action]) {
+            if (!condition?.where || !condition.rules || !condition.rules?.[action]) {
                 return Resources.fromIds([]);
             }
 
             return Resources.fromCondition(condition.where);
         }
+
+        return null;
     }
 
-    private async generateAccessRule(user: Users, resourceId: ResourceId): Promise<AccessRules> {
+    private async generateAccessRule(user: Users, resourceId?: ResourceId): Promise<AccessRules> {
         const type = await this.accessControlsType(user);
-        if (type === PolicyResourceTypes.Resources) {
+        if (type === PolicyResourceTypes.Resources && resourceId) {
             const r = await this.resourceHasAction(user, resourceId, AccessActionType.Read);
             const u = await this.resourceHasAction(user, resourceId, AccessActionType.Update);
             const d = await this.resourceHasAction(user, resourceId, AccessActionType.Delete);
@@ -246,8 +248,11 @@ export class ResourceAccessControlService {
             const rule = await this.redisService.get(
                 RedisKeyUtils.userResourceActionWildcardKey(user, this.resourceName)
             );
+            if (!rule) {
+                return AccessRules.none();
+            }
             return AccessRules.fromString(rule);
-        } else if (type === PolicyResourceTypes.Condition) {
+        } else if (type === PolicyResourceTypes.Condition && resourceId) {
             return this.fetchResourceRule(user, resourceId);
         }
 
@@ -263,14 +268,14 @@ export class ResourceAccessControlService {
         return res.findIndex((value) => resourceId === this.databaseAdapter.parseIds(this.config.model, value)) >= 0;
     }
 
-    private async getResourceCondition(user: Users): Promise<PolicyResourcesCondition<any>> {
+    private async getResourceCondition(user: Users): Promise<PolicyResourcesCondition<any> | null> {
         const res = await this.redisService.get(RedisKeyUtils.userResourceActionConditionKey(user, this.resourceName));
-        return JSON.parse(res) as PolicyResourcesCondition<any>;
+        return res !== null ? JSON.parse(res) as PolicyResourcesCondition<any> : null;
     }
 
     private async fetchResourceRule(user: Users, resourceId: ResourceId): Promise<AccessRules> {
         const condition = await this.getResourceCondition(user);
-        if (!condition.where || !condition.rules) {
+        if (!condition?.where || !condition.rules) {
             return AccessRules.none();
         }
 

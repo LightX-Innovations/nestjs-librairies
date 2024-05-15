@@ -141,7 +141,7 @@ describe("Filter", () => {
                 attribute: "test"
             });
             filter.translateService = translationService;
-            const config = await filter.getConfig(null, null, null);
+            const config = await filter.getConfig("", null, {});
             expect(config).toBeDefined()
         })
 
@@ -151,7 +151,7 @@ describe("Filter", () => {
                 enabled: async ({ user, request }) => true
             });
             filter.translateService = translationService;
-            const config = await filter.getConfig(null, null, null);
+            const config = await filter.getConfig("", null, {});
             expect(config).toBeDefined()
         })
 
@@ -161,7 +161,7 @@ describe("Filter", () => {
                 enabled: async ({ user, request }) => false
             });
             filter.translateService = translationService;
-            const config = await filter.getConfig(null, null, null);
+            const config = await filter.getConfig("", null, {});
             expect(config).toBeNull()
         })
     })

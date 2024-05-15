@@ -19,7 +19,7 @@ export function FilterServiceFactory<T>(options?: { disableAccessControl?: boole
 }
 
 export function FilterFactory<T>(filter: Type<T>) {
-    return (...args) => {
+    return (...args: any[]) => {
         /**
          * Check if all dependencies are injected
          */

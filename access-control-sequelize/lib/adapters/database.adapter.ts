@@ -16,7 +16,7 @@ export class SequelizeDatabaseAdapter implements IDatabaseAdapter {
     }
 
     public parseIds(model: typeof SequelizeEntities, ids: string | string[]): ResourceId | ResourceId[] {
-        const primaryKey = model.getAttributes()[model.primaryKeyAttribute];
+        const primaryKey = (model.getAttributes() as any)[model.primaryKeyAttribute];
         if ((primaryKey.type as AbstractDataType).key !== "INTEGER") {
             return ids;
         }

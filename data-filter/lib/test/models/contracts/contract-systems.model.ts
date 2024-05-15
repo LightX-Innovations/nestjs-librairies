@@ -23,37 +23,37 @@ export class ContractSystems extends Model {
     @AutoIncrement
     @PrimaryKey
     @Column
-    id: number;
+    id!: number;
 
     @Column
     @ForeignKey(() => Contracts)
-    contract_id: number;
+    contract_id?: number;
 
     @Column
     @ForeignKey(() => Systems)
-    system_id: number;
+    system_id?: number;
 
     @Column
-    active: boolean;
+    active?: boolean;
 
     @Column(DataType.DATE)
-    activated_date: string;
+    activated_date?: string;
 
     @BelongsTo(() => Contracts)
-    contract: Contracts;
+    contract?: Contracts;
 
     @BelongsTo(() => Systems)
-    system: Systems;
+    system?: Systems;
 
     @HasMany(() => MaintenanceVisits)
-    visits: MaintenanceVisits[];
+    visits?: MaintenanceVisits[];
 
     @CreatedAt
-    created_at: Date;
+    created_at?: Date;
 
     @UpdatedAt
-    updated_at: Date;
+    updated_at?: Date;
 
     @DeletedAt
-    deleted_at: Date;
+    deleted_at?: Date;
 }

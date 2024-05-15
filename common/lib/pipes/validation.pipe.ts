@@ -10,7 +10,7 @@ export class ValidationPipe implements PipeTransform<unknown> {
         if (value instanceof Object) {
             return value;
         }
-        const newRealOPObject = {};
+        const newRealOPObject: { [key: string]: any } = {};
         for (const key in value) {
             if (key in value) {
                 // Skip hasOwnProperty warning since value if not an object.
@@ -47,7 +47,7 @@ export class ValidationPipe implements PipeTransform<unknown> {
         return object;
     }
 
-    private toValidate(metatype): boolean {
+    private toValidate(metatype: any): boolean {
         const types = [String, Boolean, Number, Array, Object];
         return !types.find(type => metatype === type);
     }

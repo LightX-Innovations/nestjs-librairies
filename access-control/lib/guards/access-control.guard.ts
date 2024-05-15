@@ -13,8 +13,8 @@ import { AccessControlService, DatabaseAdaptersRegistry } from "../services";
 
 @Injectable()
 export class AccessControlGuard implements CanActivate, OnModuleInit {
-    private resources: { [resource: string]: unknown };
-    private routes: string[];
+    private resources!: { [resource: string]: unknown };
+    private routes!: string[];
 
     constructor(
         private readonly reflector: Reflector,
@@ -52,7 +52,7 @@ export class AccessControlGuard implements CanActivate, OnModuleInit {
         }
 
         // Returns the [resource, resourceType]
-        const getResource = (action: AccessAction, index: number): [any, string?] => {
+        const getResource = (action: AccessAction, index: number): [any, string?] | null => {
             if (!controllerResource && !methodResource) {
                 return [request.resources[index]];
             }
@@ -103,7 +103,7 @@ export class AccessControlGuard implements CanActivate, OnModuleInit {
                 (await this.moduleRef.get<CanActivate>(guard, { strict: false }))
                     .canActivate(context))
         );
-        return shouldActivate.length && shouldActivate.every(activate => activate);
+        return !!shouldActivate.length && shouldActivate.every(activate => activate);
     }
 
     public getModels(path: string, actions: AccessAction[]): any[] {

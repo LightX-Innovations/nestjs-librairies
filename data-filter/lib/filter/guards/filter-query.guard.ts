@@ -14,6 +14,10 @@ export class FilterQueryGuard implements CanActivate {
             return true;
         }
 
+        if (!body.page?.size) {
+            throw new BadRequestException(`You muste provide a page size ${this.option.maxPage}`);
+        }
+
         if (body?.page?.size > this.option.maxPage) {
             throw new BadRequestException(`Page size should be lower than ${this.option.maxPage}`);
         }

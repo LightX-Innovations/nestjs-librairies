@@ -7,12 +7,12 @@ import { Devices } from "./devices";
 export class Accounts extends SequelizeEntities {
     @AllowNull(false)
     @Column
-    userId: string;
+    userId?: string;
 
     @AllowNull(false)
     @Column
-    name: string;
+    name?: string;
 
     @BelongsToMany(() => Devices, () => AccountDevices)
-    devices: Devices[];
+    devices?: Devices[];
 }

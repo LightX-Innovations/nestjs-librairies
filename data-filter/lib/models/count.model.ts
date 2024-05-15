@@ -1,6 +1,4 @@
-import { tr } from "date-fns/locale";
 import { fn, literal, ProjectionAlias } from "sequelize";
-import { GroupOption } from "sequelize/types/model";
 import { SequelizeUtils } from "../sequelize.utils";
 import { CustomAttributesConfig, CustomAttributesOptionConfig } from "./custom-attributes.model";
 

@@ -24,54 +24,54 @@ export class Coords extends Model {
     @AutoIncrement
     @PrimaryKey
     @Column
-    id: number;
+    id!: number;
 
     @Column
     @ForeignKey(() => Locations)
-    location_id: number;
+    location_id?: number;
 
     @Column
-    street_number: number;
+    street_number?: number;
 
     @Column
-    address: string;
+    address?: string;
 
     @Column
-    address_2: string;
+    address_2?: string;
 
     @Column
-    postal_code: string;
+    postal_code?: string;
 
     @Column
-    cellphone: string;
+    cellphone?: string;
 
     @Column
-    cellphone_ext: string;
+    cellphone_ext?: string;
 
     @Column
-    house_phone: string;
+    house_phone?: string;
 
     @Column
-    house_phone_ext: string;
+    house_phone_ext?: string;
 
     @Column
-    business_phone: string;
+    business_phone?: string;
 
     @Column
-    business_phone_ext: string;
+    business_phone_ext?: string;
 
     @Column({ type: DataType.GEOMETRY("POINT") })
-    geo_point: GeoPoint;
+    geo_point?: GeoPoint;
 
     @BelongsTo(() => Locations)
-    location: Locations;
+    location?: Locations;
 
     @CreatedAt
-    created_at: Date;
+    created_at?: Date;
 
     @UpdatedAt
-    updated_at: Date;
+    updated_at?: Date;
 
     @DeletedAt
-    deleted_at: Date;
+    deleted_at?: Date;
 }

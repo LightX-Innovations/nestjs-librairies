@@ -14,7 +14,7 @@ export interface PathModel {
 }
 
 export class PathConfig {
-    path: string;
+    path!: string;
     where?: IncludeWhereModel;
     required?: boolean;
     separate?: boolean;

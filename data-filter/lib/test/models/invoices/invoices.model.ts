@@ -8,26 +8,26 @@ export class Invoices extends Model {
     @AutoIncrement
     @PrimaryKey
     @Column
-    id: number;
+    id!: number;
 
     @Column
-    invoice_number: string;
+    invoice_number?: string;
 
     @Column
-    paid: boolean;
+    paid?: boolean;
 
     @Column
-    subtotal: number;
+    subtotal?: number;
 
     @Column
-    total_cost: number;
+    total_cost?: number;
 
     @CreatedAt
-    created_at: Date;
+    created_at?: Date;
 
     @UpdatedAt
-    updated_at: Date;
+    updated_at?: Date;
 
     @DeletedAt
-    deleted_at: Date;
+    deleted_at?: Date;
 }

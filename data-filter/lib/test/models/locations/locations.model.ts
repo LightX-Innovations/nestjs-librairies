@@ -19,23 +19,23 @@ export class Locations extends Model {
     @AutoIncrement
     @PrimaryKey
     @Column
-    id: number;
+    id!: number;
 
     @Column
-    value: string;
+    value?: string;
 
     @Column
-    unique_code: string;
+    unique_code?: string;
 
     @HasMany(() => Coords)
-    coords: Coords[];
+    coords?: Coords[];
 
     @CreatedAt
-    created_at: Date;
+    created_at?: Date;
 
     @UpdatedAt
-    updated_at: Date;
+    updated_at?: Date;
 
     @DeletedAt
-    deleted_at: Date;
+    deleted_at?: Date;
 }

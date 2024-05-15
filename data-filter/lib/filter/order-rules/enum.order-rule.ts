@@ -7,7 +7,7 @@ export interface EnumOrderRuleDefinition {
 }
 
 export class EnumOrderRule extends OrderRule implements EnumOrderRuleDefinition {
-    public priorities: string[];
+    public priorities!: string[];
 
     constructor(definition: BaseOrderRuleDefinition & EnumOrderRuleDefinition) {
         super(definition);

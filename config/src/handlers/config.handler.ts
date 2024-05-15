@@ -11,7 +11,7 @@ export class ConfigHandler {
             return null;
         }
 
-        return config.variables.find(variable => variable.propertyKey === propertyKey);
+        return config.variables.find(variable => variable.propertyKey === propertyKey) ?? null;
     }
 
     public static saveVariable(target: Type, variableConfig: VariableMetadata): void {

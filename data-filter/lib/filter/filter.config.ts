@@ -1,5 +1,5 @@
 export interface FilterOptionConfig {
-    maxPage?: number;
+    maxPage: number;
     disableAccessControl?: boolean;
 }
 

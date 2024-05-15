@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="TypeScriptCompiler">
-    <option name="typeScriptCompilerParams" value="-p ./sequelize-utils/tsconfig.json" />
+    <option name="typeScriptCompilerParams" value="-p ./config-sequelize/tsconfig.json" />
     <option name="typeScriptServiceDirectory" value="$PROJECT_DIR$/sequelize-utils/node_modules/typescript" />
     <option name="versionType" value="SERVICE_DIRECTORY" />
   </component>

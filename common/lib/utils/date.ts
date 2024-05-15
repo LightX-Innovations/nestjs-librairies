@@ -23,7 +23,7 @@ export class DateUtils {
         return Date.UTC(+dates[0], +dates[1] - 1, +dates[2]);
     }
 
-    public static toUtcFromString(date: string): Date {
+    public static toUtcFromString(date: string): Date | null {
         return this.isValid(date) ? new Date(date) : null;
     }
 
@@ -35,7 +35,7 @@ export class DateUtils {
         return date
             .toISOString()
             .split("T")
-            .shift();
+            .shift() as string;
     }
 
     public static getUtcDateOnly(date: Date | string): Date;
@@ -73,7 +73,7 @@ export class DateUtils {
     }
 
     public static format(lang: string, date: Date): string {
-        const locales = { fr: frCA, en: enCA }
+        const locales: { [key: string]: Locale } = { fr: frCA, en: enCA }
         return format(date, "LL", { locale: locales[lang] });
     }
 }

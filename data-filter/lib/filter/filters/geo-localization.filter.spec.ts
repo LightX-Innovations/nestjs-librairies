@@ -25,7 +25,7 @@ describe("GeoLocalizationFilter", () => {
                 })
             });
             filter.translateService = new DefaultTranslateAdapter();
-            const config = await filter.getConfig(null, null);
+            const config = await filter.getConfig("", {});
             expect(config).toBeDefined();
             expect(config).toStrictEqual<GroupFilterBaseConfigurationModel>({
                 type: FilterType.GeoLocalization,
@@ -83,7 +83,7 @@ describe("GeoLocalizationFilter", () => {
                 group: "test"
             });
             filter.translateService = new DefaultTranslateAdapter();
-            const config = await filter.getConfig(null, null);
+            const config = await filter.getConfig("", {});
             expect(config).toBeDefined();
             expect(config).toStrictEqual<GroupFilterBaseConfigurationModel>({
                 type: FilterType.GeoLocalization,

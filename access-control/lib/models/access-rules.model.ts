@@ -19,9 +19,9 @@ export interface PermissionsOption {
 const defaultPermissionsOption = { r: "read", u: "update", d: "delete" };
 
 export class AccessRules {
-    public r: boolean;
-    public u: boolean;
-    public d: boolean;
+    public r!: boolean;
+    public u!: boolean;
+    public d!: boolean;
 
     public get hasNoAccess(): boolean {
         return !this.r && !this.u && !this.d;

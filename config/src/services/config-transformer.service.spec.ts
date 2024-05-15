@@ -24,33 +24,33 @@ class EnvironmentConfigModel {
 
 class DefaultConfigModel {
     @Variable("FIRST_VAR")
-    firstVar: string;
+    firstVar!: string;
 
     @Variable(true)
-    secondVar: string;
+    secondVar!: string;
 
     @Variable
-    THIRD_VAR: string;
+    THIRD_VAR!: string;
 }
 
 @Config({ provider: "unknown" })
 class UnknownProviderConfigModel {
     @Variable("UNKNOWN_VAR")
-    var: string;
+    var!: string;
 }
 
 class RequiredVariableEnvTest {
     @Variable(true)
-    firstVar: string;
+    firstVar!: string;
 
     @Variable
-    secondVar: string;
+    secondVar!: string;
 }
 
 class TransformedConfigModel {
     @Variable
     @Transform(({ value }) => +value)
-    myNumber: number;
+    myNumber!: number;
 }
 
 describe("ConfigTransformerService", () => {
@@ -133,6 +133,10 @@ describe("ConfigTransformerService", () => {
             const config = await configService.transform(TransformedConfigModel);
 
             expect(config).toBeDefined();
+            if (!config) {
+                return;
+            }
+
             expect(config).toBeInstanceOf(TransformedConfigModel);
             expect(typeof config.myNumber).toBe("number");
             expect(config.myNumber).toBe(42);

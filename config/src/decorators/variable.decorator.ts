@@ -4,7 +4,7 @@ import { Type } from "@nestjs/common";
 
 export function Variable(requiredOrVariableNameOrConfig: boolean | string | VariableConfig): PropertyDecorator;
 export function Variable(target: Object, propertyKey: string): void;
-export function Variable(...args: any[]): PropertyDecorator {
+export function Variable(...args: any[]): PropertyDecorator | void {
     if (args.length >= 2) {
         const [target, propertyName] = args;
 
@@ -12,7 +12,7 @@ export function Variable(...args: any[]): PropertyDecorator {
         return;
     }
 
-    return (target: Object, propertyKey: string) => {
+    return (target: Object, propertyKey: string | symbol) => {
         const [requiredOrVariableNameOrConfig] = args;
 
         let config: VariableConfig;
@@ -29,7 +29,7 @@ export function Variable(...args: any[]): PropertyDecorator {
             };
         }
 
-        annotate(target.constructor as any, propertyKey, config);
+        annotate(target.constructor as any, propertyKey as string, config);
     };
 }
 

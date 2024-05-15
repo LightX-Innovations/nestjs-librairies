@@ -7,15 +7,15 @@ export class AccountDevices extends Model {
     @PrimaryKey
     @AutoIncrement
     @Column
-    id: number;
+    id!: number;
 
     @AllowNull(false)
     @Column
     @ForeignKey(() => Accounts)
-    accountId: number;
+    accountId?: number;
 
     @AllowNull(false)
     @Column
     @ForeignKey(() => Devices)
-    deviceId: number;
+    deviceId?: number;
 }

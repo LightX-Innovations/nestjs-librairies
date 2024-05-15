@@ -1,10 +1,10 @@
 import { fn, literal, ProjectionAlias } from "sequelize";
-import { GroupOption } from "sequelize/types/model";
+import { Fn, Literal } from "sequelize/types/utils";
 import { SequelizeUtils } from "../sequelize.utils";
 import { CustomAttributesConfig, CustomAttributesOptionConfig } from "./custom-attributes.model";
 
 export interface BaseDistanceConfig extends CustomAttributesOptionConfig {
-    coordinates: (option?) => [number, number];
+    coordinates: (option?: any) => [number, number];
     srid?: number;
 }
 
@@ -20,11 +20,14 @@ export interface DistanceConfigWithLatLng {
 export type DistanceConfig = BaseDistanceConfig & (DistanceConfigWithPoint | DistanceConfigWithLatLng);
 
 export class DistanceAttributesConfig implements CustomAttributesConfig<DistanceConfig> {
+    public readonly key: string;
     public type = "distance";
 
-    constructor(public key: string, public config: DistanceConfig) {}
+    constructor(key: string | symbol, public config: DistanceConfig) {
+        this.key = typeof key === "string" ? key : key.toString();
+    }
 
-    public transform(options: object, path?: string): string | ProjectionAlias {
+    public transform(options: object, path?: string): string | ProjectionAlias | null {
         if (!options) {
             return null;
         }
@@ -50,7 +53,7 @@ export class DistanceAttributesConfig implements CustomAttributesConfig<Distance
         return false;
     }
 
-    private getPointAttribute(path: string) {
+    private getPointAttribute(path?: string): Literal | Fn {
         if ((this.config as DistanceConfigWithPoint).attribute) {
             const att = (this.config as DistanceConfigWithPoint).attribute;
             return literal(path ? SequelizeUtils.getLiteralFullName(att, path) : att);

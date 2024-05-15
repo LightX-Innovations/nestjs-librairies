@@ -20,33 +20,33 @@ export class Persons extends Model {
     @AutoIncrement
     @PrimaryKey
     @Column
-    id: number;
+    id!: number;
 
     @Column
-    user_id: string;
+    user_id?: string;
 
     @Column
     @ForeignKey(() => Coords)
-    coord_id: number;
+    coord_id?: number;
 
     @Column
-    email: string;
+    email?: string;
 
     @Column
-    first_name: string;
+    first_name?: string;
 
     @Column
-    last_name: string;
+    last_name?: string;
 
     @BelongsTo(() => Coords)
-    coord: Coords;
+    coord?: Coords;
 
     @CreatedAt
-    created_at: Date;
+    created_at?: Date;
 
     @UpdatedAt
-    updated_at: Date;
+    updated_at?: Date;
 
     @DeletedAt
-    deleted_at: Date;
+    deleted_at?: Date;
 }

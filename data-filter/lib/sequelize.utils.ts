@@ -90,7 +90,10 @@ export class SequelizeUtils {
         return a;
     }
 
-    public static mergeAttributes(a: FindAttributeOptions, b: FindAttributeOptions): FindAttributeOptions {
+    public static mergeAttributes(
+        a: FindAttributeOptions | undefined,
+        b: FindAttributeOptions | undefined
+    ): FindAttributeOptions | undefined {
         type Attr = { exclude?: string[]; include?: (string | ProjectionAlias)[] };
 
         if (a instanceof Array && b instanceof Array) {
@@ -173,16 +176,16 @@ export class SequelizeUtils {
         return attribute;
     }
 
-    public static mergeWhere(a: WhereOptions, b: WhereOptions): WhereOptions {
+    public static mergeWhere(a: WhereOptions | undefined, b: WhereOptions | undefined): WhereOptions | undefined {
         if (!a && !b) {
-            return null;
+            return;
         }
         return Object.assign(a ?? {}, b ?? {});
     }
 
-    public static mergeOrder(a: Order, b: Order): Order {
+    public static mergeOrder(a: Order | undefined, b: Order | undefined): Order | undefined {
         if (!a && !b) {
-            return null;
+            return;
         }
         if (a && !b) {
             return a;
@@ -194,12 +197,12 @@ export class SequelizeUtils {
         const res: OrderItem[] = [];
         if (a instanceof Array) {
             res.push(...a);
-        } else {
+        } else if (a) {
             res.push(a);
         }
         if (b instanceof Array) {
             res.push(...b);
-        } else {
+        } else if (b) {
             res.push(b);
         }
         return res;
@@ -324,19 +327,19 @@ export class SequelizeUtils {
             });
     }
 
-    public static reduceModelFromPath(model: M, path: string) {
+    public static reduceModelFromPath(model: M, path: string): M | null {
         const steps = path.split(".");
 
         let step = steps.shift();
         while (step) {
-            if (model[step] instanceof Array) {
+            if ((model as any)[step] instanceof Array) {
                 if (!steps.length) {
-                    return model[step];
+                    return (model as any)[step];
                 }
 
-                return (model[step] as Array<any>)
+                return ((model as any)[step] as Array<any>)
                     .map((x) => this.reduceModelFromPath(x, steps.join(".")))
-                    .reduce((all, current) => {
+                    .reduce((all: any, current) => {
                         if (current instanceof Array) {
                             return [...all, ...current];
                         }
@@ -344,9 +347,9 @@ export class SequelizeUtils {
                     }, []);
             }
 
-            model = model[step];
+            model = (model as any)[step];
             if (!model) {
-                return undefined;
+                return null;
             }
 
             step = steps.shift();
@@ -361,9 +364,9 @@ export class SequelizeUtils {
                 return true;
             }
 
-            return model.rawAttributes[key].field === name;
+            return (model.rawAttributes as any)[key].field === name;
         });
-        return model.rawAttributes[field].field ?? name;
+        return (model.rawAttributes as any)[field as string].field ?? name;
     }
 
     public static isColumnJson(model: typeof M, name: string): boolean {
@@ -391,7 +394,7 @@ export class SequelizeUtils {
 
             const value = model[key as any](options);
             if (typeof value !== "undefined") {
-                where[key] = value;
+                (where as any)[key] = value;
             }
         }
 

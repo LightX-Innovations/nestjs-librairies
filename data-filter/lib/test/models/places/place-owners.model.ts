@@ -20,28 +20,28 @@ export class PlaceOwners extends Model {
     @AutoIncrement
     @PrimaryKey
     @Column
-    id: number;
+    id!: number;
 
     @Column
     @ForeignKey(() => Places)
-    place_id: number;
+    place_id?: number;
 
     @Column
     @ForeignKey(() => Owners)
-    owner_id: number;
+    owner_id?: number;
 
     @BelongsTo(() => Owners)
-    owner: Owners;
+    owner?: Owners;
 
     @BelongsTo(() => Places)
-    place: Places;
+    place?: Places;
 
     @CreatedAt
-    created_at: Date;
+    created_at?: Date;
 
     @UpdatedAt
-    updated_at: Date;
+    updated_at?: Date;
 
     @DeletedAt
-    deleted_at: Date;
+    deleted_at?: Date;
 }

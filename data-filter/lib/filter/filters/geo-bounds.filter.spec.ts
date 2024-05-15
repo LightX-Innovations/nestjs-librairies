@@ -14,7 +14,7 @@ describe("GeoBoundsFilter", () => {
                 lngAttribute: "longitude"
             });
             filter.translateService = new DefaultTranslateAdapter();
-            const config = await filter.getConfig(null, null);
+            const config = await filter.getConfig("", {});
             expect(config).toBeDefined();
             expect(config).toStrictEqual<FilterBaseConfigurationModel>({
                 type: FilterType.GeoBounds,
@@ -38,7 +38,7 @@ describe("GeoBoundsFilter", () => {
                 group: "test"
             });
             filter.translateService = new DefaultTranslateAdapter();
-            const config = await filter.getConfig(null, null);
+            const config = await filter.getConfig("", {});
             expect(config).toBeDefined();
             expect(config).toStrictEqual<FilterBaseConfigurationModel>({
                 type: FilterType.GeoBounds,
@@ -92,7 +92,7 @@ describe("GeoBoundsFilter", () => {
                 attribute: "test"
             }).setOperators(FilterOperatorTypes.Equal);
             filter.translateService = new DefaultTranslateAdapter();
-            const config = await filter.getConfig(null, null);
+            const config = await filter.getConfig("", {});
             expect(config).toBeDefined();
             expect(config).toStrictEqual<FilterBaseConfigurationModel>({
                 type: FilterType.GeoBounds,

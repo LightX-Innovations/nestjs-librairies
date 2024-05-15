@@ -21,33 +21,33 @@ export class Contracts extends Model {
     @AutoIncrement
     @PrimaryKey
     @Column
-    id: number;
+    id!: number;
 
     @Column(DataType.DATEONLY)
-    start_date: Date;
+    start_date?: Date;
 
     @Column(DataType.DATEONLY)
-    end_date: Date;
+    end_date?: Date;
 
     @Column
-    total_cost: number;
+    total_cost?: number;
 
     @Column(DataType.DATEONLY)
-    payable_by: Date;
+    payable_by?: Date;
 
     @Column
     @ForeignKey(() => Invoices)
-    invoice_id: number;
+    invoice_id?: number;
 
     @BelongsTo(() => Invoices)
-    invoice: Invoices;
+    invoice?: Invoices;
 
     @CreatedAt
-    created_at: Date;
+    created_at?: Date;
 
     @UpdatedAt
-    updated_at: Date;
+    updated_at?: Date;
 
     @DeletedAt
-    deleted_at: Date;
+    deleted_at?: Date;
 }

@@ -25,7 +25,7 @@ export class Places extends Model {
     @AutoIncrement
     @PrimaryKey
     @Column
-    id: number;
+    id!: number;
 
     @Column
     @ForeignKey(() => Coords)
@@ -36,23 +36,23 @@ export class Places extends Model {
     geo_coord_id?: number;
 
     @BelongsTo(() => Coords, "billing_coord_id")
-    billingCoord: Coords;
+    billingCoord?: Coords;
 
     @BelongsTo(() => Coords, "geo_coord_id")
-    geoCoord: Coords;
+    geoCoord?: Coords;
 
     @HasMany(() => Systems)
-    systems: Systems[];
+    systems?: Systems[];
 
     @BelongsToMany(() => Owners, () => PlaceOwners)
-    owners: Owners[];
+    owners?: Owners[];
 
     @CreatedAt
-    created_at: Date;
+    created_at?: Date;
 
     @UpdatedAt
-    updated_at: Date;
+    updated_at?: Date;
 
     @DeletedAt
-    deleted_at: Date;
+    deleted_at?: Date;
 }

@@ -13,7 +13,7 @@ describe("SelectFilter", () => {
                 values: () => Promise.resolve([{ id: "test", name: "test" }])
             });
             filter.translateService = new DefaultTranslateAdapter();
-            const config = await filter.getConfig(null, null);
+            const config = await filter.getConfig("", null);
             expect(config).toBeDefined();
             expect(config).toStrictEqual<FilterBaseConfigurationModel>({
                 type: FilterType.Select,
@@ -39,7 +39,7 @@ describe("SelectFilter", () => {
                 values: () => Promise.resolve([{ id: "test", name: "test" }])
             });
             filter.translateService = new DefaultTranslateAdapter();
-            const config = await filter.getConfig(null, null);
+            const config = await filter.getConfig("", null);
             expect(config).toBeDefined();
             expect(config).toStrictEqual<FilterBaseConfigurationModel>({
                 type: FilterType.Select,
@@ -99,7 +99,7 @@ describe("SelectFilter", () => {
                 values: () => Promise.resolve([{ id: "test", name: "test" }])
             }).setOperators(FilterOperatorTypes.Equal);
             filter.translateService = new DefaultTranslateAdapter();
-            const config = await filter.getConfig(null, null);
+            const config = await filter.getConfig("", null);
             expect(config).toBeDefined();
             expect(config).toStrictEqual<FilterBaseConfigurationModel>({
                 type: FilterType.Select,
@@ -121,7 +121,7 @@ describe("SelectFilter", () => {
                 lazyLoading: false
             });
             filter.translateService = new DefaultTranslateAdapter();
-            const config = await filter.getConfig(null, null);
+            const config = await filter.getConfig("", null);
             expect(config).toBeDefined();
             expect(config).toStrictEqual<FilterBaseConfigurationModel>({
                 type: FilterType.Select,

@@ -22,7 +22,7 @@ export class ArrayUtils {
             if (!groups.has(key)) {
                 groups.set(key, value);
             } else {
-                groups.get(key).push(...value);
+                groups.get(key)?.push(...value);
             }
         }
         return groups;

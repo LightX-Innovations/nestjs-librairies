@@ -25,16 +25,16 @@ import { FilterOperatorTypes } from "./operators";
 class ContractSystemsTest {
     @Attributes(["paid", "payment_date", "payment_method"])
     @Path("contract.invoice")
-    invoice: Invoices;
+    invoice?: Invoices;
 
     @Attributes(["start_date", "end_date"])
     @Path("contract")
-    contract: Contracts;
+    contract?: Contracts;
 
     @Attributes([])
     @Path("system.place.owners")
-    @Include({ path: "person", attributes: ["email"] })
-    owners: Owners[];
+    @Include("person", { attributes: ["email"] })
+    owners?: Owners[];
 }
 
 @Injectable()

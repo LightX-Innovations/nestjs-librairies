@@ -9,6 +9,7 @@
     "lib": [
       "es2019"
     ],
+    "strict": true,
     "sourceMap": true,
     "outDir": "build"
   },

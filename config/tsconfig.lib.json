@@ -5,6 +5,7 @@
         "target": "es2021",
         "moduleResolution": "node",
         "declaration": true,
+        "strict": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "outDir": "dist"

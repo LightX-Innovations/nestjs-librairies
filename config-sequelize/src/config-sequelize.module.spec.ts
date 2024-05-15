@@ -8,7 +8,7 @@ import { ConfigSequelizeModel, ConfigSequelizeModelInjectionToken } from "./mode
 @SequelizeConfig()
 class SequelizeConfigTest {
     @Variable(false)
-    name: string;
+    name?: string;
 }
 
 describe("ConfigSequelizeModule", () => {

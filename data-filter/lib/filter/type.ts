@@ -4,6 +4,7 @@ export enum FilterType {
     Date = "date",
     DateTime = "date_time",
     Select = "select",
+    Options = "options",
     Radio = "radio",
     Coordinate = "coordinate",
     Group = "group",

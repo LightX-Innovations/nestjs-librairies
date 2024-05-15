@@ -17,7 +17,7 @@ export class GeoLocalizationFilter extends GroupFilter implements GroupFilterDef
     private static whereCounter = 0;
 
     public type = FilterType.GeoLocalization;
-    public rootFilter: CoordinateFilter;
+    public rootFilter!: CoordinateFilter;
     public valueFilter = new NumberFilter();
     public srid?: number;
 
@@ -25,8 +25,12 @@ export class GeoLocalizationFilter extends GroupFilter implements GroupFilterDef
         super(definition);
     }
 
-    public async getWhereOptions(rule: QueryRuleModel): Promise<WhereOptions> {
+    public async getWhereOptions(rule: QueryRuleModel): Promise<WhereOptions | undefined> {
         const [root, value] = this.getRules(rule);
+        if (!root || !value) {
+            return;
+        }
+
         const name = this.rootFilter.path ?
             SequelizeUtils.getLiteralFullName(this.rootFilter.attribute, this.rootFilter.path) :
             this.rootFilter.attribute;

@@ -13,7 +13,7 @@ describe.skip("DateTimeFilter", () => {
                 attribute: "test",
             });
             filter.translateService = new DefaultTranslateAdapter();
-            const config = await filter.getConfig(null, null);
+            const config = await filter.getConfig("", null);
             expect(config).toBeDefined();
             expect(config).toStrictEqual<FilterBaseConfigurationModel>({
                 type: FilterType.DateTime,
@@ -60,7 +60,7 @@ describe.skip("DateTimeFilter", () => {
                 group: "test",
             });
             filter.translateService = new DefaultTranslateAdapter();
-            const config = await filter.getConfig(null, null);
+            const config = await filter.getConfig("", null);
             expect(config).toBeDefined();
             expect(config).toStrictEqual<FilterBaseConfigurationModel>({
                 type: FilterType.DateTime,
@@ -162,7 +162,7 @@ describe.skip("DateTimeFilter", () => {
                 attribute: "test",
             }).setOperators(FilterOperatorTypes.Equal, FilterOperatorTypes.NotEqual);
             filter.translateService = new DefaultTranslateAdapter();
-            const config = await filter.getConfig(null, null);
+            const config = await filter.getConfig("", null);
             expect(config).toBeDefined();
             expect(config).toStrictEqual<FilterBaseConfigurationModel>({
                 type: FilterType.DateTime,
