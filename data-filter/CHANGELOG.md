@@ -361,3 +361,9 @@ SelectFilter({
 ### Bugfix
 
 - Fix crash caused when using an old client library.
+
+## [10.1.2] - 2024-05-10
+
+### Bugfix
+
+- Fix crash caused when using an old client library.

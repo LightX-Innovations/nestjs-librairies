@@ -515,7 +515,7 @@ export class FilterService<Data> {
                 }
             })
             .filter(column => column && !column.includes(".") && !repository.hasCustomAttribute(column));
-        const customAttributes = this.getOrderCustomAttribute(filter.order as OrderModel[], filter.data);
+        const customAttributes = filter.order ? this.getOrderCustomAttribute(filter.order, filter.data) : [];
 
         const values = await repository.model.findAll({
             ...options,

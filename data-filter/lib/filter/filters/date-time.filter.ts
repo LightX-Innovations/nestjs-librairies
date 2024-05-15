@@ -1,4 +1,4 @@
-import { format, parseJSON } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { WhereOptions } from "sequelize";
 import { QueryRuleModel } from "../models";
 import { DateOperators, FilterOperatorTypes } from "../operators";
@@ -23,15 +23,15 @@ export class DateTimeFilter extends Filter {
             return super.getWhereOptions({
                 ...rule,
                 value: [
-                    format(parseJSON(rule.value[0]), "yyyy-MM-dd HH:mm:ss"),
-                    format(parseJSON(rule.value[1]), "yyyy-MM-dd HH:mm:ss")
+                    format(parseISO(rule.value[0]), "yyyy-MM-dd HH:mm:ss"),
+                    format(parseISO(rule.value[1]), "yyyy-MM-dd HH:mm:ss")
                 ]
             });
         }
 
         return super.getWhereOptions({
             operation: rule.operation,
-            value: format(parseJSON(rule.value as any), "yyyy-MM-dd HH:mm:ss"),
+            value: format(parseISO(rule.value as any), "yyyy-MM-dd HH:mm:ss"),
             id: rule.id
         });
     }

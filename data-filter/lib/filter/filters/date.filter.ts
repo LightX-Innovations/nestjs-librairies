@@ -1,4 +1,4 @@
-import { addMilliseconds, endOfDay, parseJSON, startOfDay } from "date-fns";
+import { addMilliseconds, endOfDay, parseISO, startOfDay } from "date-fns";
 import { getTimezoneOffset } from "date-fns-tz";
 import { Op, WhereOptions } from "sequelize";
 import { QueryRuleModel } from "../models";
@@ -50,8 +50,8 @@ export class DateFilter extends Filter implements DateFilterDefinition {
                 ? rule.value
                 :
                 [
-                    addMilliseconds(startOfDay(parseJSON(rule.value[0])), offsetMilliseconds).toISOString(),
-                    addMilliseconds(endOfDay(parseJSON(rule.value[1])), offsetMilliseconds).toISOString()
+                    addMilliseconds(startOfDay(parseISO(rule.value[0])), offsetMilliseconds).toISOString(),
+                    addMilliseconds(endOfDay(parseISO(rule.value[1])), offsetMilliseconds).toISOString()
                 ];
             return super.getWhereOptions({
                 ...rule,
@@ -59,7 +59,7 @@ export class DateFilter extends Filter implements DateFilterDefinition {
             });
         }
 
-        const parsedValue = parseJSON(rule.value as any);
+        const parsedValue = parseISO(rule.value as any);
         const start = this.skipTimezone ? startOfDay(parsedValue).toISOString() : addMilliseconds(startOfDay(parsedValue), offsetMilliseconds).toISOString();
         const end = this.skipTimezone ? endOfDay(parsedValue).toISOString() : addMilliseconds(endOfDay(parsedValue), offsetMilliseconds).toISOString();
 

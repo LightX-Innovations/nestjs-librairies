@@ -181,6 +181,33 @@ describe.skip("DateTimeFilter", () => {
     });
 
     describe("getWhereOptions", () => {
+        it("legacy date formats should be supported", async () => {
+            const filter = new DateTimeFilter({
+                attribute: "test"
+            });
+
+
+            const dateOnly = await filter.getWhereOptions({
+                id: "test",
+                value: "2020-03-06",
+                operation: FilterOperatorTypes.Equal
+            });
+            expect(dateOnly).toBeDefined();
+            expect(dateOnly).toStrictEqual<WhereOptions>({
+                test: "2020-03-06 00:00:00"
+            });
+
+            const dateTime = await filter.getWhereOptions({
+                id: "test",
+                value: "2020-03-06 00:55:12",
+                operation: FilterOperatorTypes.Equal
+            });
+            expect(dateTime).toBeDefined();
+            expect(dateTime).toStrictEqual<WhereOptions>({
+                test: "2020-03-06 00:55:12"
+            });
+        });
+
         it("with equal operator should return a valid filter config", async () => {
             const filter = new DateTimeFilter({
                 attribute: "test",
