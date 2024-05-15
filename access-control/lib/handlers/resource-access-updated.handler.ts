@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { ResourceAccessUpdatedCommand } from "../commands";
-import { ResourceAccessUpdatedPoliciesService } from "../services/resource-access-updated-policies.service";
-import { ResourceAccessService } from "../services";
 import { UserResources } from "../models";
+import { ResourceAccessService } from "../services";
+import { ResourceAccessUpdatedPoliciesService } from "../services/resource-access-updated-policies.service";
 
 @CommandHandler(ResourceAccessUpdatedCommand)
 export class AccessControlResourceAccessUpdatedHandler implements ICommandHandler<ResourceAccessUpdatedCommand> {
@@ -20,7 +20,7 @@ export class AccessControlResourceAccessUpdatedHandler implements ICommandHandle
         for (const userResource of command.userResources) {
             const key = `${userResource.resourceName}:${userResource.resourceId}`;
             if (userResourcesByResourceMap.has(key)) {
-                userResourcesByResourceMap.get(key).push(userResource);
+                userResourcesByResourceMap.get(key)?.push(userResource);
             } else {
                 userResourcesByResourceMap.set(key, [userResource]);
             }
@@ -30,7 +30,7 @@ export class AccessControlResourceAccessUpdatedHandler implements ICommandHandle
         const nestedUserResources = await Promise.all(
             userResourcesByResource.map((userResources) =>
                 this.resourceAccessUpdatedPolicyService.execute(
-                    userResources[0].resourceName,
+                    userResources[0].resourceName!,
                     userResources[0].resourceId,
                     userResources
                 )

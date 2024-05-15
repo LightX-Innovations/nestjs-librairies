@@ -31,10 +31,10 @@ export class ResourceAccessService {
             case PolicyResourceTypes.Resources:
                 await Promise.all(
                     accessActionTypeValues.map((action) =>
-                        this.setUserAccessActions(user, resourceName, policyResources.resources, action)
+                        this.setUserAccessActions(user, resourceName, policyResources.resources ?? [], action)
                     )
                 );
-                await this.setUserResourceIdsRules(user, resourceName, policyResources.resources);
+                await this.setUserResourceIdsRules(user, resourceName, policyResources.resources ?? []);
                 break;
             case PolicyResourceTypes.Condition:
                 await this.redisService.set(
@@ -64,8 +64,8 @@ export class ResourceAccessService {
             filteredUserResources.map((userResource) =>
                 this.setUserResourceIdsRules(
                     { id: userResource.userId, role: userResource.userRole },
-                    userResource.resourceName,
-                    [{ resourceId: userResource.resourceId, rules: userResource.rules }]
+                    userResource.resourceName!,
+                    [{ resourceId: userResource.resourceId!, rules: userResource.rules }]
                 )
             )
         );
@@ -78,7 +78,7 @@ export class ResourceAccessService {
 
         const delKeys = new Map(
             filteredUserResources.map((userResource) => [
-                RedisKeyUtils.userResourceIdKey(userResource.resourceName, userResource.resourceId, {
+                RedisKeyUtils.userResourceIdKey(userResource.resourceName!, userResource.resourceId!, {
                     id: userResource.userId,
                     role: userResource.userRole
                 }),
@@ -97,8 +97,8 @@ export class ResourceAccessService {
             filteredUserResources.map((userResource) =>
                 this.setUserResourceIdsRules(
                     { id: userResource.userId, role: userResource.userRole },
-                    userResource.resourceName,
-                    [{ resourceId: userResource.resourceId, rules: userResource.rules }]
+                    userResource.resourceName!,
+                    [{ resourceId: userResource.resourceId!, rules: userResource.rules }]
                 )
             )
         );
@@ -126,7 +126,7 @@ export class ResourceAccessService {
         for (const userResource of userResources) {
             const key = RedisKeyUtils.userAccessControl(
                 { id: userResource.userId, role: userResource.userRole },
-                userResource.resourceName
+                userResource.resourceName!
             );
             if (!groupedUserResources[key]) {
                 groupedUserResources[key] = [userResource];
@@ -167,13 +167,13 @@ export class ResourceAccessService {
 
             const cacheKey = RedisKeyUtils.userResourceActionKey(
                 { id: userResource.userId, role: userResource.userRole },
-                userResource.resourceName,
+                userResource.resourceName!,
                 action
             );
             if (resourceIdsByCacheKey.has(cacheKey)) {
-                resourceIdsByCacheKey.get(cacheKey).push(userResource.resourceId.toString());
+                resourceIdsByCacheKey.get(cacheKey)?.push(userResource.resourceId!.toString());
             } else {
-                resourceIdsByCacheKey.set(cacheKey, [userResource.resourceId.toString()]);
+                resourceIdsByCacheKey.set(cacheKey, [userResource.resourceId!.toString()]);
             }
         }
 
@@ -215,7 +215,7 @@ export class ResourceAccessService {
                         id: userResource.userId,
                         role: userResource.userRole
                     },
-                    { id: userResource.resourceId, name: userResource.resourceName },
+                    { id: userResource.resourceId!, name: userResource.resourceName! },
                     action
                 )
             )

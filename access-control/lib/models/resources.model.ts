@@ -29,22 +29,30 @@ export class PolicyResources {
         return PolicyResourceTypes.Resources;
     }
 
-    private constructor({ wildcard, resources, condition }: { wildcard?: AccessRules; resources?: AccessControlResources[]; condition?: PolicyResourcesCondition<any> }) {
+    private constructor({
+        wildcard,
+        resources,
+        condition
+    }: {
+        wildcard?: AccessRules;
+        resources?: AccessControlResources[];
+        condition?: PolicyResourcesCondition<any>;
+    }) {
         this.wildcard = wildcard;
         this.resources = resources;
         this.condition = condition;
     }
 
     public static wildcard(rules: AccessRules): PolicyResources {
-        return new PolicyResources({ wildcard: rules })
+        return new PolicyResources({ wildcard: rules });
     }
 
     public static resources(resources: AccessControlResources[]): PolicyResources {
-        return new PolicyResources({ resources })
+        return new PolicyResources({ resources });
     }
 
     public static condition(where: any, rules: AccessRules): PolicyResources {
-        return new PolicyResources({ condition: { where, rules } })
+        return new PolicyResources({ condition: { where, rules } });
     }
 }
 

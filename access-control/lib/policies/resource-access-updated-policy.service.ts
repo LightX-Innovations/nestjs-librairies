@@ -3,9 +3,9 @@ import { UserResources } from "../models";
 
 @Injectable()
 export abstract class ResourceAccessUpdatedPolicy<T> {
-    public type: string;
-    public sourceResourceName: string;
-    public targetResourceName: string;
+    public type!: string;
+    public sourceResourceName!: string;
+    public targetResourceName!: string;
 
     public get name(): string {
         return (this as any).constructor.name;
