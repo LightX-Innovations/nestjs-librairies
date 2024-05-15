@@ -168,3 +168,4 @@ fabric.properties
 
 build/
 dist/
+node_modules/
