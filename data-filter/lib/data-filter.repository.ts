@@ -45,7 +45,11 @@ export class DataFilterRepository<Data> {
         return this.reduceObject(result);
     }
 
-    public async findByPkFromUser(user: DataFilterUserModel, identifier: Identifier, conditions?: object): Promise<Data | null> {
+    public async findByPkFromUser(
+        user: DataFilterUserModel,
+        identifier: Identifier,
+        conditions?: object
+    ): Promise<Data | null> {
         const resources = await this.accessControlAdapter.getResources(this._config.model as any, user);
         if (resources.ids?.includes(identifier as number) || resources.all) {
             return await this.findByPk(identifier, {}, conditions);
@@ -54,16 +58,19 @@ export class DataFilterRepository<Data> {
         if (resources.ids?.length) {
             return null;
         }
-        return await this.findOne({
-            where: {
-                [Op.and]: [
-                    {
-                        [this._config.model.primaryKeyAttribute]: identifier
-                    },
-                    resources.where ?? {}
-                ]
-            }
-        }, conditions);
+        return await this.findOne(
+            {
+                where: {
+                    [Op.and]: [
+                        {
+                            [this._config.model.primaryKeyAttribute]: identifier,
+                        },
+                        resources.where ?? {},
+                    ],
+                },
+            },
+            conditions
+        );
     }
 
     public async findOne(options?: FindOptions, conditions?: object): Promise<Data | null> {
@@ -74,11 +81,15 @@ export class DataFilterRepository<Data> {
         return this.reduceObject(result);
     }
 
-    public async findOneFromUser(user: DataFilterUserModel, options: FindOptions = {}, conditions?: object): Promise<Data | null> {
+    public async findOneFromUser(
+        user: DataFilterUserModel,
+        options: FindOptions = {},
+        conditions?: object
+    ): Promise<Data | null> {
         return this.findOne(
             {
                 ...options,
-                where: await this.mergeAccessControlCondition(options.where ?? {}, user)
+                where: await this.mergeAccessControlCondition(options.where ?? {}, user),
             },
             conditions
         );
@@ -89,15 +100,19 @@ export class DataFilterRepository<Data> {
         if (!result?.length) {
             return result as unknown as Data[];
         }
-        return result.map(x => this.reduceObject(x));
+        return result.map((x) => this.reduceObject(x));
     }
 
-    public async findAllFromUser(user: DataFilterUserModel, options?: FindOptions, conditions?: object): Promise<Data[]> {
+    public async findAllFromUser(
+        user: DataFilterUserModel,
+        options?: FindOptions,
+        conditions?: object
+    ): Promise<Data[]> {
         options = options ?? {};
         return await this.findAll(
             {
                 ...options,
-                where: await this.mergeAccessControlCondition(options.where ?? {}, user)
+                where: await this.mergeAccessControlCondition(options.where ?? {}, user),
             },
             conditions
         );
@@ -116,10 +131,15 @@ export class DataFilterRepository<Data> {
         if (!result?.length) {
             return result as unknown as Data[];
         }
-        return result.map(x => this.reduceObject(x));
+        return result.map((x) => this.reduceObject(x));
     }
 
-    public async searchFromUser(user: DataFilterUserModel, search: string, options?: FindOptions, conditions?: object): Promise<Data[]> {
+    public async searchFromUser(
+        user: DataFilterUserModel,
+        search: string,
+        options?: FindOptions,
+        conditions?: object
+    ): Promise<Data[]> {
         const findOptions = this.generateFindOptions(options, conditions);
         this.addSearchCondition(search, findOptions);
 
@@ -128,14 +148,14 @@ export class DataFilterRepository<Data> {
         if (!result?.length) {
             return result as unknown as Data[];
         }
-        return result.map(x => this.reduceObject(x));
+        return result.map((x) => this.reduceObject(x));
     }
 
     public generateFindOptions(options?: FindOptions, conditions?: object): FindOptions {
         options ??= {};
 
         const nestedIncludes: Array<IncludeOptions | IncludeOptions[]> = [
-            ...this._definitions.map(x => {
+            ...this._definitions.map((x) => {
                 if (!x.path) {
                     return [];
                 }
@@ -144,12 +164,19 @@ export class DataFilterRepository<Data> {
                 const additionalIncludes = x.transformIncludesConfig(conditions);
                 return this.sequelizeModelScanner.getIncludes(this.model, path, additionalIncludes, attributes);
             }),
-            ...this._config.getCustomAttributesIncludes().map(x => this.sequelizeModelScanner.getIncludes(this.model, {
-                path: x.path,
-                paranoid: x.paranoid,
-                subQuery: x.subQuery,
-                where: x.where ? SequelizeUtils.generateWhereConditions(x.where, conditions) : undefined
-            }, [], x.attributes))
+            ...this._config.getCustomAttributesIncludes().map((x) =>
+                this.sequelizeModelScanner.getIncludes(
+                    this.model,
+                    {
+                        path: x.path,
+                        paranoid: x.paranoid,
+                        subQuery: x.subQuery,
+                        where: x.where ? SequelizeUtils.generateWhereConditions(x.where, conditions) : undefined,
+                    },
+                    [],
+                    x.attributes
+                )
+            ),
         ];
         if (options.include) {
             nestedIncludes.push(options.include as IncludeOptions | IncludeOptions[]);
@@ -180,10 +207,16 @@ export class DataFilterRepository<Data> {
                 return [];
             }
 
-            return this.sequelizeModelScanner.getIncludes(this.model, {
-                path: customAttr.config.path,
-                where: customAttr.config.where ? SequelizeUtils.generateWhereConditions(customAttr.config.where, conditions) : undefined
-            }, []);
+            return this.sequelizeModelScanner.getIncludes(
+                this.model,
+                {
+                    path: customAttr.config.path,
+                    where: customAttr.config.where
+                        ? SequelizeUtils.generateWhereConditions(customAttr.config.where, conditions)
+                        : undefined,
+                },
+                []
+            );
         }
 
         return this.sequelizeModelScanner.getOrderIncludes(this.model, order);
@@ -191,7 +224,7 @@ export class DataFilterRepository<Data> {
 
     public generateSearchInclude(conditions?: object): Includeable[] {
         const nestedIncludes: Array<IncludeOptions | IncludeOptions[]> = [
-            ...this._definitions.map(x => {
+            ...this._definitions.map((x) => {
                 if (!x.path || x.path.separate || x.ignoreInSearch) {
                     return [];
                 }
@@ -200,18 +233,23 @@ export class DataFilterRepository<Data> {
                 const additionalIncludes = x.transformIncludesConfig(conditions);
                 return this.sequelizeModelScanner.getIncludes(this.model, path, additionalIncludes, attributes);
             }),
-            ...this._config.getCustomAttributesIncludes().map(x => {
+            ...this._config.getCustomAttributesIncludes().map((x) => {
                 if (!x.path || x.separate || x.ignoreInSearch) {
                     return [];
                 }
 
-                return this.sequelizeModelScanner.getIncludes(this.model, {
-                    path: x.path,
-                    paranoid: x.paranoid,
-                    subQuery: x.subQuery,
-                    where: x.where ? SequelizeUtils.generateWhereConditions(x.where, conditions) : undefined
-                }, [], x.attributes);
-            })
+                return this.sequelizeModelScanner.getIncludes(
+                    this.model,
+                    {
+                        path: x.path,
+                        paranoid: x.paranoid,
+                        subQuery: x.subQuery,
+                        where: x.where ? SequelizeUtils.generateWhereConditions(x.where, conditions) : undefined,
+                    },
+                    [],
+                    x.attributes
+                );
+            }),
         ];
 
         return SequelizeUtils.reduceIncludes(nestedIncludes);
@@ -223,7 +261,7 @@ export class DataFilterRepository<Data> {
         Object.assign(data, r);
         if (data instanceof Model) {
             (data as any).dataValues = {
-                ...r
+                ...r,
             };
         }
 
@@ -246,10 +284,10 @@ export class DataFilterRepository<Data> {
         const attributes: SearchAttributesModel[] = [];
         const modelAttr = this._config.getSearchableAttributes();
         attributes.push(
-            ...modelAttr.map(a => ({
+            ...modelAttr.map((a) => ({
                 name: a,
                 key: a,
-                isJson: SequelizeUtils.isColumnJson(this.model, a)
+                isJson: SequelizeUtils.isColumnJson(this.model, a),
             }))
         );
 
@@ -293,7 +331,13 @@ export class DataFilterRepository<Data> {
     }
 
     public async downloadData(data: Data[], type: ExportTypes, lang: string, options?: any): Promise<Buffer | string>;
-    public async downloadData(headers: string[], data: any[], type: ExportTypes, lang: string, options?: any): Promise<Buffer | string>;
+    public async downloadData(
+        headers: string[],
+        data: any[],
+        type: ExportTypes,
+        lang: string,
+        options?: any
+    ): Promise<Buffer | string>;
     public async downloadData(
         dataOrHeaders: Data[] | string[],
         typeOrData: ExportTypes | any[],
@@ -334,19 +378,19 @@ export class DataFilterRepository<Data> {
     }
 
     public async downloadXlsx(headers: string[], data: any[]): Promise<Buffer> {
-        return XlsxUtils.arrayToXlsxBuffer(
-            data,
-            this._config.model.getTableName() as string,
-            headers
-        );
+        return XlsxUtils.arrayToXlsxBuffer(data, this._config.model.getTableName() as string, headers);
     }
 
     public async downloadHtml(headers: string[], data: any[], lang: string, options?: any): Promise<string> {
-        return this.exportAdapter.exportAsHtml(lang, {
-            title: this._config.model.getTableName() as string,
-            columns: headers,
-            data: data
-        }, options);
+        return this.exportAdapter.exportAsHtml(
+            lang,
+            {
+                title: this._config.model.getTableName() as string,
+                columns: headers,
+                data: data,
+            },
+            options
+        );
     }
 
     public async downloadCsv(headers: string[], data: any[]): Promise<Buffer> {
@@ -354,19 +398,27 @@ export class DataFilterRepository<Data> {
     }
 
     public async downloadPdf(headers: string[], data: any[], lang: string, options?: any): Promise<Buffer> {
-        return this.exportAdapter.exportAsPdf(lang, {
-            title: this._config.model.getTableName() as string,
-            columns: headers,
-            data: data
-        }, options);
+        return this.exportAdapter.exportAsPdf(
+            lang,
+            {
+                title: this._config.model.getTableName() as string,
+                columns: headers,
+                data: data,
+            },
+            options
+        );
     }
 
     public async downloadZip(headers: string[], data: any[], lang: string, options?: any): Promise<Buffer> {
-        return this.exportAdapter.exportAsZip(lang, {
-            title: this._config.model.getTableName() as string,
-            columns: headers,
-            data: data
-        }, options);
+        return this.exportAdapter.exportAsZip(
+            lang,
+            {
+                title: this._config.model.getTableName() as string,
+                columns: headers,
+                data: data,
+            },
+            options
+        );
     }
 
     private init() {
@@ -394,7 +446,7 @@ export class DataFilterRepository<Data> {
         const where = options.where;
         const generateFieldsObject = (searchValue: string) =>
             this.getSearchAttributes()
-                .map(a => {
+                .map((a) => {
                     if (a.isJson) {
                         const field = a.literalKey ?? `\`${this.model.name}\`.\`${a.key}\``;
 
@@ -407,27 +459,32 @@ export class DataFilterRepository<Data> {
                     }
                     return {
                         [a.key]: {
-                            [Op.like]: `%${searchValue}%`
-                        }
+                            [Op.like]: `%${searchValue}%`,
+                        },
                     };
-                }).filter(x => !!x);
+                })
+                .filter((x) => !!x);
 
         const tokens = search.split(" ");
         (where as any)[Op.and].push(
-            tokens.map(t => {
+            tokens.map((t) => {
                 return {
-                    [Op.or]: generateFieldsObject(t)
+                    [Op.or]: generateFieldsObject(t),
                 };
             })
         );
     }
 
-    private getExportsHeader(lang: string, headers: string[], translateService = this.translateService): Promise<string[]> {
-        return Promise.all(headers.map(x => translateService.getTranslation(lang, `exports.${x}`)));
+    private getExportsHeader(
+        lang: string,
+        headers: string[],
+        translateService = this.translateService
+    ): Promise<string[]> {
+        return Promise.all(headers.map((x) => translateService.getTranslation(lang, `exports.${x}`)));
     }
 
     private getExportData(data: Data[]): object[] {
-        return data.map(x => {
+        return data.map((x) => {
             const result: { [key: string]: any } = {};
             let i = 0;
             for (const key of this._config.exportColumns ?? []) {
@@ -456,16 +513,16 @@ export class DataFilterRepository<Data> {
         return [data, key];
     }
 
-    private async mergeAccessControlCondition(where: WhereOptions | undefined, user: DataFilterUserModel): Promise<WhereOptions | undefined> {
+    private async mergeAccessControlCondition(
+        where: WhereOptions | undefined,
+        user: DataFilterUserModel
+    ): Promise<WhereOptions | undefined> {
         const resources = await this.accessControlAdapter.getResources(this._config.model as any, user);
         if (resources.ids) {
             return SequelizeUtils.mergeWhere({ id: resources.ids }, where);
         } else if (resources.where) {
             return {
-                [Op.and]: [
-                    where,
-                    resources.where
-                ]
+                [Op.and]: [where, resources.where],
             } as WhereOptions;
         }
 

@@ -10,7 +10,7 @@ import {
     Query,
     Req,
     UseGuards,
-    UseInterceptors
+    UseInterceptors,
 } from "@nestjs/common";
 import { ExportTypes, FilterQueryModel, FilterResultModel, SelectFilterValue } from "../..";
 import { FILTER_OPTION } from "../../constant";
@@ -63,7 +63,7 @@ export class FilterController<Data> {
 
     @Get("filter/config")
     public async getFilterConfig(@Req() req: any): Promise<FilterConfigurationModel[]> {
-        return await this.filterService.getConfig(req, await this.getUser(req) ?? {} as DataFilterUserModel);
+        return await this.filterService.getConfig(req, (await this.getUser(req)) ?? ({} as DataFilterUserModel));
     }
 
     @Get("filter/config/id")
@@ -71,7 +71,11 @@ export class FilterController<Data> {
         @Query() search: FilterResourceValueModel,
         @Req() req: any
     ): Promise<SelectFilterValue | null> {
-        return await this.filterService.findResourceValueById(req, search, await this.getUser(req) ?? {} as DataFilterUserModel);
+        return await this.filterService.findResourceValueById(
+            req,
+            search,
+            (await this.getUser(req)) ?? ({} as DataFilterUserModel)
+        );
     }
 
     @Get("filter/config/value")
@@ -79,7 +83,11 @@ export class FilterController<Data> {
         @Query() search: FilterConfigurationSearchModel,
         @Req() req: any
     ): Promise<SelectFilterValue[]> {
-        return await this.filterService.searchConfigValues(req, search, await this.getUser(req) ?? {} as DataFilterUserModel);
+        return await this.filterService.searchConfigValues(
+            req,
+            search,
+            (await this.getUser(req)) ?? ({} as DataFilterUserModel)
+        );
     }
 
     protected async getUser(req: any): Promise<DataFilterUserModel | null> {

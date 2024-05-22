@@ -24,15 +24,15 @@ export class DateTimeFilter extends Filter {
                 ...rule,
                 value: [
                     format(parseISO(rule.value[0]), "yyyy-MM-dd HH:mm:ss"),
-                    format(parseISO(rule.value[1]), "yyyy-MM-dd HH:mm:ss")
-                ]
+                    format(parseISO(rule.value[1]), "yyyy-MM-dd HH:mm:ss"),
+                ],
             });
         }
 
         return super.getWhereOptions({
             operation: rule.operation,
             value: format(parseISO(rule.value as any), "yyyy-MM-dd HH:mm:ss"),
-            id: rule.id
+            id: rule.id,
         });
     }
 }
