@@ -8,7 +8,6 @@ import {
     literal,
     Op,
     Order,
-    OrderItem,
     WhereOptions,
 } from "sequelize";
 import { GroupOption, ProjectionAlias } from "sequelize/types/model";
@@ -350,15 +349,15 @@ export class FilterService<Data> {
                 continue;
             }
 
-            const filter = this.definitions[r.id] as FilterDefinition;
-            if (!OrderRule.validate(filter)) {
+            const filter = this.definitions[r.id] as FilterDefinition | undefined;
+            if (filter && !OrderRule.validate(filter)) {
                 const filterOptions = await filter.getWhereOptions(r);
 
                 if (filterOptions) {
                     options.push(filterOptions);
                 }
             }
-            paranoid = filter.paranoid ?? true;
+            paranoid = filter?.paranoid ?? true;
         }
 
         return paranoid;
@@ -389,8 +388,8 @@ export class FilterService<Data> {
                 continue;
             }
 
-            const filter = this.definitions[r.id] as FilterDefinition;
-            if (!OrderRule.validate(filter)) {
+            const filter = this.definitions[r.id] as FilterDefinition | undefined;
+            if (filter && !OrderRule.validate(filter)) {
                 const filterOptions = await filter.getHavingOptions(r);
                 if (filterOptions) {
                     options.push(filterOptions);
@@ -422,7 +421,7 @@ export class FilterService<Data> {
         }
 
         for (const order of orders) {
-            const rule = this.definitions[order.column] as OrderRuleDefinition;
+            const rule = this.definitions[order.column] as OrderRuleDefinition | undefined;
             const includes =
                 rule && OrderRule.validate(rule)
                     ? rule.path
@@ -454,7 +453,7 @@ export class FilterService<Data> {
 
         const orders = this.normalizeOrder(filter.order);
         for (const order of orders) {
-            const rule = this.definitions[order.column] as OrderRuleDefinition;
+            const rule = this.definitions[order.column] as OrderRuleDefinition | undefined;
             if (rule && OrderRule.validate(rule)) {
                 continue;
             }
@@ -545,7 +544,7 @@ export class FilterService<Data> {
         const nonNestedOrderColumns = (Array.isArray(filter.order) ? filter.order : [filter.order])
             .filter((order): order is OrderModel => !!order)
             .map((order) => {
-                const rule = this.definitions[order.column] as OrderRuleDefinition;
+                const rule = this.definitions[order.column] as OrderRuleDefinition | undefined;
                 if (!rule || !OrderRule.validate(rule)) {
                     return order.column;
                 } else {
@@ -670,13 +669,9 @@ export class FilterService<Data> {
                 continue;
             }
 
-            const rule = this.definitions[order.column] as OrderRuleDefinition;
+            const rule = this.definitions[order.column] as OrderRuleDefinition | undefined;
             if (!rule || !OrderRule.validate(rule)) {
-                if (Filter.validate(rule)) {
-                    generatedOrder.push([order.column, order.direction.toUpperCase()]);
-                } else {
-                    generatedOrder.push(this.sequelizeModelScanner.getOrder(this.repository.model, order) as OrderItem);
-                }
+                generatedOrder.push([order.column, order.direction.toUpperCase()]);
             } else {
                 generatedOrder.push([rule.getOrderOption(this.repository.model), order.direction.toUpperCase()]);
             }
@@ -685,11 +680,10 @@ export class FilterService<Data> {
     }
 
     private getOrderCustomAttribute(orders: OrderModel | OrderModel[], data?: object): ProjectionAlias[] {
+        const attributes: ProjectionAlias[] = [];
         if (!Array.isArray(orders)) {
             orders = [orders];
         }
-
-        const attributes: ProjectionAlias[] = [];
         for (const order of orders) {
             if (!this.repository.hasCustomAttribute(order.column)) {
                 continue;
@@ -730,7 +724,7 @@ export class FilterService<Data> {
                 continue;
             }
 
-            const rule = this.definitions[order.column] as OrderRuleDefinition;
+            const rule = (this.definitions[order.column] as OrderRuleDefinition) || undefined;
             if (!rule || !OrderRule.validate(rule)) {
                 group.push(
                     `${this.repository.model.name}.${SequelizeUtils.findColumnFieldName(
