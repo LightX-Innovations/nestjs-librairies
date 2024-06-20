@@ -3,16 +3,17 @@ import {
     CountOptions,
     FindOptions,
     GroupedCountResultItem,
-    Includeable,
     IncludeOptions,
-    literal,
+    Includeable,
     Op,
     Order,
     WhereOptions,
+    literal,
 } from "sequelize";
 import { GroupOption, ProjectionAlias } from "sequelize/types/model";
 import { ExportTypes, FilterQueryModel, FilterResultModel, FilterSearchModel, OrderModel } from "../";
 import { AccessControlAdapter } from "../adapters/access-control.adapter";
+import { SubscriptionAdapter } from "../adapters/subscription.adapter";
 import { TranslateAdapter } from "../adapters/translate.adapter";
 import { DataFilterRepository } from "../data-filter.repository";
 import { DataFilterService } from "../data-filter.service";
@@ -45,6 +46,7 @@ export class FilterService<Data> {
 
     constructor(
         private accessControlAdapter: AccessControlAdapter,
+        public subscriptionAdapter: SubscriptionAdapter,
         private translateAdapter: TranslateAdapter,
         private model: BaseFilter<Data>,
         private sequelizeModelScanner: SequelizeModelScanner,
@@ -57,6 +59,7 @@ export class FilterService<Data> {
     public forData<T>(dataDef: Type<T>): FilterService<T> {
         return new FilterService(
             this.accessControlAdapter,
+            this.subscriptionAdapter,
             this.translateAdapter,
             {
                 ...this.model,
@@ -239,6 +242,17 @@ export class FilterService<Data> {
         }
 
         return option;
+    }
+
+    public generateSubscription(user: DataFilterUserModel, resource: any, query: FilterQueryModel) {
+        const subscriptionInfo: { [key: string]: any } = {
+            userId: user!.id,
+            resource: resource,
+            resourceModel: this.repository.model,
+            excludedResourceModels: [],
+        };
+        if (query.expiredAt) subscriptionInfo["expiredAt"] = new Date(query.expiredAt);
+        this.subscriptionAdapter.createSubscription(subscriptionInfo);
     }
 
     private init() {

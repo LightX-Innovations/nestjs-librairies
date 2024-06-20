@@ -23,6 +23,8 @@ export interface FilterQueryModel {
     order?: OrderModel | OrderModel[];
     data?: object;
     groupBy?: string;
+    needSubscription?: boolean;
+    expiredAt?: Date;
 }
 
 export interface FilterResultModel<T> {

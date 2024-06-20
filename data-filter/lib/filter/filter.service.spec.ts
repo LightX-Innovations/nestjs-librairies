@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { col, FindOptions, fn, Op, where } from "sequelize";
 import { DefaultAccessControlAdapter, DefaultExportAdapter, DefaultTranslateAdapter } from "../adapters";
+import { DefaultSubscriptionAdapter } from "../adapters/default-subscription.adapter";
 import { DataFilterService } from "../data-filter.service";
 import { Attributes, Data, Include, Path } from "../decorators";
 import { DataFilterScanner } from "../scanners/data-filter.scanner";
@@ -44,18 +45,18 @@ export class TestFilter extends BaseFilter<ContractSystemsTest> {
     public defaultFilter = new DefaultFilter({
         id: "email",
         operation: FilterOperatorTypes.Contains,
-        value: "@"
+        value: "@",
     });
 
     public email = new TextFilter({
         attribute: "email",
         path: "system.place.owners.person",
-        group: "owner"
+        group: "owner",
     }).addOperators({
         name: "none",
         having: where(fn("count", col("system.place.owners.person.email")), {
-            [Op.lte]: 0
-        })
+            [Op.lte]: 0,
+        }),
     });
 
     public name = new TextFilter({
@@ -69,17 +70,17 @@ export class TestFilter extends BaseFilter<ContractSystemsTest> {
                     path: "system.place.owners.person",
                     key: "last_name",
                     value: "Doe",
-                    operation: FilterOperatorTypes.Equal
-                }
-            ]
-        }
+                    operation: FilterOperatorTypes.Equal,
+                },
+            ],
+        },
     });
 
     public visitCount = new NumberFilter({
         attribute: "id",
         path: "visits.visit",
         group: "visit",
-        having: fn("count", col("visits.visit.id"))
+        having: fn("count", col("visits.visit.id")),
     });
 }
 
@@ -89,6 +90,7 @@ describe("FilterService", () => {
     beforeAll(() => {
         filterService = new FilterService<ContractSystemsTest>(
             new DefaultAccessControlAdapter(),
+            new DefaultSubscriptionAdapter(),
             new DefaultTranslateAdapter(),
             new TestFilter(),
             new SequelizeModelScanner(),
@@ -109,19 +111,19 @@ describe("FilterService", () => {
                 {
                     id: "email",
                     value: null,
-                    operation: "none"
+                    operation: "none",
                 },
                 {
                     id: "name",
                     value: "John",
-                    operation: FilterOperatorTypes.Equal
+                    operation: FilterOperatorTypes.Equal,
                 },
                 {
                     id: "visitCount",
                     value: 2,
-                    operation: FilterOperatorTypes.GreaterOrEqual
-                }
-            ]
+                    operation: FilterOperatorTypes.GreaterOrEqual,
+                },
+            ],
         });
         expect(options).toBeDefined();
         expect(options).toStrictEqual({
@@ -155,13 +157,13 @@ describe("FilterService", () => {
                                             separate: false,
                                             paranoid: false,
                                             attributes: [],
-                                            include: []
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
+                                            include: [],
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    ],
                 },
                 {
                     as: "visits",
@@ -177,40 +179,40 @@ describe("FilterService", () => {
                             paranoid: true,
                             separate: false,
                             attributes: [],
-                            include: []
-                        }
-                    ]
-                }
+                            include: [],
+                        },
+                    ],
+                },
             ],
             where: {
                 [Op.and]: [
                     {
                         [Op.and]: [
                             {
-                                "$system.place.owners.person.first_name$": "John"
+                                "$system.place.owners.person.first_name$": "John",
                             },
                             {
-                                "$system.place.owners.person.last_name$": "Doe"
-                            }
-                        ]
+                                "$system.place.owners.person.last_name$": "Doe",
+                            },
+                        ],
                     },
                     {
                         "$system.place.owners.person.email$": {
-                            [Op.like]: "%@%"
-                        }
-                    }
-                ]
+                            [Op.like]: "%@%",
+                        },
+                    },
+                ],
             },
             having: {
                 [Op.and]: [
                     where(fn("count", col("system.place.owners.person.email")), {
-                        [Op.lte]: 0
+                        [Op.lte]: 0,
                     }),
                     where(fn("count", col("visits.visit.id")), {
-                        [Op.gte]: 2
-                    })
-                ]
-            }
+                        [Op.gte]: 2,
+                    }),
+                ],
+            },
         } as FindOptions);
     });
 });

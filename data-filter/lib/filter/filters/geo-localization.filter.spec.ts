@@ -1,28 +1,29 @@
+import { FindOptions, Op, WhereOptions, fn, literal, where } from "sequelize";
 import { DefaultAccessControlAdapter, DefaultExportAdapter } from "../../adapters";
+import { DefaultSubscriptionAdapter } from "../../adapters/default-subscription.adapter";
 import { DefaultTranslateAdapter } from "../../adapters/default-translate.adapter";
-import { FilterUtils } from "../filter.utils";
-import { GeoLocalizationFilter } from "./geo-localization.filter";
-import { CoordinateFilter } from "./coordinate.filter";
-import { FilterOperatorTypes } from "../operators";
-import { FindOptions, fn, literal, Op, where, WhereOptions } from "sequelize";
-import { GroupFilterBaseConfigurationModel } from "../models/filter-configuration.model";
-import { FilterType } from "../type";
-import { RuleModel } from "../models";
+import { DataFilterService } from "../../data-filter.service";
 import { Data } from "../../decorators";
+import { DataFilterScanner } from "../../scanners/data-filter.scanner";
+import { SequelizeModelScanner } from "../../scanners/sequelize-model.scanner";
 import { Coords } from "../../test/models/coords/coords.model";
 import { BaseFilter } from "../base-filter";
 import { FilterService } from "../filter.service";
-import { SequelizeModelScanner } from "../../scanners/sequelize-model.scanner";
-import { DataFilterService } from "../../data-filter.service";
-import { DataFilterScanner } from "../../scanners/data-filter.scanner";
+import { FilterUtils } from "../filter.utils";
+import { RuleModel } from "../models";
+import { GroupFilterBaseConfigurationModel } from "../models/filter-configuration.model";
+import { FilterOperatorTypes } from "../operators";
+import { FilterType } from "../type";
+import { CoordinateFilter } from "./coordinate.filter";
+import { GeoLocalizationFilter } from "./geo-localization.filter";
 
 describe("GeoLocalizationFilter", () => {
     describe("getConfig", () => {
         it("should return a valid config", async () => {
             const filter = new GeoLocalizationFilter({
                 rootFilter: new CoordinateFilter({
-                    attribute: "test"
-                })
+                    attribute: "test",
+                }),
             });
             filter.translateService = new DefaultTranslateAdapter();
             const config = await filter.getConfig("", {});
@@ -34,53 +35,53 @@ describe("GeoLocalizationFilter", () => {
                     operators: [
                         {
                             id: "equal",
-                            name: FilterUtils.getOperatorTranslationKey("equal")
+                            name: FilterUtils.getOperatorTranslationKey("equal"),
                         },
                         {
                             id: "not_equal",
-                            name: FilterUtils.getOperatorTranslationKey("not_equal")
-                        }
-                    ]
+                            name: FilterUtils.getOperatorTranslationKey("not_equal"),
+                        },
+                    ],
                 },
                 valueFilter: {
                     type: FilterType.Number,
                     operators: [
                         {
                             id: "equal",
-                            name: FilterUtils.getOperatorTranslationKey("equal")
+                            name: FilterUtils.getOperatorTranslationKey("equal"),
                         },
                         {
                             id: "not_equal",
-                            name: FilterUtils.getOperatorTranslationKey("not_equal")
+                            name: FilterUtils.getOperatorTranslationKey("not_equal"),
                         },
                         {
                             id: "greater",
-                            name: FilterUtils.getOperatorTranslationKey("greater")
+                            name: FilterUtils.getOperatorTranslationKey("greater"),
                         },
                         {
                             id: "greater_or_equal",
-                            name: FilterUtils.getOperatorTranslationKey("greater_or_equal")
+                            name: FilterUtils.getOperatorTranslationKey("greater_or_equal"),
                         },
                         {
                             id: "less",
-                            name: FilterUtils.getOperatorTranslationKey("less")
+                            name: FilterUtils.getOperatorTranslationKey("less"),
                         },
                         {
                             id: "less_or_equal",
-                            name: FilterUtils.getOperatorTranslationKey("less_or_equal")
-                        }
-                    ]
+                            name: FilterUtils.getOperatorTranslationKey("less_or_equal"),
+                        },
+                    ],
                 },
-                lazyLoading: false
+                lazyLoading: false,
             });
         });
 
         it("with group should return a valid config", async () => {
             const filter = new GeoLocalizationFilter({
                 rootFilter: new CoordinateFilter({
-                    attribute: "test"
+                    attribute: "test",
                 }),
-                group: "test"
+                group: "test",
             });
             filter.translateService = new DefaultTranslateAdapter();
             const config = await filter.getConfig("", {});
@@ -92,48 +93,48 @@ describe("GeoLocalizationFilter", () => {
                     operators: [
                         {
                             id: "equal",
-                            name: FilterUtils.getOperatorTranslationKey("equal")
+                            name: FilterUtils.getOperatorTranslationKey("equal"),
                         },
                         {
                             id: "not_equal",
-                            name: FilterUtils.getOperatorTranslationKey("not_equal")
-                        }
-                    ]
+                            name: FilterUtils.getOperatorTranslationKey("not_equal"),
+                        },
+                    ],
                 },
                 valueFilter: {
                     type: FilterType.Number,
                     operators: [
                         {
                             id: "equal",
-                            name: FilterUtils.getOperatorTranslationKey("equal")
+                            name: FilterUtils.getOperatorTranslationKey("equal"),
                         },
                         {
                             id: "not_equal",
-                            name: FilterUtils.getOperatorTranslationKey("not_equal")
+                            name: FilterUtils.getOperatorTranslationKey("not_equal"),
                         },
                         {
                             id: "greater",
-                            name: FilterUtils.getOperatorTranslationKey("greater")
+                            name: FilterUtils.getOperatorTranslationKey("greater"),
                         },
                         {
                             id: "greater_or_equal",
-                            name: FilterUtils.getOperatorTranslationKey("greater_or_equal")
+                            name: FilterUtils.getOperatorTranslationKey("greater_or_equal"),
                         },
                         {
                             id: "less",
-                            name: FilterUtils.getOperatorTranslationKey("less")
+                            name: FilterUtils.getOperatorTranslationKey("less"),
                         },
                         {
                             id: "less_or_equal",
-                            name: FilterUtils.getOperatorTranslationKey("less_or_equal")
-                        }
-                    ]
+                            name: FilterUtils.getOperatorTranslationKey("less_or_equal"),
+                        },
+                    ],
                 },
                 lazyLoading: false,
                 group: {
                     name: FilterUtils.getGroupTranslationKey("test"),
-                    key: "test"
-                }
+                    key: "test",
+                },
             });
         });
     });
@@ -146,28 +147,35 @@ describe("GeoLocalizationFilter", () => {
         it("should return a valid filter config", async () => {
             const filter = new GeoLocalizationFilter({
                 rootFilter: new CoordinateFilter({
-                    attribute: "test"
-                })
+                    attribute: "test",
+                }),
             });
             const options = await filter.getWhereOptions({
                 id: "test",
                 value: [
                     {
                         operation: FilterOperatorTypes.Equal,
-                        value: [45.8797953, -73.2815516]
+                        value: [45.8797953, -73.2815516],
                     },
                     {
                         operation: FilterOperatorTypes.LessOrEqual,
-                        value: 1000
-                    }
+                        value: 1000,
+                    },
                 ] as [RuleModel, RuleModel],
-                operation: FilterOperatorTypes.Equal
+                operation: FilterOperatorTypes.Equal,
             });
             expect(options).toBeDefined();
             expect(options).toStrictEqual<WhereOptions>(
-                where(fn("ST_Distance_Sphere", literal("test"), fn("ST_GeometryFromText", literal(`'POINT(${45.8797953} ${-73.2815516})'`), 0)), {
-                    [Op.lte]: 1000
-                })
+                where(
+                    fn(
+                        "ST_Distance_Sphere",
+                        literal("test"),
+                        fn("ST_GeometryFromText", literal(`'POINT(${45.8797953} ${-73.2815516})'`), 0)
+                    ),
+                    {
+                        [Op.lte]: 1000,
+                    }
+                )
             );
         });
     });
@@ -181,8 +189,8 @@ class GeoLocalizationTestFilter extends BaseFilter<GeoLocalizationTestData> {
 
     public distance = new GeoLocalizationFilter({
         rootFilter: new CoordinateFilter({
-            attribute: "geo_point"
-        })
+            attribute: "geo_point",
+        }),
     });
 }
 
@@ -192,6 +200,7 @@ describe("GeoLocalizationTestFilter", () => {
     beforeAll(() => {
         filter = new FilterService(
             new DefaultAccessControlAdapter(),
+            new DefaultSubscriptionAdapter(),
             new DefaultTranslateAdapter(),
             new GeoLocalizationTestFilter(),
             new SequelizeModelScanner(),
@@ -199,6 +208,7 @@ describe("GeoLocalizationTestFilter", () => {
                 new DataFilterScanner(),
                 new SequelizeModelScanner(),
                 new DefaultAccessControlAdapter(),
+                new DefaultSubscriptionAdapter(),
                 new DefaultTranslateAdapter(),
                 new DefaultExportAdapter()
             )
@@ -215,13 +225,13 @@ describe("GeoLocalizationTestFilter", () => {
                     value: [
                         {
                             value: [45.8797953, -73.2815516],
-                            operation: FilterOperatorTypes.Equal
+                            operation: FilterOperatorTypes.Equal,
                         },
                         {
                             value: 25000,
-                            operation: FilterOperatorTypes.LessOrEqual
-                        }
-                    ] as [RuleModel, RuleModel]
+                            operation: FilterOperatorTypes.LessOrEqual,
+                        },
+                    ] as [RuleModel, RuleModel],
                 },
                 {
                     id: "distance",
@@ -229,29 +239,43 @@ describe("GeoLocalizationTestFilter", () => {
                     value: [
                         {
                             value: [45.8797953, -73.2815516],
-                            operation: FilterOperatorTypes.Equal
+                            operation: FilterOperatorTypes.Equal,
                         },
                         {
                             value: 5000,
-                            operation: FilterOperatorTypes.LessOrEqual
-                        }
-                    ] as [RuleModel, RuleModel]
-                }
-            ]
+                            operation: FilterOperatorTypes.LessOrEqual,
+                        },
+                    ] as [RuleModel, RuleModel],
+                },
+            ],
         });
         expect(options).toBeDefined();
         expect(options).toStrictEqual<FindOptions>({
             include: [],
             where: {
                 [Op.and]: [
-                    where(fn("ST_Distance_Sphere", literal("geo_point"), fn("ST_GeometryFromText", literal(`'POINT(${45.8797953} ${-73.2815516})'`), 0)), {
-                        [Op.lte]: 25000
-                    }),
-                    where(fn("ST_Distance_Sphere", literal("geo_point"), fn("ST_GeometryFromText",  literal(`'POINT(${45.8797953} ${-73.2815516})'`), 0)), {
-                        [Op.lte]: 5000
-                    }),
-                ]
-            }
+                    where(
+                        fn(
+                            "ST_Distance_Sphere",
+                            literal("geo_point"),
+                            fn("ST_GeometryFromText", literal(`'POINT(${45.8797953} ${-73.2815516})'`), 0)
+                        ),
+                        {
+                            [Op.lte]: 25000,
+                        }
+                    ),
+                    where(
+                        fn(
+                            "ST_Distance_Sphere",
+                            literal("geo_point"),
+                            fn("ST_GeometryFromText", literal(`'POINT(${45.8797953} ${-73.2815516})'`), 0)
+                        ),
+                        {
+                            [Op.lte]: 5000,
+                        }
+                    ),
+                ],
+            },
         });
     });
 });

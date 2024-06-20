@@ -1,7 +1,5 @@
 import { Injectable, Type } from "@nestjs/common";
-import { AccessControlAdapter } from "./adapters";
-import { ExportAdapter } from "./adapters";
-import { TranslateAdapter } from "./adapters";
+import { AccessControlAdapter, ExportAdapter, TranslateAdapter } from "./adapters";
 import { DataFilterRepository } from "./data-filter.repository";
 import { DataFilterScanner } from "./scanners/data-filter.scanner";
 import { SequelizeModelScanner } from "./scanners/sequelize-model.scanner";

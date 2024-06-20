@@ -39,7 +39,12 @@ export class FilterController<Data> {
     @UseGuards(FilterQueryGuard)
     public async filter(@Body() query: FilterQueryModel, @Req() req: any): Promise<FilterResultModel<Data>> {
         const user = await this.getUser(req);
-        return user ? this.filterService.filter(user, query) : this.filterService.filter(query);
+        const filterResult = user ? this.filterService.filter(user, query) : this.filterService.filter(query);
+        if (user && query.needSubscription) {
+            console.log(query);
+            this.filterService.generateSubscription(user, filterResult, query);
+        }
+        return filterResult;
     }
 
     @Post("filter-count")
