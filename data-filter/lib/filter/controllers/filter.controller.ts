@@ -40,10 +40,7 @@ export class FilterController<Data> {
     public async filter(@Body() query: FilterQueryModel, @Req() req: any): Promise<FilterResultModel<Data>> {
         const user = await this.getUser(req);
         const filterResult = user ? this.filterService.filter(user, query) : this.filterService.filter(query);
-        if (user && query.needSubscription) {
-            console.log(query);
-            this.filterService.generateSubscription(user, filterResult, query);
-        }
+        if (user && query.needSubscription) this.filterService.generateSubscriptions(user, await filterResult, query);
         return filterResult;
     }
 

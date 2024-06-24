@@ -24,7 +24,7 @@ export interface FilterQueryModel {
     data?: object;
     groupBy?: string;
     needSubscription?: boolean;
-    expiredAt?: Date;
+    expiresAt?: Date;
 }
 
 export interface FilterResultModel<T> {

@@ -46,7 +46,7 @@ export class FilterService<Data> {
 
     constructor(
         private accessControlAdapter: AccessControlAdapter,
-        public subscriptionAdapter: SubscriptionAdapter,
+        private subscriptionAdapter: SubscriptionAdapter,
         private translateAdapter: TranslateAdapter,
         private model: BaseFilter<Data>,
         private sequelizeModelScanner: SequelizeModelScanner,
@@ -244,15 +244,25 @@ export class FilterService<Data> {
         return option;
     }
 
-    public generateSubscription(user: DataFilterUserModel, resource: any, query: FilterQueryModel) {
-        const subscriptionInfo: { [key: string]: any } = {
-            userId: user!.id,
-            resource: resource,
-            resourceModel: this.repository.model,
-            excludedResourceModels: [],
-        };
-        if (query.expiredAt) subscriptionInfo["expiredAt"] = new Date(query.expiredAt);
-        this.subscriptionAdapter.createSubscription(subscriptionInfo);
+    public generateSubscriptions(
+        user: DataFilterUserModel,
+        resource: FilterResultModel<Data>,
+        query: FilterQueryModel
+    ) {
+        for (const result of resource.values) {
+            const subscriptionInfo: { [key: string]: any } = {
+                userId: user!.id,
+                resource: result,
+                resourceModel: this.model.dataDefinition,
+            };
+            if (query.expiresAt) subscriptionInfo["expiresAt"] = new Date(query.expiresAt);
+            if (query.query) {
+                subscriptionInfo["filterOptions"] = { user, query };
+                delete subscriptionInfo["filterOptions"]["query"]["expiresAt"];
+                delete subscriptionInfo["filterOptions"]["query"]["needSubscription"];
+            }
+            this.subscriptionAdapter.createSubscription(subscriptionInfo);
+        }
     }
 
     private init() {
