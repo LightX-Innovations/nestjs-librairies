@@ -249,17 +249,23 @@ export class FilterService<Data> {
         resource: FilterResultModel<Data>,
         query: FilterQueryModel
     ) {
+        if (!query.page || query.page.number <= 0) this.subscriptionAdapter.removeSubscriptionFromUserId(user.id!);
         for (const result of resource.values) {
             const subscriptionInfo: { [key: string]: any } = {
-                userId: user!.id,
+                userId: user.id!,
                 resource: result,
                 resourceModel: this.model.dataDefinition,
             };
             if (query.expiresAt) subscriptionInfo["expiresAt"] = new Date(query.expiresAt);
             if (query.query) {
-                subscriptionInfo["filterOptions"] = { user, query };
-                delete subscriptionInfo["filterOptions"]["query"]["expiresAt"];
-                delete subscriptionInfo["filterOptions"]["query"]["needSubscription"];
+                const currentQuery = { ...query.query };
+                if (currentQuery.rules)
+                    currentQuery.rules = [
+                        ...query.query?.rules,
+                        { id: "id", operation: "equal", value: (result as any).id },
+                    ];
+                subscriptionInfo["filterFunc"] = async () =>
+                    (await this.filter(user, { ...query, query: currentQuery })).values[0];
             }
             this.subscriptionAdapter.createSubscription(subscriptionInfo);
         }
