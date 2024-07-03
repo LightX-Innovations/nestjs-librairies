@@ -153,6 +153,9 @@ export class FilterService<Data> {
         const user = opt ? (userOrOpt as DataFilterUserModel) : null;
 
         if (options.order) {
+            const realPath = this.model.baseRoot.length > 0 ? `${this.model.baseRoot.join(".")}.` : "";
+            if (Array.isArray(options.order)) options.order.map((order) => (order.column = realPath + order.column));
+            else options.order.column = realPath + options.order.column;
             options.order = this.normalizeOrder(options.order);
         }
 
@@ -186,6 +189,9 @@ export class FilterService<Data> {
         const findOptions = await this.getFindOptions(this.exportRepository.model, options.query);
 
         if (options.order) {
+            const realPath = this.model.baseRoot.length > 0 ? `${this.model.baseRoot.join(".")}.` : "";
+            if (Array.isArray(options.order)) options.order.map((order) => (order.column = realPath + order.column));
+            else options.order.column = realPath + options.order.column;
             options.order = this.normalizeOrder(options.order);
         }
 
@@ -250,13 +256,15 @@ export class FilterService<Data> {
         query: FilterQueryModel
     ) {
         if (!query.page || query.page.number <= 0) this.subscriptionAdapter.removeSubscriptionFromUserId(user.id!);
+        const resultValues: any[] = [];
         for (const result of resource.values) {
-            const subscriptionInfo: { [key: string]: any } = {
+            const subscriptionOption: { [key: string]: any } = {
                 userId: user.id!,
                 resource: result,
                 resourceModel: this.model.dataDefinition,
+                baseRoot: this.model.baseRoot,
             };
-            if (query.expiresAt) subscriptionInfo["expiresAt"] = new Date(query.expiresAt);
+            if (query.expiresAt) subscriptionOption["expiresAt"] = new Date(query.expiresAt);
             if (query.query) {
                 const currentQuery = { ...query.query };
                 if (currentQuery.rules)
@@ -264,11 +272,13 @@ export class FilterService<Data> {
                         ...query.query?.rules,
                         { id: "id", operation: "equal", value: (result as any).id },
                     ];
-                subscriptionInfo["filterFunc"] = async () =>
+                subscriptionOption["filterFunc"] = async () =>
                     (await this.filter(user, { ...query, query: currentQuery })).values[0];
             }
-            this.subscriptionAdapter.createSubscription(subscriptionInfo);
+            const sub = this.subscriptionAdapter.createSubscription(subscriptionOption);
+            resultValues.push(...this.subscriptionAdapter.transformData(sub.info.baseRoot, resource["values"]));
         }
+        resource.values = resultValues;
     }
 
     private init() {
@@ -291,15 +301,25 @@ export class FilterService<Data> {
             }
 
             this.definitions[key] = this.model[key] as FilterDefinition;
+
+            if (this.model.baseRoot.length > 0)
+                (this.definitions[key] as any)["attribute"] = `$${this.model.baseRoot.join(".")}.${
+                    (this.definitions[key] as any)["attribute"]
+                }$`;
         }
     }
 
     private async getInclude(model: typeof M, query: QueryModel, data?: object): Promise<Includeable[]> {
+        const includes: IncludeOptions[][] = [];
+        let modelInclude = this.repository.generateFindOptions().include;
+        if (!modelInclude) modelInclude = [];
+        else if (!Array.isArray(modelInclude)) modelInclude = [modelInclude];
+        includes.push(modelInclude as IncludeOptions[]);
+
         if (!query.rules) {
-            return [];
+            return SequelizeUtils.reduceIncludes(includes, true);
         }
 
-        const includes: IncludeOptions[][] = [];
         for (const rule of query.rules) {
             const m = rule as QueryModel;
             if (m.condition) {
@@ -471,10 +491,15 @@ export class FilterService<Data> {
     }
 
     private addGroupOption(filter: FilterQueryModel, options: CountOptions): void {
-        const model = this.repository.model;
-        options.group = [`${model.name}.id`];
+        let model = this.repository.model;
+        for (const child of this.model.baseRoot) {
+            model = model.associations[child].target as typeof M;
+        }
+        const subPath = this.model.baseRoot.length > 0 ? `${this.model.baseRoot.join(".")}.` : "";
+        options.group = [`${subPath}id`];
         if (filter.groupBy) {
-            options.group.push(SequelizeUtils.getGroupLiteral(this.repository.model, filter.groupBy));
+            const newGroupOption = SequelizeUtils.getGroupLiteral(model, filter.groupBy).replace(/->/g, ".");
+            if (!options.group.includes(newGroupOption)) options.group.push(newGroupOption);
         }
 
         if (!filter.order || (filter.order instanceof Array && !filter.order.length)) {
@@ -484,20 +509,22 @@ export class FilterService<Data> {
         const orders = this.normalizeOrder(filter.order);
         for (const order of orders) {
             const rule = this.definitions[order.column] as OrderRuleDefinition | undefined;
-            if (rule && OrderRule.validate(rule)) {
-                continue;
-            }
+            if (rule && OrderRule.validate(rule)) continue;
 
-            if (this.repository.hasCustomAttribute(order.column)) {
-                continue;
-            }
+            if (this.repository.hasCustomAttribute(order.column)) continue;
 
             const values = order.column.split(".");
             const column = values.pop() as string;
             if (!values.length) {
-                options.group.push(`${model.name}.${SequelizeUtils.findColumnFieldName(model, column)}`);
+                let newGroupOption = `${subPath}${SequelizeUtils.findColumnFieldName(model, column)}`;
+                newGroupOption = newGroupOption.replace(/->/g, ".");
+                if (!options.group.includes(newGroupOption)) options.group.push(newGroupOption);
             } else {
-                options.group.push(...this.sequelizeModelScanner.getGroup(model, order));
+                const newGroups = this.sequelizeModelScanner.getGroup(this.repository.model, order);
+                for (const newGroup of newGroups) {
+                    const newGroupOption = newGroup.replace(/->/g, ".");
+                    if (!options.group.includes(newGroupOption)) options.group.push(newGroupOption);
+                }
             }
         }
     }
@@ -594,12 +621,13 @@ export class FilterService<Data> {
             order,
         });
 
+        const realPath = this.model.baseRoot.length > 0 ? `${this.model.baseRoot.join(".")}.` : "";
         const group = this.generateRepositoryGroupBy(filter);
+        const mappingWhere: { [key: string]: any } = {};
+        mappingWhere[`$${realPath}id$`] = values.map((x) => x.id);
         return await repository.findAll(
             {
-                where: {
-                    id: values.map((x) => x.id),
-                },
+                where: mappingWhere,
                 order,
                 paranoid: options.paranoid,
                 group,
