@@ -7,6 +7,7 @@ import {
     Includeable,
     Op,
     Order,
+    OrderItem,
     WhereOptions,
     literal,
 } from "sequelize";
@@ -256,7 +257,6 @@ export class FilterService<Data> {
         query: FilterQueryModel
     ) {
         if (!query.page || query.page.number <= 0) this.subscriptionAdapter.removeSubscriptionFromUserId(user.id!);
-        const resultValues: any[] = [];
         for (const result of resource.values) {
             const subscriptionOption: { [key: string]: any } = {
                 userId: user.id!,
@@ -275,10 +275,13 @@ export class FilterService<Data> {
                 subscriptionOption["filterFunc"] = async () =>
                     (await this.filter(user, { ...query, query: currentQuery })).values[0];
             }
-            const sub = this.subscriptionAdapter.createSubscription(subscriptionOption);
-            resultValues.push(...this.subscriptionAdapter.transformData(sub.info.baseRoot, resource["values"]));
+            this.subscriptionAdapter.createSubscription(subscriptionOption);
         }
-        resource.values = resultValues;
+    }
+
+    public rerouteDataPath(resource: FilterResultModel<Data>) {
+        resource.values = this.subscriptionAdapter.rerouteData(this.model.baseRoot, resource["values"]);
+        resource.total = resource.values.length;
     }
 
     private init() {
@@ -615,19 +618,19 @@ export class FilterService<Data> {
             ...options,
             attributes: ["id", ...nonNestedOrderColumns, ...customAttributes],
             limit: filter.page ? filter.page.size : undefined,
-            offset: filter.page ? filter.page.number * filter.page.size + (filter.page.offset ?? 0) : undefined,
+            offset:
+                filter.page && this.model.baseRoot.length == 0
+                    ? filter.page.number * filter.page.size + (filter.page.offset ?? 0)
+                    : undefined,
             subQuery: false,
             group: filter.groupBy ?? options.group,
             order,
         });
 
-        const realPath = this.model.baseRoot.length > 0 ? `${this.model.baseRoot.join(".")}.` : "";
         const group = this.generateRepositoryGroupBy(filter);
-        const mappingWhere: { [key: string]: any } = {};
-        mappingWhere[`$${realPath}id$`] = values.map((x) => x.id);
         return await repository.findAll(
             {
-                where: mappingWhere,
+                where: { id: values.map((x) => x.id) },
                 order,
                 paranoid: options.paranoid,
                 group,
@@ -729,7 +732,12 @@ export class FilterService<Data> {
 
             const rule = this.definitions[order.column] as OrderRuleDefinition | undefined;
             if (!rule || !OrderRule.validate(rule)) {
-                generatedOrder.push([order.column, order.direction.toUpperCase()]);
+                if (order.column.includes(".")) {
+                    const formattedOrder: any[] = [...order.column.split("."), order.direction.toUpperCase()];
+                    generatedOrder.push(formattedOrder as OrderItem);
+                } else {
+                    generatedOrder.push([order.column, order.direction.toUpperCase()]);
+                }
             } else {
                 generatedOrder.push([rule.getOrderOption(this.repository.model), order.direction.toUpperCase()]);
             }
