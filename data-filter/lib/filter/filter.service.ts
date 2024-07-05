@@ -265,16 +265,7 @@ export class FilterService<Data> {
                 baseRoot: this.model.baseRoot,
             };
             if (query.expiresAt) subscriptionOption["expiresAt"] = new Date(query.expiresAt);
-            if (query.query) {
-                const currentQuery = { ...query.query };
-                if (currentQuery.rules)
-                    currentQuery.rules = [
-                        ...query.query?.rules,
-                        { id: "id", operation: "equal", value: (result as any).id },
-                    ];
-                subscriptionOption["filterFunc"] = async () =>
-                    (await this.filter(user, { ...query, query: currentQuery })).values[0];
-            }
+            subscriptionOption["filterFunc"] = async () => (await this.filter(user, structuredClone(query))).values[0];
             this.subscriptionAdapter.createSubscription(subscriptionOption);
         }
     }
@@ -653,9 +644,16 @@ export class FilterService<Data> {
             throw new Error("AccessControl isn't enable in your project");
         }
 
-        const resources = await this.accessControlAdapter.getResources(this.repository.model, user);
+        let model = this.repository.model;
+        for (const child of this.model.baseRoot) {
+            model = model.associations[child].target as typeof M;
+        }
+        const resources = await this.accessControlAdapter.getResources(model, user);
         if (resources.ids) {
-            return SequelizeUtils.mergeWhere({ id: resources.ids }, where ?? {});
+            const subPath = this.model.baseRoot.length > 0 ? `${this.model.baseRoot.join(".")}.` : "";
+            const whereCondition: { [key: string]: any } = {};
+            whereCondition[subPath ? `$${subPath}id$` : "id"] = resources.ids;
+            return SequelizeUtils.mergeWhere(whereCondition, where ?? {});
         }
         if (resources.where) {
             return {
