@@ -208,7 +208,6 @@ describe("GeoLocalizationTestFilter", () => {
                 new DataFilterScanner(),
                 new SequelizeModelScanner(),
                 new DefaultAccessControlAdapter(),
-                new DefaultSubscriptionAdapter(),
                 new DefaultTranslateAdapter(),
                 new DefaultExportAdapter()
             )
