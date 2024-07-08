@@ -34,4 +34,5 @@ export interface FilterResultModel<T> {
         number: number;
         size: number;
     };
+    subscriptionIds?: number[];
 }

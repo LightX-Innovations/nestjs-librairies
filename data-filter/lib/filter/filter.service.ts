@@ -14,7 +14,7 @@ import {
 import { GroupOption, ProjectionAlias } from "sequelize/types/model";
 import { ExportTypes, FilterQueryModel, FilterResultModel, FilterSearchModel, OrderModel } from "../";
 import { AccessControlAdapter } from "../adapters/access-control.adapter";
-import { SubscriptionAdapter } from "../adapters/subscription.adapter";
+import { SubscriptionAdapter, SubscriptionBase } from "../adapters/subscription.adapter";
 import { TranslateAdapter } from "../adapters/translate.adapter";
 import { DataFilterRepository } from "../data-filter.repository";
 import { DataFilterService } from "../data-filter.service";
@@ -255,7 +255,8 @@ export class FilterService<Data> {
         user: DataFilterUserModel,
         resource: FilterResultModel<Data>,
         query: FilterQueryModel
-    ) {
+    ): SubscriptionBase[] {
+        const subscriptions: SubscriptionBase[] = [];
         if (!query.page || query.page.number <= 0) this.subscriptionAdapter.removeSubscriptionFromUserId(user.id!);
         for (const result of resource.values) {
             const subscriptionOption: { [key: string]: any } = {
@@ -266,8 +267,10 @@ export class FilterService<Data> {
             };
             if (query.expiresAt) subscriptionOption["expiresAt"] = new Date(query.expiresAt);
             subscriptionOption["filterFunc"] = async () => (await this.filter(user, structuredClone(query))).values[0];
-            this.subscriptionAdapter.createSubscription(subscriptionOption);
+            const sub = this.subscriptionAdapter.createSubscription(subscriptionOption);
+            subscriptions.push(sub);
         }
+        return subscriptions;
     }
 
     public rerouteDataPath(resource: FilterResultModel<Data>) {
@@ -297,9 +300,8 @@ export class FilterService<Data> {
             this.definitions[key] = this.model[key] as FilterDefinition;
 
             if (this.model.baseRoot.length > 0)
-                (this.definitions[key] as any)["attribute"] = `$${this.model.baseRoot.join(".")}.${
-                    (this.definitions[key] as any)["attribute"]
-                }$`;
+                (this.definitions[key] as any)["attribute"] = `$${this.model.baseRoot.join(".")}.${(this.definitions[key] as any)["attribute"]
+                    }$`;
         }
     }
 
