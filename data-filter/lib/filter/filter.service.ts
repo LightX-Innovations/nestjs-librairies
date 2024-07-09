@@ -266,7 +266,10 @@ export class FilterService<Data> {
                 baseRoot: this.model.baseRoot,
             };
             if (query.expiresAt) subscriptionOption["expiresAt"] = new Date(query.expiresAt);
-            subscriptionOption["filterFunc"] = async () => (await this.filter(user, structuredClone(query))).values[0];
+            subscriptionOption["filterFunc"] = async () =>
+                (await this.filter(user, { ...structuredClone(query) })).values.find(
+                    (data) => (result as any).id == (data as any).id
+                );
             const sub = this.subscriptionAdapter.createSubscription(subscriptionOption);
             subscriptions.push(sub);
         }
@@ -537,7 +540,13 @@ export class FilterService<Data> {
             options.where = await this.getAccessControlWhereCondition(options.where, userOrOpt as DataFilterUserModel);
         }
 
-        this.rerouteWhereOption(options);
+        if (this.model.baseRoot.length) {
+            const currentInclude = this.rerouteInclude(options);
+            if (options.where) {
+                currentInclude.where = options.where;
+                delete options.where;
+            }
+        }
 
         if (options.having) {
             const data = await this.repository.model.findAll({
@@ -616,14 +625,24 @@ export class FilterService<Data> {
             .filter((column) => column && !column.includes(".") && !repository.hasCustomAttribute(column));
         const customAttributes = filter.order ? this.getOrderCustomAttribute(filter.order, filter.data) : [];
 
-        this.rerouteWhereOption(options);
+        if (this.model.baseRoot.length) {
+            const currentInclude = this.rerouteInclude(options);
+            if (options.where) {
+                currentInclude.where = options.where;
+                delete options.where;
+            }
+            // if (filter.page) {
+            //     currentInclude.limit = filter.page.size;
+            //     currentInclude.offset = filter.page.number * filter.page.size + (filter.page.offset ?? 0);
+            // }
+        }
 
         const values = await repository.model.findAll({
             ...options,
             attributes: ["id", ...nonNestedOrderColumns, ...customAttributes],
-            limit: filter.page ? filter.page.size : undefined,
+            limit: filter.page && !this.model.baseRoot.length ? filter.page.size : undefined,
             offset:
-                filter.page && this.model.baseRoot.length == 0
+                filter.page && !this.model.baseRoot.length
                     ? filter.page.number * filter.page.size + (filter.page.offset ?? 0)
                     : undefined,
             subQuery: false,
@@ -644,20 +663,17 @@ export class FilterService<Data> {
         );
     }
 
-    private rerouteWhereOption(options: FindOptions) {
-        if (this.model.baseRoot.length > 0 && options.where) {
-            let currentInclude = options;
-            for (const path of this.model.baseRoot) {
-                for (const it in currentInclude.include as Includeable[]) {
-                    if (((currentInclude.include as Includeable[])[it] as IncludeOptions).as == path) {
-                        currentInclude = (currentInclude.include as Includeable[])[it] as IncludeOptions;
-                        break;
-                    }
+    private rerouteInclude(options: FindOptions) {
+        let currentInclude = options;
+        for (const path of this.model.baseRoot) {
+            for (const it in currentInclude.include as Includeable[]) {
+                if (((currentInclude.include as Includeable[])[it] as IncludeOptions).as == path) {
+                    currentInclude = (currentInclude.include as Includeable[])[it] as IncludeOptions;
+                    break;
                 }
             }
-            currentInclude.where = options.where;
-            delete options.where;
         }
+        return currentInclude;
     }
 
     private async getAccessControlWhereCondition(
