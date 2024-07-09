@@ -32,7 +32,7 @@ export class FilterController<Data> {
     @Inject(FILTER_OPTION)
     private readonly option!: FilterOptionConfig;
 
-    constructor(protected readonly filterService: FilterService<Data>) { }
+    constructor(protected readonly filterService: FilterService<Data>) {}
 
     @Post("filter")
     @HttpCode(HttpStatus.OK)
@@ -43,11 +43,7 @@ export class FilterController<Data> {
             ? this.filterService.filter(user, structuredClone(query))
             : this.filterService.filter(structuredClone(query)));
         if (user && query.needSubscription) {
-
-            const subs = this.filterService.generateSubscriptions(user, filterResult, structuredClone(query));
-            if (subs && subs.length) {
-                filterResult.subscriptionIds = subs.map((s) => s.info.id);
-            }
+            this.filterService.generateSubscriptions(user, filterResult, structuredClone(query));
         }
         this.filterService.rerouteDataPath(filterResult);
         return filterResult;

@@ -270,6 +270,9 @@ export class FilterService<Data> {
             const sub = this.subscriptionAdapter.createSubscription(subscriptionOption);
             subscriptions.push(sub);
         }
+        if (subscriptions && subscriptions.length) {
+            resource.subscriptionIds = subscriptions.map((s) => s.info.id);
+        }
         return subscriptions;
     }
 
@@ -298,10 +301,6 @@ export class FilterService<Data> {
             }
 
             this.definitions[key] = this.model[key] as FilterDefinition;
-
-            if (this.model.baseRoot.length > 0)
-                (this.definitions[key] as any)["attribute"] = `$${this.model.baseRoot.join(".")}.${(this.definitions[key] as any)["attribute"]
-                    }$`;
         }
     }
 
@@ -538,6 +537,8 @@ export class FilterService<Data> {
             options.where = await this.getAccessControlWhereCondition(options.where, userOrOpt as DataFilterUserModel);
         }
 
+        this.rerouteWhereOption(options);
+
         if (options.having) {
             const data = await this.repository.model.findAll({
                 ...options,
@@ -546,6 +547,14 @@ export class FilterService<Data> {
             return data.length;
         } else {
             const { group, ...countOptions } = options;
+            const test2 = await this.getAccessControlWhereCondition(
+                options.where,
+                userOrOpt as DataFilterUserModel,
+                false
+            );
+            const test = await this.repository.model.findAll({
+                ...countOptions,
+            });
             const value = (await this.repository.model.count({
                 ...countOptions,
                 distinct: true,
@@ -607,6 +616,8 @@ export class FilterService<Data> {
             .filter((column) => column && !column.includes(".") && !repository.hasCustomAttribute(column));
         const customAttributes = filter.order ? this.getOrderCustomAttribute(filter.order, filter.data) : [];
 
+        this.rerouteWhereOption(options);
+
         const values = await repository.model.findAll({
             ...options,
             attributes: ["id", ...nonNestedOrderColumns, ...customAttributes],
@@ -623,6 +634,7 @@ export class FilterService<Data> {
         const group = this.generateRepositoryGroupBy(filter);
         return await repository.findAll(
             {
+                include: [...((options.include as Includeable[]) ?? [])],
                 where: { id: values.map((x) => x.id) },
                 order,
                 paranoid: options.paranoid,
@@ -632,9 +644,26 @@ export class FilterService<Data> {
         );
     }
 
+    private rerouteWhereOption(options: FindOptions) {
+        if (this.model.baseRoot.length > 0 && options.where) {
+            let currentInclude = options;
+            for (const path of this.model.baseRoot) {
+                for (const it in currentInclude.include as Includeable[]) {
+                    if (((currentInclude.include as Includeable[])[it] as IncludeOptions).as == path) {
+                        currentInclude = (currentInclude.include as Includeable[])[it] as IncludeOptions;
+                        break;
+                    }
+                }
+            }
+            currentInclude.where = options.where;
+            delete options.where;
+        }
+    }
+
     private async getAccessControlWhereCondition(
         where: WhereOptions | undefined,
-        user: DataFilterUserModel
+        user: DataFilterUserModel,
+        rootBased: boolean = true
     ): Promise<WhereOptions | undefined> {
         if (this.options?.disableAccessControl) {
             return where;
@@ -647,15 +676,14 @@ export class FilterService<Data> {
         }
 
         let model = this.repository.model;
-        for (const child of this.model.baseRoot) {
-            model = model.associations[child].target as typeof M;
+        if (rootBased) {
+            for (const child of this.model.baseRoot) {
+                model = model.associations[child].target as typeof M;
+            }
         }
         const resources = await this.accessControlAdapter.getResources(model, user);
         if (resources.ids) {
-            const subPath = this.model.baseRoot.length > 0 ? `${this.model.baseRoot.join(".")}.` : "";
-            const whereCondition: { [key: string]: any } = {};
-            whereCondition[subPath ? `$${subPath}id$` : "id"] = resources.ids;
-            return SequelizeUtils.mergeWhere(whereCondition, where ?? {});
+            return SequelizeUtils.mergeWhere({ id: [...new Set(resources.ids)] }, where ?? {});
         }
         if (resources.where) {
             return {
