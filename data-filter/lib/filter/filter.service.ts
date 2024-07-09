@@ -257,7 +257,6 @@ export class FilterService<Data> {
         query: FilterQueryModel
     ): SubscriptionBase[] {
         const subscriptions: SubscriptionBase[] = [];
-        if (!query.page || query.page.number <= 0) this.subscriptionAdapter.removeSubscriptionFromUserId(user.id!);
         for (const result of resource.values) {
             const subscriptionOption: { [key: string]: any } = {
                 userId: user.id!,
