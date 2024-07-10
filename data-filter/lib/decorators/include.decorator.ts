@@ -1,5 +1,5 @@
-import { IncludeConfig } from "../models/include.model";
 import { AttributesHandler } from "../handlers/attributes.handler";
+import { IncludeConfig } from "../models/include.model";
 
 /**
  * @deprecated
@@ -8,7 +8,10 @@ import { AttributesHandler } from "../handlers/attributes.handler";
 export function Include(options: IncludeConfig): PropertyDecorator;
 export function Include(path: string, separate?: boolean): PropertyDecorator;
 export function Include(path: string, IncludeConfig?: Omit<IncludeConfig, "path">): PropertyDecorator;
-export function Include(optionsOrPath: IncludeConfig | string, separateOrOptions?: boolean | Omit<IncludeConfig, "path">): PropertyDecorator {
+export function Include(
+    optionsOrPath: IncludeConfig | string,
+    separateOrOptions?: boolean | Omit<IncludeConfig, "path">
+): PropertyDecorator {
     return (target: Object, propertyKey: string | symbol) => {
         const separate = typeof separateOrOptions === "boolean" ? separateOrOptions : false;
         const options = typeof separateOrOptions === "boolean" ? {} : separateOrOptions;
@@ -27,3 +30,5 @@ export function Include(optionsOrPath: IncludeConfig | string, separateOrOptions
         AttributesHandler.saveAttribute(target, attribute);
     };
 }
+
+export const ALL_ATTRIBUTES = { include: [] };

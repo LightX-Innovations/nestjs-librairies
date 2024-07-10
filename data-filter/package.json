@@ -1,6 +1,6 @@
 {
     "name": "@lightx-innovations/nestjs-data-filter",
-    "version": "10.2.5",
+    "version": "10.2.6",
     "description": "NestJs DataFilter library",
     "main": "index.js",
     "scripts": {
