@@ -154,9 +154,9 @@ export class FilterService<Data> {
         const user = opt ? (userOrOpt as DataFilterUserModel) : null;
 
         if (options.order) {
-            const realPath = this.model.baseRoot.length > 0 ? `${this.model.baseRoot.join(".")}.` : "";
-            if (Array.isArray(options.order)) options.order.map((order) => (order.column = realPath + order.column));
-            else options.order.column = realPath + options.order.column;
+            if (Array.isArray(options.order))
+                options.order.map((order) => (order.column = this.preRoute + order.column));
+            else options.order.column = this.preRoute + options.order.column;
             options.order = this.normalizeOrder(options.order);
         }
 
@@ -190,9 +190,9 @@ export class FilterService<Data> {
         const findOptions = await this.getFindOptions(this.exportRepository.model, options.query);
 
         if (options.order) {
-            const realPath = this.model.baseRoot.length > 0 ? `${this.model.baseRoot.join(".")}.` : "";
-            if (Array.isArray(options.order)) options.order.map((order) => (order.column = realPath + order.column));
-            else options.order.column = realPath + options.order.column;
+            if (Array.isArray(options.order))
+                options.order.map((order) => (order.column = this.preRoute + order.column));
+            else options.order.column = this.preRoute + options.order.column;
             options.order = this.normalizeOrder(options.order);
         }
 
@@ -304,6 +304,10 @@ export class FilterService<Data> {
 
             this.definitions[key] = this.model[key] as FilterDefinition;
         }
+    }
+
+    private get preRoute(): string {
+        return this.model.baseRoot.length > 0 ? `${this.model.baseRoot.join(".")}.` : "";
     }
 
     private async getInclude(model: typeof M, query: QueryModel, data?: object): Promise<Includeable[]> {
@@ -492,36 +496,32 @@ export class FilterService<Data> {
         for (const child of this.model.baseRoot) {
             model = model.associations[child].target as typeof M;
         }
-        const subPath = this.model.baseRoot.length > 0 ? `${this.model.baseRoot.join(".")}.` : "";
-        options.group = [`${subPath}id`];
-        if (filter.groupBy) {
-            const newGroupOption = SequelizeUtils.getGroupLiteral(model, filter.groupBy).replace(/->/g, ".");
-            if (!options.group.includes(newGroupOption)) options.group.push(newGroupOption);
-        }
-
-        if (!filter.order || (filter.order instanceof Array && !filter.order.length)) {
-            return;
-        }
+        const modelPath = this.model.baseRoot.length ? "" : `${this.repository.model.name}.`;
+        options.group = [`${modelPath}${this.preRoute}id`];
+        const addGroup = (pathRef: string) => {
+            const formattedPath = `${modelPath}${pathRef}`.replace(/->/g, ".");
+            if (!(options.group as string[]).includes(formattedPath)) (options.group as string[]).push(formattedPath);
+        };
+        if (filter.groupBy) addGroup(SequelizeUtils.getGroupLiteral(model, filter.groupBy));
+        if (!filter.order || (filter.order instanceof Array && !filter.order.length)) return;
 
         const orders = this.normalizeOrder(filter.order);
         for (const order of orders) {
-            const rule = this.definitions[order.column] as OrderRuleDefinition | undefined;
+            const columnName = order.column
+                .replace(new RegExp(`${this.repository.model.name}.`, "gy"), "")
+                .replace(new RegExp(this.preRoute, "gy"), "");
+            const rule = this.definitions[columnName] as OrderRuleDefinition | undefined;
             if (rule && OrderRule.validate(rule)) continue;
 
-            if (this.repository.hasCustomAttribute(order.column)) continue;
+            if (this.repository.hasCustomAttribute(columnName)) continue;
 
-            const values = order.column.split(".");
+            const values = columnName.split(".");
             const column = values.pop() as string;
             if (!values.length) {
-                let newGroupOption = `${subPath}${SequelizeUtils.findColumnFieldName(model, column)}`;
-                newGroupOption = newGroupOption.replace(/->/g, ".");
-                if (!options.group.includes(newGroupOption)) options.group.push(newGroupOption);
+                addGroup(`${this.preRoute}${SequelizeUtils.findColumnFieldName(model, column)}`);
             } else {
                 const newGroups = this.sequelizeModelScanner.getGroup(this.repository.model, order);
-                for (const newGroup of newGroups) {
-                    const newGroupOption = newGroup.replace(/->/g, ".");
-                    if (!options.group.includes(newGroupOption)) options.group.push(newGroupOption);
-                }
+                for (const newGroup of newGroups) addGroup(newGroup);
             }
         }
     }
