@@ -555,14 +555,6 @@ export class FilterService<Data> {
             return data.length;
         } else {
             const { group, ...countOptions } = options;
-            const test2 = await this.getAccessControlWhereCondition(
-                options.where,
-                userOrOpt as DataFilterUserModel,
-                false
-            );
-            const test = await this.repository.model.findAll({
-                ...countOptions,
-            });
             const value = (await this.repository.model.count({
                 ...countOptions,
                 distinct: true,
