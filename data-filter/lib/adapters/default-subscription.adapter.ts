@@ -1,3 +1,4 @@
+import { FilterQueryModel } from "../models/filter.model";
 import { SubscriptionAdapter, SubscriptionBase } from "./subscription.adapter";
 
 export class DefaultSubscriptionAdapter extends SubscriptionAdapter {
@@ -8,8 +9,8 @@ export class DefaultSubscriptionAdapter extends SubscriptionAdapter {
             },
         };
     }
-    public removeSubscriptionFromUserId(userId: string) { }
-    public rerouteData(baseRoot: string[], data: any | any[]): any[] {
+    public removeSubscriptionFromUserId(userId: string) {}
+    public rerouteData(baseRoot: string[], filterQuery: FilterQueryModel, data: any | any[]): any[] {
         return data;
     }
 }

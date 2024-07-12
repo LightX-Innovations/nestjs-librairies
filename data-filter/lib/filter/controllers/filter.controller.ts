@@ -45,7 +45,7 @@ export class FilterController<Data> {
         if (user && query.needSubscription) {
             this.filterService.generateSubscriptions(user, filterResult, structuredClone(query));
         }
-        this.filterService.rerouteDataPath(filterResult);
+        this.filterService.rerouteDataPath(structuredClone(query), filterResult);
         return filterResult;
     }
 

@@ -278,9 +278,8 @@ export class FilterService<Data> {
         return subscriptions;
     }
 
-    public rerouteDataPath(resource: FilterResultModel<Data>) {
-        resource.values = this.subscriptionAdapter.rerouteData(this.model.baseRoot, resource["values"]);
-        resource.total = resource.values.length;
+    public rerouteDataPath(filterQuery: FilterQueryModel, resource: FilterResultModel<Data>) {
+        resource.values = this.subscriptionAdapter.rerouteData(this.model.baseRoot, filterQuery, resource["values"]);
     }
 
     private init() {
@@ -503,7 +502,7 @@ export class FilterService<Data> {
             if (!(options.group as string[]).includes(formattedPath)) (options.group as string[]).push(formattedPath);
         };
         if (filter.groupBy) addGroup(SequelizeUtils.getGroupLiteral(model, filter.groupBy));
-        if (!filter.order || (filter.order instanceof Array && !filter.order.length)) return;
+        if (!filter.order || (Array.isArray(filter.order) && !filter.order.length)) return;
 
         const orders = this.normalizeOrder(filter.order);
         for (const order of orders) {
@@ -555,8 +554,18 @@ export class FilterService<Data> {
             return data.length;
         } else {
             const { group, ...countOptions } = options;
-            const value = (await this.repository.model.count({
-                ...countOptions,
+            const countOptionsCopy = { ...countOptions };
+            let model = this.repository.model;
+            if (this.model.baseRoot.length) {
+                for (const child of this.model.baseRoot) {
+                    model = model.associations[child].target as typeof M;
+                }
+                const currentInclude = this.rerouteInclude(options);
+                countOptionsCopy.include = currentInclude.include;
+                countOptionsCopy.where = currentInclude.where;
+            }
+            const value = (await model.count({
+                ...countOptionsCopy,
                 distinct: true,
             })) as number | GroupedCountResultItem[];
             if (typeof value === "number") {
@@ -622,10 +631,6 @@ export class FilterService<Data> {
                 currentInclude.where = options.where;
                 delete options.where;
             }
-            // if (filter.page) {
-            //     currentInclude.limit = filter.page.size;
-            //     currentInclude.offset = filter.page.number * filter.page.size + (filter.page.offset ?? 0);
-            // }
         }
 
         const values = await repository.model.findAll({
@@ -811,7 +816,7 @@ export class FilterService<Data> {
         }
 
         group.push(...groupBy);
-        if (!filter.order || (filter.order instanceof Array && !filter.order.length)) {
+        if (!filter.order || (Array.isArray(filter.order) && !filter.order.length)) {
             return group;
         }
 

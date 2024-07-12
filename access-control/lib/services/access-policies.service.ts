@@ -24,7 +24,7 @@ export class AccessPoliciesService {
     }
 
     public async execute(resourceName: string, user: Users): Promise<PolicyResources> {
-        const policy = this._policies.find(x => x.resourceName === resourceName);
+        const policy = this._policies.find((x) => x.resourceName === resourceName);
         if (!policy) {
             return PolicyResources.resources([]);
         }
@@ -34,7 +34,7 @@ export class AccessPoliciesService {
             const res = await policy.getResources(user);
             this.logger.verbose(`Resources found for user ${user.id}`, policy.name);
 
-            if (res instanceof Array) {
+            if (Array.isArray(res)) {
                 return PolicyResources.resources(res);
             }
 
@@ -44,11 +44,10 @@ export class AccessPoliciesService {
 
             return PolicyResources.resources([]);
         }
-
     }
 
     public registerPolicies(...policies: Type<AccessPolicy>[]): void {
-        policies.forEach(policy => this.registerPolicy(policy));
+        policies.forEach((policy) => this.registerPolicy(policy));
     }
 
     private registerPolicy(policy: Type<AccessPolicy>): void {
@@ -60,7 +59,7 @@ export class AccessPoliciesService {
         const config = this.reflectModel(policy);
         instance.type = config.type ?? this.type;
 
-        const databaseAdapter = this.databaseAdaptersRegistry.getAdapter(config.type ?? this.type)
+        const databaseAdapter = this.databaseAdaptersRegistry.getAdapter(config.type ?? this.type);
         instance.resourceName = databaseAdapter.getResourceName(config.model);
         this._policies.push(instance);
     }

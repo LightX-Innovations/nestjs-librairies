@@ -1,3 +1,5 @@
+import { FilterQueryModel } from "../models/filter.model";
+
 export interface SubscriptionBase {
     info: SubscriptionInfoBase;
 }
@@ -8,6 +10,5 @@ export interface SubscriptionInfoBase {
 export abstract class SubscriptionAdapter {
     public abstract createSubscription(options: any): SubscriptionBase;
     public abstract removeSubscriptionFromUserId(userId: string): void;
-    public abstract rerouteData(baseRoot: string[], data: any | any[]): any[];
+    public abstract rerouteData(baseRoot: string[], filterQuery: FilterQueryModel, data: any | any[]): any[];
 }
-
