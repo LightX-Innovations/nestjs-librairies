@@ -36,16 +36,16 @@ export interface DataFilterFeatureConfig extends DataFilterConfig {
 }
 
 @Global()
-@Module({
-    providers: [DataFilterScanner, SequelizeModelScanner, DataFilterService],
-    exports: [DataFilterScanner, SequelizeModelScanner, DataFilterService],
-})
+@Module({})
 export class DataFilterModule {
     public static forRoot(option?: DataFilterConfig): DynamicModule {
         return {
             module: DataFilterModule,
             imports: [...(option?.imports ?? [])],
             providers: [
+                DataFilterScanner,
+                SequelizeModelScanner,
+                DataFilterService,
                 ...(option?.providers ?? []),
                 {
                     provide: FILTER_OPTION,
@@ -87,6 +87,9 @@ export class DataFilterModule {
                 SubscriptionAdapter,
                 TranslateAdapter,
                 ExportAdapter,
+                DataFilterScanner,
+                SequelizeModelScanner,
+                DataFilterService,
             ],
         };
     }
