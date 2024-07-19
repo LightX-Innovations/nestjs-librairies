@@ -5,6 +5,7 @@ import {
     GroupedCountResultItem,
     IncludeOptions,
     Includeable,
+    ModelStatic,
     Op,
     Order,
     OrderItem,
@@ -279,7 +280,12 @@ export class FilterService<Data> {
     }
 
     public rerouteDataPath(filterQuery: FilterQueryModel, resource: FilterResultModel<Data>) {
-        resource.values = this.subscriptionAdapter.rerouteData(this.model.baseRoot, filterQuery, resource["values"]);
+        resource.values = this.subscriptionAdapter.rerouteData(
+            this.model.baseRoot,
+            filterQuery,
+            resource["values"],
+            Object.getPrototypeOf(this) as ModelStatic<any>
+        );
     }
 
     private init() {
