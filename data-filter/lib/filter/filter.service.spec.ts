@@ -104,8 +104,7 @@ describe("FilterService", () => {
         );
     });
 
-    // TODO
-    it.skip("getFindOptions should return a valid Sequelize FindOptions", async () => {
+    it("getFindOptions should return a valid Sequelize FindOptions", async () => {
         const options = await filterService.getFindOptions(ContractSystems, {
             condition: "and",
             rules: [
@@ -130,25 +129,50 @@ describe("FilterService", () => {
         expect(options).toStrictEqual({
             include: [
                 {
+                    as: "contract",
+                    model: Contracts,
+                    required: false,
+                    paranoid: true,
+                    attributes: ["id", "start_date", "end_date"],
+                    include: [
+                        {
+                            as: "invoice",
+                            model: Invoices,
+                            order: undefined,
+                            required: false,
+                            paranoid: true,
+                            separate: false,
+                            attributes: ["id", "paid", "payment_date", "payment_method"],
+                            include: [],
+                        },
+                    ],
+                },
+                {
                     as: "system",
                     model: Systems,
                     required: false,
                     paranoid: true,
-                    attributes: [],
+                    attributes: {
+                        include: [],
+                    },
                     include: [
                         {
                             as: "place",
                             model: Places,
                             required: false,
                             paranoid: true,
-                            attributes: [],
+                            attributes: {
+                                include: [],
+                            },
                             include: [
                                 {
                                     as: "owners",
                                     model: Owners,
+                                    order: undefined,
                                     required: false,
+                                    separate: false,
                                     paranoid: true,
-                                    attributes: [],
+                                    attributes: ["id"],
                                     include: [
                                         {
                                             as: "person",
@@ -157,7 +181,7 @@ describe("FilterService", () => {
                                             required: false,
                                             separate: false,
                                             paranoid: false,
-                                            attributes: [],
+                                            attributes: ["email", "id"],
                                             include: [],
                                         },
                                     ],
