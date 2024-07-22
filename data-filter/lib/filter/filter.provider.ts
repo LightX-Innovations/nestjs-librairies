@@ -1,5 +1,5 @@
 import { Provider, Type } from "@nestjs/common";
-import { AccessControlAdapter, TranslateAdapter } from "../adapters";
+import { AccessControlAdapter, SubscriptionAdapter, TranslateAdapter } from "../adapters";
 import { DataFilterService } from "../data-filter.service";
 import { SequelizeModelScanner } from "../scanners/sequelize-model.scanner";
 import { BaseFilter } from "./base-filter";
@@ -10,6 +10,13 @@ export function createFilterProvider(filter: Type<BaseFilter<any>>, disableAcces
     return {
         provide: FilterUtils.getProviderToken(filter),
         useFactory: FilterServiceFactory({ disableAccessControl }),
-        inject: [AccessControlAdapter, TranslateAdapter, filter, SequelizeModelScanner, DataFilterService]
+        inject: [
+            AccessControlAdapter,
+            SubscriptionAdapter,
+            TranslateAdapter,
+            filter,
+            SequelizeModelScanner,
+            DataFilterService,
+        ],
     };
 }

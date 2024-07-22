@@ -3,16 +3,19 @@ import {
     CountOptions,
     FindOptions,
     GroupedCountResultItem,
-    Includeable,
     IncludeOptions,
-    literal,
+    Includeable,
+    ModelStatic,
     Op,
     Order,
+    OrderItem,
     WhereOptions,
+    literal,
 } from "sequelize";
 import { GroupOption, ProjectionAlias } from "sequelize/types/model";
 import { ExportTypes, FilterQueryModel, FilterResultModel, FilterSearchModel, OrderModel } from "../";
 import { AccessControlAdapter } from "../adapters/access-control.adapter";
+import { SubscriptionAdapter, SubscriptionBase } from "../adapters/subscription.adapter";
 import { TranslateAdapter } from "../adapters/translate.adapter";
 import { DataFilterRepository } from "../data-filter.repository";
 import { DataFilterService } from "../data-filter.service";
@@ -45,6 +48,7 @@ export class FilterService<Data> {
 
     constructor(
         private accessControlAdapter: AccessControlAdapter,
+        private subscriptionAdapter: SubscriptionAdapter,
         private translateAdapter: TranslateAdapter,
         private model: BaseFilter<Data>,
         private sequelizeModelScanner: SequelizeModelScanner,
@@ -57,6 +61,7 @@ export class FilterService<Data> {
     public forData<T>(dataDef: Type<T>): FilterService<T> {
         return new FilterService(
             this.accessControlAdapter,
+            this.subscriptionAdapter,
             this.translateAdapter,
             {
                 ...this.model,
@@ -150,6 +155,9 @@ export class FilterService<Data> {
         const user = opt ? (userOrOpt as DataFilterUserModel) : null;
 
         if (options.order) {
+            if (Array.isArray(options.order))
+                options.order.map((order) => (order.column = this.preRoute + order.column));
+            else options.order.column = this.preRoute + options.order.column;
             options.order = this.normalizeOrder(options.order);
         }
 
@@ -183,6 +191,9 @@ export class FilterService<Data> {
         const findOptions = await this.getFindOptions(this.exportRepository.model, options.query);
 
         if (options.order) {
+            if (Array.isArray(options.order))
+                options.order.map((order) => (order.column = this.preRoute + order.column));
+            else options.order.column = this.preRoute + options.order.column;
             options.order = this.normalizeOrder(options.order);
         }
 
@@ -241,6 +252,42 @@ export class FilterService<Data> {
         return option;
     }
 
+    public generateSubscriptions(
+        user: DataFilterUserModel,
+        resource: FilterResultModel<Data>,
+        query: FilterQueryModel
+    ): SubscriptionBase[] {
+        const subscriptions: SubscriptionBase[] = [];
+        for (const result of resource.values) {
+            const subscriptionOption: { [key: string]: any } = {
+                userId: user.id!,
+                resource: result,
+                resourceModel: this.model.dataDefinition,
+                baseRoot: this.model.baseRoot,
+            };
+            if (query.expiresAt) subscriptionOption["expiresAt"] = new Date(query.expiresAt);
+            subscriptionOption["filterFunc"] = async () =>
+                (await this.filter(user, { ...structuredClone(query) })).values.find(
+                    (data) => (result as any).id == (data as any).id
+                );
+            const sub = this.subscriptionAdapter.createSubscription(subscriptionOption);
+            subscriptions.push(sub);
+        }
+        if (subscriptions && subscriptions.length) {
+            resource.subscriptionIds = subscriptions.map((s) => s.info.id);
+        }
+        return subscriptions;
+    }
+
+    public rerouteDataPath(filterQuery: FilterQueryModel, resource: FilterResultModel<Data>) {
+        resource.values = this.subscriptionAdapter.rerouteData(
+            this.model.baseRoot,
+            filterQuery,
+            resource["values"],
+            Object.getPrototypeOf(this) as ModelStatic<any>
+        );
+    }
+
     private init() {
         this.repository = this.dataFilter.for(this.model.dataDefinition);
         this.exportRepository = this.dataFilter.for(this.model.exportDataDefinition ?? this.model.dataDefinition);
@@ -264,12 +311,21 @@ export class FilterService<Data> {
         }
     }
 
+    private get preRoute(): string {
+        return this.model.baseRoot.length > 0 ? `${this.model.baseRoot.join(".")}.` : "";
+    }
+
     private async getInclude(model: typeof M, query: QueryModel, data?: object): Promise<Includeable[]> {
+        const includes: IncludeOptions[][] = [];
+        let modelInclude = this.repository.generateFindOptions().include;
+        if (!modelInclude) modelInclude = [];
+        else if (!Array.isArray(modelInclude)) modelInclude = [modelInclude];
+        includes.push(modelInclude as IncludeOptions[]);
+
         if (!query.rules) {
-            return [];
+            return SequelizeUtils.reduceIncludes(includes, true);
         }
 
-        const includes: IncludeOptions[][] = [];
         for (const rule of query.rules) {
             const m = rule as QueryModel;
             if (m.condition) {
@@ -441,33 +497,36 @@ export class FilterService<Data> {
     }
 
     private addGroupOption(filter: FilterQueryModel, options: CountOptions): void {
-        const model = this.repository.model;
-        options.group = [`${model.name}.id`];
-        if (filter.groupBy) {
-            options.group.push(SequelizeUtils.getGroupLiteral(this.repository.model, filter.groupBy));
+        let model = this.repository.model;
+        for (const child of this.model.baseRoot) {
+            model = model.associations[child].target as typeof M;
         }
-
-        if (!filter.order || (filter.order instanceof Array && !filter.order.length)) {
-            return;
-        }
+        const modelPath = this.model.baseRoot.length ? "" : `${this.repository.model.name}.`;
+        options.group = [`${modelPath}${this.preRoute}id`];
+        const addGroup = (pathRef: string) => {
+            const formattedPath = `${modelPath}${pathRef}`.replace(/->/g, ".");
+            if (!(options.group as string[]).includes(formattedPath)) (options.group as string[]).push(formattedPath);
+        };
+        if (filter.groupBy) addGroup(SequelizeUtils.getGroupLiteral(model, filter.groupBy));
+        if (!filter.order || (Array.isArray(filter.order) && !filter.order.length)) return;
 
         const orders = this.normalizeOrder(filter.order);
         for (const order of orders) {
-            const rule = this.definitions[order.column] as OrderRuleDefinition | undefined;
-            if (rule && OrderRule.validate(rule)) {
-                continue;
-            }
+            const columnName = order.column
+                .replace(new RegExp(`${this.repository.model.name}.`, "gy"), "")
+                .replace(new RegExp(this.preRoute, "gy"), "");
+            const rule = this.definitions[columnName] as OrderRuleDefinition | undefined;
+            if (rule && OrderRule.validate(rule)) continue;
 
-            if (this.repository.hasCustomAttribute(order.column)) {
-                continue;
-            }
+            if (this.repository.hasCustomAttribute(columnName)) continue;
 
-            const values = order.column.split(".");
+            const values = columnName.split(".");
             const column = values.pop() as string;
             if (!values.length) {
-                options.group.push(`${model.name}.${SequelizeUtils.findColumnFieldName(model, column)}`);
+                addGroup(`${this.preRoute}${SequelizeUtils.findColumnFieldName(model, column)}`);
             } else {
-                options.group.push(...this.sequelizeModelScanner.getGroup(model, order));
+                const newGroups = this.sequelizeModelScanner.getGroup(this.repository.model, order);
+                for (const newGroup of newGroups) addGroup(newGroup);
             }
         }
     }
@@ -485,6 +544,14 @@ export class FilterService<Data> {
             options.where = await this.getAccessControlWhereCondition(options.where, userOrOpt as DataFilterUserModel);
         }
 
+        if (this.model.baseRoot.length) {
+            const currentInclude = this.rerouteInclude(options);
+            if (options.where) {
+                currentInclude.where = options.where;
+                delete options.where;
+            }
+        }
+
         if (options.having) {
             const data = await this.repository.model.findAll({
                 ...options,
@@ -493,8 +560,18 @@ export class FilterService<Data> {
             return data.length;
         } else {
             const { group, ...countOptions } = options;
-            const value = (await this.repository.model.count({
-                ...countOptions,
+            const countOptionsCopy = { ...countOptions };
+            let model = this.repository.model;
+            if (this.model.baseRoot.length) {
+                for (const child of this.model.baseRoot) {
+                    model = model.associations[child].target as typeof M;
+                }
+                const currentInclude = this.rerouteInclude(options);
+                countOptionsCopy.include = currentInclude.include;
+                countOptionsCopy.where = currentInclude.where;
+            }
+            const value = (await model.count({
+                ...countOptionsCopy,
                 distinct: true,
             })) as number | GroupedCountResultItem[];
             if (typeof value === "number") {
@@ -554,11 +631,22 @@ export class FilterService<Data> {
             .filter((column) => column && !column.includes(".") && !repository.hasCustomAttribute(column));
         const customAttributes = filter.order ? this.getOrderCustomAttribute(filter.order, filter.data) : [];
 
+        if (this.model.baseRoot.length) {
+            const currentInclude = this.rerouteInclude(options);
+            if (options.where) {
+                currentInclude.where = options.where;
+                delete options.where;
+            }
+        }
+
         const values = await repository.model.findAll({
             ...options,
             attributes: ["id", ...nonNestedOrderColumns, ...customAttributes],
-            limit: filter.page ? filter.page.size : undefined,
-            offset: filter.page ? filter.page.number * filter.page.size + (filter.page.offset ?? 0) : undefined,
+            limit: filter.page && !this.model.baseRoot.length ? filter.page.size : undefined,
+            offset:
+                filter.page && !this.model.baseRoot.length
+                    ? filter.page.number * filter.page.size + (filter.page.offset ?? 0)
+                    : undefined,
             subQuery: false,
             group: filter.groupBy ?? options.group,
             order,
@@ -567,9 +655,8 @@ export class FilterService<Data> {
         const group = this.generateRepositoryGroupBy(filter);
         return await repository.findAll(
             {
-                where: {
-                    id: values.map((x) => x.id),
-                },
+                include: [...((options.include as Includeable[]) ?? [])],
+                where: { id: values.map((x) => x.id) },
                 order,
                 paranoid: options.paranoid,
                 group,
@@ -578,9 +665,23 @@ export class FilterService<Data> {
         );
     }
 
+    private rerouteInclude(options: FindOptions) {
+        let currentInclude = options;
+        for (const path of this.model.baseRoot) {
+            for (const it in currentInclude.include as Includeable[]) {
+                if (((currentInclude.include as Includeable[])[it] as IncludeOptions).as == path) {
+                    currentInclude = (currentInclude.include as Includeable[])[it] as IncludeOptions;
+                    break;
+                }
+            }
+        }
+        return currentInclude;
+    }
+
     private async getAccessControlWhereCondition(
         where: WhereOptions | undefined,
-        user: DataFilterUserModel
+        user: DataFilterUserModel,
+        rootBased: boolean = true
     ): Promise<WhereOptions | undefined> {
         if (this.options?.disableAccessControl) {
             return where;
@@ -592,9 +693,15 @@ export class FilterService<Data> {
             throw new Error("AccessControl isn't enable in your project");
         }
 
-        const resources = await this.accessControlAdapter.getResources(this.repository.model, user);
+        let model = this.repository.model;
+        if (rootBased) {
+            for (const child of this.model.baseRoot) {
+                model = model.associations[child].target as typeof M;
+            }
+        }
+        const resources = await this.accessControlAdapter.getResources(model, user);
         if (resources.ids) {
-            return SequelizeUtils.mergeWhere({ id: resources.ids }, where ?? {});
+            return SequelizeUtils.mergeWhere({ id: [...new Set(resources.ids)] }, where ?? {});
         }
         if (resources.where) {
             return {
@@ -671,7 +778,12 @@ export class FilterService<Data> {
 
             const rule = this.definitions[order.column] as OrderRuleDefinition | undefined;
             if (!rule || !OrderRule.validate(rule)) {
-                generatedOrder.push([order.column, order.direction.toUpperCase()]);
+                if (order.column.includes(".")) {
+                    const formattedOrder: any[] = [...order.column.split("."), order.direction.toUpperCase()];
+                    generatedOrder.push(formattedOrder as OrderItem);
+                } else {
+                    generatedOrder.push([order.column, order.direction.toUpperCase()]);
+                }
             } else {
                 generatedOrder.push([rule.getOrderOption(this.repository.model), order.direction.toUpperCase()]);
             }
@@ -710,7 +822,7 @@ export class FilterService<Data> {
         }
 
         group.push(...groupBy);
-        if (!filter.order || (filter.order instanceof Array && !filter.order.length)) {
+        if (!filter.order || (Array.isArray(filter.order) && !filter.order.length)) {
             return group;
         }
 

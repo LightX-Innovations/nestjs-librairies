@@ -39,7 +39,14 @@ export class FilterController<Data> {
     @UseGuards(FilterQueryGuard)
     public async filter(@Body() query: FilterQueryModel, @Req() req: any): Promise<FilterResultModel<Data>> {
         const user = await this.getUser(req);
-        return user ? this.filterService.filter(user, query) : this.filterService.filter(query);
+        const filterResult = await (user
+            ? this.filterService.filter(user, structuredClone(query))
+            : this.filterService.filter(structuredClone(query)));
+        if (user && query.needSubscription) {
+            this.filterService.generateSubscriptions(user, filterResult, structuredClone(query));
+        }
+        this.filterService.rerouteDataPath(structuredClone(query), filterResult);
+        return filterResult;
     }
 
     @Post("filter-count")

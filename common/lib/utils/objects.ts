@@ -7,7 +7,7 @@ export class ObjectUtils {
         for (const property in object) {
             if (!object.hasOwnProperty || object.hasOwnProperty(property)) {
                 const value = object[property];
-                if (value instanceof Array) {
+                if (Array.isArray(value)) {
                     for (let i = 0; i < value.length; ++i) {
                         value[i] = valueHandle(value[i]);
                     }
@@ -25,13 +25,13 @@ export class ObjectUtils {
         const properties: any[] = [];
         ObjectUtils.forEachProperty(
             object,
-            value => {
+            (value) => {
                 properties.push(value);
                 return value;
             },
             !deep
                 ? null
-                : deepObject => {
+                : (deepObject) => {
                       properties.push(ObjectUtils.objectToArrayOfProperties(deepObject));
                   }
         );

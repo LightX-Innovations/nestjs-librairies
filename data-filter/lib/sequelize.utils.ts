@@ -96,7 +96,7 @@ export class SequelizeUtils {
     ): FindAttributeOptions | undefined {
         type Attr = { exclude?: string[]; include?: (string | ProjectionAlias)[] };
 
-        if (a instanceof Array && b instanceof Array) {
+        if (Array.isArray(a) && Array.isArray(b)) {
             return ArrayUtils.uniqueValues([...a, ...b, "id"], (x) => x);
         } else if (a || b) {
             const aAttributes = (a ?? {}) as Attr;
@@ -110,7 +110,7 @@ export class SequelizeUtils {
                 return b;
             }
 
-            if (a instanceof Array) {
+            if (Array.isArray(a)) {
                 const bAttr = (b ?? {}) as Attr;
                 if (bAttr.include?.length) {
                     return ArrayUtils.uniqueValues([...a, ...bAttr.include, "id"], (x) => x);
@@ -119,7 +119,7 @@ export class SequelizeUtils {
                 return b ? ArrayUtils.uniqueValues([...a, "id"], (x) => x) : b;
             }
 
-            if (b instanceof Array) {
+            if (Array.isArray(b)) {
                 const aAttr = (a ?? {}) as Attr;
                 if (aAttr.include?.length) {
                     return ArrayUtils.uniqueValues([...b, ...aAttr.include, "id"], (x) => x);
@@ -160,7 +160,7 @@ export class SequelizeUtils {
     }
 
     public static ensureAttributesValidity(attribute: FindAttributeOptions): FindAttributeOptions {
-        if (attribute instanceof Array) {
+        if (Array.isArray(attribute)) {
             if (attribute.find((x) => x === "id")) {
                 return attribute;
             }
@@ -195,12 +195,12 @@ export class SequelizeUtils {
         }
 
         const res: OrderItem[] = [];
-        if (a instanceof Array) {
+        if (Array.isArray(a)) {
             res.push(...a);
         } else if (a) {
             res.push(a);
         }
-        if (b instanceof Array) {
+        if (Array.isArray(b)) {
             res.push(...b);
         } else if (b) {
             res.push(b);
@@ -332,7 +332,7 @@ export class SequelizeUtils {
 
         let step = steps.shift();
         while (step) {
-            if ((model as any)[step] instanceof Array) {
+            if (Array.isArray((model as any)[step])) {
                 if (!steps.length) {
                     return (model as any)[step];
                 }
@@ -340,7 +340,7 @@ export class SequelizeUtils {
                 return ((model as any)[step] as Array<any>)
                     .map((x) => this.reduceModelFromPath(x, steps.join(".")))
                     .reduce((all: any, current) => {
-                        if (current instanceof Array) {
+                        if (Array.isArray(current)) {
                             return [...all, ...current];
                         }
                         return [...all, current];

@@ -15,7 +15,7 @@ export class ArrayUtils {
                 continue;
             }
 
-            if (!(value instanceof Array)) {
+            if (!Array.isArray(value)) {
                 value = [value];
             }
 
@@ -29,7 +29,7 @@ export class ArrayUtils {
     }
 
     public static joinIfDefined(array: any[], join = " "): string {
-        return array.filter(val => val).join(join);
+        return array.filter((val) => val).join(join);
     }
 
     public static uniqueValues<Item, Value>(array: Item[], valueSelector: (item: Item) => Value): Value[] {
@@ -43,6 +43,6 @@ declare global {
     }
 }
 
-Array.prototype.sum = function(digits = 2) {
+Array.prototype.sum = function (digits = 2) {
     return this.reduce((a, b) => a + b, 0).toFixed(digits);
 };

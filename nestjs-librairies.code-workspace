@@ -1,35 +1,41 @@
 {
-	"folders": [
-		{
-			"path": "."
-		},
-		{
-			"path": "access-control"
-		},
-		{
-			"path": "access-control-mongoose"
-		},
-		{
-			"path": "access-control-sequelize"
-		},
-		{
-			"path": "common"
-		},
-		{
-			"path": "config"
-		},
-		{
-			"path": "config-sequelize"
-		},
-		{
-			"path": "data-filter"
-		},
-		{
-			"path": "redis"
-		},
-		{
-			"path": "sequelize-utils"
-		}
-	],
-	"settings": {}
+  "folders": [
+    {
+      "path": "."
+    },
+    {
+      "path": "access-control"
+    },
+    {
+      "path": "access-control-mongoose"
+    },
+    {
+      "path": "access-control-sequelize"
+    },
+    {
+      "path": "common"
+    },
+    {
+      "path": "config"
+    },
+    {
+      "path": "config-sequelize"
+    },
+    {
+      "path": "data-filter"
+    },
+    {
+      "path": "redis"
+    },
+    {
+      "path": "sequelize-utils"
+    }
+  ],
+  "settings": {
+    "jest.outputConfig": {
+      "revealOn": "demand",
+      "revealWithFocus": "test-results"
+    },
+    "testing.openTesting": "neverOpen"
+  }
 }

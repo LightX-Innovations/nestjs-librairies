@@ -23,6 +23,8 @@ export interface FilterQueryModel {
     order?: OrderModel | OrderModel[];
     data?: object;
     groupBy?: string;
+    needSubscription?: boolean;
+    expiresAt?: Date;
 }
 
 export interface FilterResultModel<T> {
@@ -32,4 +34,5 @@ export interface FilterResultModel<T> {
         number: number;
         size: number;
     };
+    subscriptionIds?: number[];
 }

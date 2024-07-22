@@ -1,9 +1,9 @@
 import { Type } from "@nestjs/common";
 import { TranslateAdapter } from "../adapters/translate.adapter";
+import { ExportTypes } from "../models/export-types.model";
 import { Filter, FilterDefinition, GroupFilter, GroupFilterDefinition } from "./filters";
 import { DefaultFilterDefinition } from "./filters/default.filter";
 import { FilterConfig, FilterModel } from "./models";
-import { ExportTypes } from "../models/export-types.model";
 import { DefaultOrderRule } from "./order-rules/default.order-rule";
 
 export abstract class BaseFilter<T> implements FilterModel<T> {
@@ -14,6 +14,7 @@ export abstract class BaseFilter<T> implements FilterModel<T> {
     public exportDataDefinition?: Type<T>;
     public defaultFilter?: DefaultFilterDefinition;
     public defaultOrderRule?: DefaultOrderRule;
+    public baseRoot: string[] = [];
 
     public set translateService(translateService: TranslateAdapter) {
         this._translateService = translateService;
