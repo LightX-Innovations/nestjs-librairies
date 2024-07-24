@@ -1,4 +1,3 @@
-import { ModelStatic } from "sequelize";
 import { FilterQueryModel } from "../models/filter.model";
 
 export interface SubscriptionBase {
@@ -14,7 +13,6 @@ export abstract class SubscriptionAdapter {
     public abstract rerouteData(
         baseRoot: string[],
         filterQuery: FilterQueryModel,
-        data: any | any[],
-        model: ModelStatic<any>
+        data: any | any[]
     ): any[];
 }
