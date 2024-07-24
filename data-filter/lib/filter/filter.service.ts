@@ -5,12 +5,11 @@ import {
     GroupedCountResultItem,
     IncludeOptions,
     Includeable,
-    ModelStatic,
     Op,
     Order,
     OrderItem,
     WhereOptions,
-    literal,
+    literal
 } from "sequelize";
 import { GroupOption, ProjectionAlias } from "sequelize/types/model";
 import { ExportTypes, FilterQueryModel, FilterResultModel, FilterSearchModel, OrderModel } from "../";
@@ -283,8 +282,7 @@ export class FilterService<Data> {
         resource.values = this.subscriptionAdapter.rerouteData(
             this.model.baseRoot,
             filterQuery,
-            resource["values"],
-            Object.getPrototypeOf(this) as ModelStatic<any>
+            resource["values"]
         );
     }
 
