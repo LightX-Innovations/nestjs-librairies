@@ -1,6 +1,6 @@
 {
     "name": "@lightx-innovations/nestjs-config",
-    "version": "10.1.0",
+    "version": "10.1.1",
     "scripts": {
         "watch": "gulp",
         "build": "gulp build",
@@ -19,8 +19,8 @@
     "peerDependencies": {
         "@nestjs/common": ">=10.0.0",
         "@nestjs/core": ">=10.0.0",
-        "reflect-metadata": "^0.1.13",
-        "class-transformer": "^0.5.1"
+        "reflect-metadata": ">=0.1.13",
+        "class-transformer": ">=0.5.1"
     },
     "devDependencies": {
         "@nestjs/common": "^10.0.0",
