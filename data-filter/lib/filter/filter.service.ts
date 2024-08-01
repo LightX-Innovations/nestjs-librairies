@@ -536,6 +536,11 @@ export class FilterService<Data> {
         }
 
         this.rerouteWhere(options);
+        options.where = await this.getAccessControlWhereCondition(
+            options.where,
+            userOrOpt as DataFilterUserModel,
+            false
+        );
 
         if (options.having) {
             const data = await this.repository.model.findAll({
@@ -595,12 +600,9 @@ export class FilterService<Data> {
 
         const repository = repo ?? (optOrRepoIsRepo ? optOrRepo : this.repository);
 
-        /**
-         * This means that findValues was called with a user
-         */
         options.where = await this.getAccessControlWhereCondition(options.where, userOrOFilter as Users);
-
         this.rerouteWhere(options);
+        options.where = await this.getAccessControlWhereCondition(options.where, userOrOFilter as Users, false);
         const order = this.getOrderOptions(filter.order ?? []);
         const group: any = this.generateRepositoryGroupBy(filter);
         const values = await repository.findAll(
