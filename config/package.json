@@ -1,6 +1,6 @@
 {
     "name": "@lightx-innovations/nestjs-config",
-    "version": "10.1.1",
+    "version": "10.1.2",
     "scripts": {
         "watch": "gulp",
         "build": "gulp build",
