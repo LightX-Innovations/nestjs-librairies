@@ -1,6 +1,6 @@
 {
     "name": "@lightx-innovations/nestjs-config-sequelize",
-    "version": "10.1.0",
+    "version": "10.1.1",
     "scripts": {
         "watch": "gulp",
         "build": "gulp build",
