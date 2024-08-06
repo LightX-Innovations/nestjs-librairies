@@ -9,7 +9,7 @@ import {
     Order,
     OrderItem,
     WhereOptions,
-    literal
+    literal,
 } from "sequelize";
 import { GroupOption, ProjectionAlias } from "sequelize/types/model";
 import { ExportTypes, FilterQueryModel, FilterResultModel, FilterSearchModel, OrderModel } from "../";
@@ -169,15 +169,12 @@ export class FilterService<Data> {
         }
         this.addGroupOption(options, countOptions);
 
-        const total = await (user ? this.countTotalValues(user, countOptions) : this.countTotalValues(countOptions));
-
-        const values = await (user
+        const result = await (user
             ? this.findValues(user, options, countOptions)
             : this.findValues(options, countOptions));
         return {
-            total,
+            ...result,
             page: options.page,
-            values,
         };
     }
 
@@ -203,17 +200,17 @@ export class FilterService<Data> {
             this.addOrderCondition(options.order, findOptions, options.data);
         }
         delete options.page;
-        const values = await (user
+        const result = await (user
             ? this.findValues(user, options, findOptions, this.exportRepository)
             : this.findValues(options, findOptions, this.exportRepository));
         const headers = await this.model.getExportedFieldsKeys(type);
         if (headers.length) {
             const data = await Promise.all(
-                values.map((value) => this.model.getExportedFields(value, user?.language ?? "fr", type))
+                result.values.map((value) => this.model.getExportedFields(value, user?.language ?? "fr", type))
             );
             return await this.repository.downloadData(headers, data, type, user?.language ?? "fr", exportOptions);
         } else {
-            return await this.repository.downloadData(values, type, user?.language ?? "fr", exportOptions);
+            return await this.repository.downloadData(result.values, type, user?.language ?? "fr", exportOptions);
         }
     }
 
@@ -279,11 +276,7 @@ export class FilterService<Data> {
     }
 
     public rerouteDataPath(filterQuery: FilterQueryModel, resource: FilterResultModel<Data>) {
-        resource.values = this.subscriptionAdapter.rerouteData(
-            this.model.baseRoot,
-            filterQuery,
-            resource["values"]
-        );
+        resource.values = this.subscriptionAdapter.rerouteData(this.model.baseRoot, filterQuery, resource["values"]);
     }
 
     private init() {
@@ -542,13 +535,12 @@ export class FilterService<Data> {
             options.where = await this.getAccessControlWhereCondition(options.where, userOrOpt as DataFilterUserModel);
         }
 
-        if (this.model.baseRoot.length) {
-            const currentInclude = this.rerouteInclude(options);
-            if (options.where) {
-                currentInclude.where = options.where;
-                delete options.where;
-            }
-        }
+        this.rerouteWhere(options);
+        options.where = await this.getAccessControlWhereCondition(
+            options.where,
+            userOrOpt as DataFilterUserModel,
+            false
+        );
 
         if (options.having) {
             const data = await this.repository.model.findAll({
@@ -585,12 +577,12 @@ export class FilterService<Data> {
         filter: FilterQueryModel,
         options: FindOptions,
         repository?: DataFilterRepository<Data>
-    ): Promise<Data[]>;
+    ): Promise<{ values: Data[]; total: number }>;
     private async findValues<Users extends DataFilterUserModel>(
         filter: FilterQueryModel,
         options: FindOptions,
         repository?: DataFilterRepository<Data>
-    ): Promise<Data[]>;
+    ): Promise<{ values: Data[]; total: number }>;
     private async findValues<Users extends DataFilterUserModel>(
         ...args: [
             Users | FilterQueryModel,
@@ -598,7 +590,7 @@ export class FilterService<Data> {
             FindOptions | DataFilterRepository<Data> | undefined,
             DataFilterRepository<Data>?
         ]
-    ): Promise<Data[]> {
+    ): Promise<{ values: Data[]; total: number }> {
         const [userOrOFilter, filterOrOpt, optOrRepo, repo] = args;
         const optOrRepoIsRepo = optOrRepo instanceof DataFilterRepository;
 
@@ -608,59 +600,43 @@ export class FilterService<Data> {
 
         const repository = repo ?? (optOrRepoIsRepo ? optOrRepo : this.repository);
 
-        /**
-         * This means that findValues was called with a user
-         */
-        if (repo) {
-            options.where = await this.getAccessControlWhereCondition(options.where, userOrOFilter as Users);
-        }
-
+        options.where = await this.getAccessControlWhereCondition(options.where, userOrOFilter as Users);
+        this.rerouteWhere(options);
+        options.where = await this.getAccessControlWhereCondition(options.where, userOrOFilter as Users, false);
         const order = this.getOrderOptions(filter.order ?? []);
-        const nonNestedOrderColumns = (Array.isArray(filter.order) ? filter.order : [filter.order])
-            .filter((order): order is OrderModel => !!order)
-            .map((order) => {
-                const rule = this.definitions[order.column] as OrderRuleDefinition | undefined;
-                if (!rule || !OrderRule.validate(rule)) {
-                    return order.column;
-                } else {
-                    return [rule.path ?? "", rule.attribute].join(".");
-                }
-            })
-            .filter((column) => column && !column.includes(".") && !repository.hasCustomAttribute(column));
-        const customAttributes = filter.order ? this.getOrderCustomAttribute(filter.order, filter.data) : [];
-
-        if (this.model.baseRoot.length) {
-            const currentInclude = this.rerouteInclude(options);
-            if (options.where) {
-                currentInclude.where = options.where;
-                delete options.where;
-            }
-        }
-
-        const values = await repository.model.findAll({
-            ...options,
-            attributes: ["id", ...nonNestedOrderColumns, ...customAttributes],
-            limit: filter.page && !this.model.baseRoot.length ? filter.page.size : undefined,
-            offset:
-                filter.page && !this.model.baseRoot.length
-                    ? filter.page.number * filter.page.size + (filter.page.offset ?? 0)
-                    : undefined,
-            subQuery: false,
-            group: filter.groupBy ?? options.group,
-            order,
-        });
-
-        const group = this.generateRepositoryGroupBy(filter);
-        return await repository.findAll(
+        const group: any = this.generateRepositoryGroupBy(filter);
+        const values = await repository.findAll(
             {
-                include: [...((options.include as Includeable[]) ?? [])],
-                where: { id: values.map((x) => x.id) },
+                ...options,
+                limit: filter.page && !this.model.baseRoot.length ? filter.page.size : undefined,
+                offset:
+                    filter.page && !this.model.baseRoot.length
+                        ? filter.page.number * filter.page.size + (filter.page.offset ?? 0)
+                        : undefined,
+                subQuery: false,
                 order,
                 paranoid: options.paranoid,
                 group,
             },
             filter.data ?? {}
         );
+        return { values, total: this.countTotalFromData(values) };
+    }
+
+    private countTotalFromData(values: Data[]) {
+        if (!this.model.baseRoot.length) return values.length;
+        let total = 0;
+        for (const value of values) total += this.recursiveCountTotalFromData(value, this.model.baseRoot);
+        return total;
+    }
+
+    private recursiveCountTotalFromData(value: any | any[], baseRoot: string[]) {
+        let total = 0;
+        const listValue = Array.isArray(value) ? value : [value];
+        if (!baseRoot.length) return listValue.length;
+        for (const subValue of listValue)
+            total += this.recursiveCountTotalFromData(subValue[baseRoot[0]], baseRoot.slice(1));
+        return total;
     }
 
     private rerouteInclude(options: FindOptions) {
@@ -674,6 +650,16 @@ export class FilterService<Data> {
             }
         }
         return currentInclude;
+    }
+
+    private rerouteWhere(options: FindOptions) {
+        if (this.model.baseRoot.length) {
+            const currentInclude = this.rerouteInclude(options);
+            if (options.where) {
+                currentInclude.where = options.where;
+                delete options.where;
+            }
+        }
     }
 
     private async getAccessControlWhereCondition(

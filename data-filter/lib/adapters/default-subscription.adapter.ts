@@ -9,7 +9,6 @@ export class DefaultSubscriptionAdapter extends SubscriptionAdapter {
             },
         };
     }
-    public removeSubscriptionFromUserId(userId: string) {}
     public rerouteData(baseRoot: string[], filterQuery: FilterQueryModel, data: any | any[]): any[] {
         return data;
     }
