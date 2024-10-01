@@ -7,9 +7,9 @@ import { Model } from "sequelize-typescript";
 
 @DatabaseAdapter({ type: "sequelize" })
 export class SequelizeDatabaseAdapter implements IDatabaseAdapter {
-    private filterModelCallback?: (model: Model) => boolean;
+    private filterModelCallback?: (model: Model & { name: string }) => boolean;
 
-    constructor(filterModelCallback?: (model: Model) => boolean) {
+    constructor(filterModelCallback?: (model: Model & { name: string }) => boolean) {
         this.filterModelCallback = filterModelCallback;
     }
 

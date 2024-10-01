@@ -7,7 +7,9 @@ import { Model } from "sequelize-typescript";
     imports: [SequelizeHooksAccessControlModule]
 })
 export class AccessControlSequelizeModule {
-    public static forRoot(options: { filterModelCallback?: (model: Model) => boolean }): DynamicModule {
+    public static forRoot(options: {
+        filterModelCallback?: (model: Model & { name: string }) => boolean;
+    }): DynamicModule {
         return {
             module: AccessControlSequelizeModule,
             providers: [

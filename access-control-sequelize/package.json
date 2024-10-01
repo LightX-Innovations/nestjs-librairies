@@ -1,6 +1,6 @@
 {
     "name": "@lightx-innovations/nestjs-access-control-sequelize",
-    "version": "10.1.2",
+    "version": "10.1.3",
     "description": "Sequelize utilities for Recursyve's NestJs AccessControl library",
     "main": "index.js",
     "scripts": {
