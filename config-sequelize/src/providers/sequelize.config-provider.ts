@@ -1,7 +1,7 @@
 import { ConfigProvider, IConfigProvider } from "@lightx-innovations/nestjs-config";
 import { ConfigHandler } from "@lightx-innovations/nestjs-config/handlers/config.handler";
 import { ConfigTransformerService } from "@lightx-innovations/nestjs-config/services/config-transformer.service";
-import { Injectable, Type } from "@nestjs/common";
+import { Inject, Injectable, Type } from "@nestjs/common";
 import { Transaction } from "sequelize";
 import {
     ConfigSequelizeModel,
@@ -11,6 +11,7 @@ import {
     SequelizeConfigUpdate,
     UpdateSequelizeConfigOptions
 } from "../models";
+import { Sequelize } from "sequelize-typescript";
 
 export interface GetSequelizeConfigValueOptions {
     transaction?: Transaction;
@@ -25,6 +26,7 @@ export class SequelizeConfigProvider implements IConfigProvider<GetSequelizeConf
 
     constructor(
         @InjectConfigSequelizeModel() private repository: typeof ConfigSequelizeModel,
+        @Inject(Sequelize) private sequelize: Sequelize,
         private configTransformerService: ConfigTransformerService
     ) {}
 
@@ -111,6 +113,10 @@ export class SequelizeConfigProvider implements IConfigProvider<GetSequelizeConf
         // Since configs are resolved during the dependency injection phase, we need to do the initialization before we can run code using `onModuleInit`.
         if (this.initialized) {
             return;
+        }
+
+        if (!this.sequelize.isDefined(this.repository.name)) {
+            this.sequelize.addModels([this.repository.name]);
         }
 
         await this.repository.sync();
