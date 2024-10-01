@@ -116,7 +116,7 @@ export class SequelizeConfigProvider implements IConfigProvider<GetSequelizeConf
         }
 
         if (!this.sequelize.isDefined(this.repository.name)) {
-            this.sequelize.addModels([this.repository.name]);
+            this.sequelize.addModels([this.repository]);
         }
 
         await this.repository.sync();
