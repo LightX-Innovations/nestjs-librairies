@@ -7,8 +7,22 @@ import { Model } from "sequelize-typescript";
 
 @DatabaseAdapter({ type: "sequelize" })
 export class SequelizeDatabaseAdapter implements IDatabaseAdapter {
+    private filterModelCallback?: (model: Model) => boolean;
+
+    constructor(filterModelCallback?: (model: Model) => boolean) {
+        this.filterModelCallback = filterModelCallback;
+    }
+
     public getModels(): any[] {
-        return EntitiesMetadataStorage.getEntitiesByConnection(DEFAULT_CONNECTION_NAME) as any[];
+        const allModels = EntitiesMetadataStorage.getEntitiesByConnection(DEFAULT_CONNECTION_NAME) as any[];
+
+        if (!this.filterModelCallback) {
+            return allModels;
+        }
+
+        const filteredModels = allModels.filter((model) => this.filterModelCallback!(model));
+
+        return filteredModels;
     }
 
     public getResourceName(model: typeof Model): string {
