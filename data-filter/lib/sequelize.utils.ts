@@ -304,9 +304,13 @@ export class SequelizeUtils {
             });
     }
 
-    public static getModelSearchableFieldAttributes(model: typeof M, fields: string[]): string[] {
+    public static getModelSearchableFieldAttributes(
+        model: typeof M,
+        fields: string[] | { include: string[] }
+    ): string[] {
         const attributes = model.rawAttributes;
-        return fields
+        const fieldsArray = Array.isArray(fields) ? fields : fields.include;
+        return fieldsArray
             .filter((x) => {
                 const attr = attributes[x];
                 if (!attr) {
