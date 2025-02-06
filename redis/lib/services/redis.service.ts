@@ -22,7 +22,7 @@ export class RedisService {
     }
 
     public async disconnect(): Promise<void> {
-        this.client.disconnect();
+        await this.client.quit();
     }
 
     public keys(keys: string): Promise<string[]> {
