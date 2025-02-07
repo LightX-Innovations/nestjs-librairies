@@ -162,4 +162,8 @@ export class RedisService {
             });
         });
     }
+
+    public async flushdb(): Promise<void> {
+        await this.client.flushdb();
+    }
 }

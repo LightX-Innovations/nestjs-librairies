@@ -1,6 +1,6 @@
 {
     "name": "@lightx-innovations/nestjs-redis",
-    "version": "10.2.3",
+    "version": "10.2.4",
     "description": "NestJs Redis client",
     "main": "index.js",
     "scripts": {
