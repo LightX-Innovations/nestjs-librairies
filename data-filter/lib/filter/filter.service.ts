@@ -608,11 +608,8 @@ export class FilterService<Data> {
         const values = await repository.findAll(
             {
                 ...options,
-                limit: filter.page && !this.model.baseRoot.length ? filter.page.size : undefined,
-                offset:
-                    filter.page && !this.model.baseRoot.length
-                        ? filter.page.number * filter.page.size + (filter.page.offset ?? 0)
-                        : undefined,
+                limit: filter.page ? filter.page.size : undefined,
+                offset: filter.page ? filter.page.number * filter.page.size + (filter.page.offset ?? 0) : undefined,
                 subQuery: false,
                 order,
                 paranoid: options.paranoid,
