@@ -36,7 +36,6 @@
       "revealOn": "demand",
       "revealWithFocus": "test-results"
     },
-    "testing.openTesting": "neverOpen",
-    "testing.automaticallyOpenTestResults": "neverOpen"
+    "testing.openTesting": "neverOpen"
   }
 }
