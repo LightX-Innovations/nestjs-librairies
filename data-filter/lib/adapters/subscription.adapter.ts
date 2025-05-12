@@ -8,6 +8,6 @@ export interface SubscriptionInfoBase {
     id: number;
 }
 export abstract class SubscriptionAdapter {
-    public abstract createSubscription(options: any): SubscriptionBase;
+    public abstract createSubscription(options: any): SubscriptionBase | Promise<SubscriptionBase>;
     public abstract rerouteData(baseRoot: string[], filterQuery: FilterQueryModel, data: any | any[]): any[];
 }
